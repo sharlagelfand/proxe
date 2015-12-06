@@ -126,3 +126,5 @@ genesets_list <- lapply(genesets_list, function(x) x[!is.na(x)])
 my_palette <- colorRampPalette(c("blue", "yellow"))(n = 299)
 
 print("didcomehere1")
+
+rm(rnadf,rnadf_sub)

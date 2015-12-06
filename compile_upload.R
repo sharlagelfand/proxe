@@ -1,9 +1,15 @@
 # for pre-compiling data and running/uploading app
-
+rm(list=ls())
 setwd("/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app")
 source("clean_data.R")
 source("rna_seq.R")
 source("oncoprint.R")
+
+# check on largest-memory items
+z <- sapply(ls(), function(x)
+  object.size(get(x)))
+as.matrix(rev(sort(z))[1:10])
+
 save.image(file = "pre-compiled.RData")
 
 # -- comment or uncomment sections below as desired -- #
