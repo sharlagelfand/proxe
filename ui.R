@@ -268,6 +268,16 @@ shinyUI(
           plotOutput("plot_oncoprint",height = 800,width=1300)
         )
       )
+    ),
+    tabPanel("Glossary",
+      fluidPage(
+        fluidRow(
+          column(width = 12,
+            DT::dataTableOutput(outputId="glossary")
+          )
+        )
+      )
+      
     )
   )  
 )

@@ -263,7 +263,7 @@ names(df) <- gsub(pattern = "_",replacement = " ",x = names(df))
 
 
 # randomize row ordering of df, but deterministically
-set.seed(10)
+set.seed(12)
 df <- df[sample(1:nrow(df),size = nrow(df),replace = FALSE),]
 # consider summing non-empty cells to put most complete cells near top 
 

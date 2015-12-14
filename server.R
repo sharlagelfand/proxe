@@ -300,7 +300,24 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
 #     write.table(dfxl, filename, quote=FALSE,sep="|",na="",row.names=FALSE)
     write.xlsx(dfxl,filename,row.names=FALSE,showNA=FALSE)
   })
+  
+  # add glossary
+  output$glossary <- DT::renderDataTable({
+    meta3 <- meta2[,c("PRoXe_Column_Header","Column_Description")]
+    meta3 <- as.data.frame(lapply(meta3,gsub,pattern="_",replacement=" "),stringsAsFactors = F)
+    names(meta3) <- gsub("_"," ",names(meta3))
+    meta3
+  },
+  filter="top",
+  server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
+  rownames=FALSE,
+  options = list(
+    searchHighlight = TRUE,
+    paging=FALSE
+  ))
 })
+
+
 
 ### --- Appendix of old code --- ###
 
