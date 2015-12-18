@@ -17,6 +17,12 @@ library(xlsx)
 ###############################################################################
 ### --- Import data and metadata --- ###
 
+# read in master (backup) glossary
+gloss.filename <- dir("./data/",pattern = glob2rx("Master_Glossary*xlsx"))
+if(length(gloss.filename) != 1) stop("too few or too many Master_Glossary sheets in dropbox")
+meta_gloss <- read_excel(paste0("./data/",gloss.filename),sheet=1)
+meta_gloss$PRoXe_Column_Header <- gsub("_"," ",meta_gloss$PRoXe_Column_Header)
+
 # read in metadata
 prima.filename <- dir("./data/",pattern = glob2rx("PRIMAGRAFTS*xlsx"))
 if(length(prima.filename) != 1) stop("too few or too many PRIMAGRAFTS sheets in dropbox")

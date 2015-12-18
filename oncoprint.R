@@ -87,52 +87,56 @@ for (n in bin_seq) {
       diffyx <- length(x) - length(y)
       if(diffyx > 0) {
         warning(paste("missing type at:",i,j,gene_name))
-        y <- c(y,rep("(type not yet entered)",diffyx))
+        y <- c(y,rep("(type pending)",diffyx))
       }
       diffzx <- length(x) - length(z)
       if(diffzx > 0) {
         warning(paste("missing details at:",i,j,gene_name))
-        z <- c(z,rep("(details not yet entered)",diffyx))
+        z <- c(z,rep("(details pending)",diffyx))
       }
       # subset y,z,g by x==1
       y = y[x==1]
       z = z[x==1]
       g = g[x==1]
+      z = paste(g,y,z) # combines 'type' into 'details'
       # replace original data.
-      m3[i,j] = paste(g,collapse="|")
-      m3[i,j+1] = paste(y,collapse="|")
-      m3[i,j+2] = paste(z,collapse="|")
+      m3[i,j] = paste(g,collapse=" | ")
+      m3[i,j+1] = paste(y,collapse=" | ")
+      m3[i,j+2] = paste(z,collapse=" | ")
     } else m3[i,j] = m3[i,j+1] = m3[i,j+2] = ""
   }
 }
 
 # combine columns right
-m3$temp1 <- do.call(paste, c(m3[,m3cols.bin], sep="|"))
-m3$temp2 <- do.call(paste, c(m3[,m3cols.type], sep="|"))
-m3$temp3 <-do.call(paste, c(m3[,m3cols.details], sep="|"))
+m3$temp1 <- do.call(paste, c(m3[,m3cols.bin], sep=" | "))
+m3$temp2 <- do.call(paste, c(m3[,m3cols.type], sep=" | "))
+m3$temp3 <-do.call(paste, c(m3[,m3cols.details], sep=" | "))
 
 # save as other columns: TODO: move and use
 # m3$PDX_Molecular_Alterations_Positive <- m3$temp1
 # m3$PDX_Molecular_Alterations_Type <- m3$temp2
 # m3$PDX_Molecular_Details <- m3$temp3
 
-m3t <- m3[c("temp1","temp2","temp3")]
+m3t <- m3[c("temp1","temp3")] # removed temp2 to remove 'type'
 # remove all pipes at beginning, end, and adjacent to other pipes
   # adjacent
 i=1; temp <- NA
 while (!identical(temp,m3t)){
   print(i); i=i+1
   temp <- m3t
-  m3t <- apply(m3t,2,function(i) gsub("\\|\\|","\\|",i))
+  # m3t <- apply(m3t,2,function(i) gsub("\\| \\|","\\|",i))
+  m3t <- apply(m3t,2,function(i) gsub("||","|",i,fixed=T))
+  m3t <- apply(m3t,2,function(i) gsub("| |","|",i,fixed=T))
+  m3t <- apply(m3t,2,function(i) gsub("|  |","|",i,fixed=T))
 }
 rm(temp)
   # beginning and end
-m3t <- apply(m3t,2,function(i) gsub("^\\|","",i,perl = TRUE))
-m3t <- apply(m3t,2,function(i) gsub("\\|$","",i,perl = TRUE))
+m3t <- apply(m3t,2,function(i) gsub("^ \\| ","",i,perl = TRUE))
+m3t <- apply(m3t,2,function(i) gsub(" \\| $","",i,perl = TRUE))
 
 # rename columns and combine with index column
 m3t <- cbind(m3$PDX.RNA.Seq_Name,m3t)
-colnames(m3t) <- c("PDX-RNA-Seq Name","PDX Molecular Alterations Positive","PDX Molecular Alterations Type",
+colnames(m3t) <- c("PDX-RNA-Seq Name","PDX Molecular Alterations Positive",
                   "PDX Molecular Details")
 m3t <- as.data.frame(m3t,stringsAsFactors = F)
 
@@ -163,8 +167,8 @@ moveMe <- function(data, tomove, where = "last", ba = NULL) {
 
 df <- moveMe(df, c( "PDX-RNA-Seq Name"), "after", "Treatment Phase at Time of Sample")
 # move three new columns on right side (91:93) to just after Source Molecular Details (currently 32)
-df <- moveMe(df, c("PDX Molecular Alterations Positive","PDX Molecular Alterations Type",
-                   "PDX Molecular Details"),"after","Source Molecular Details")
+df <- moveMe(df, c("PDX Molecular Alterations Positive",
+                   "PDX Molecular Details"),"after","PDX HemoSeq")
 obInvisRet_ind <- obInvisRet_ind + 3
 
 #TODO, perhaps: clean up memory/storage/loadtime leaks from unused variables above.
