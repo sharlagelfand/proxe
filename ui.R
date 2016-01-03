@@ -9,6 +9,7 @@ library(gplots)
 library(RColorBrewer)
 library(plyr)
 
+
 # setwd, load, and clean data
 # commenting out because not necessary in both server and UI
 # delete later if still unnecessary
@@ -99,7 +100,9 @@ shinyUI(
             sidebarPanel(
                selectInput(
                  "plotType", "Plot Type",
-                 c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox")
+                 c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
+                    "2D Contingency Table" = "ctable_plot"),
+                 selected = "hist"
                  ),
                
                # Option 1: show histogram.
@@ -148,11 +151,32 @@ shinyUI(
                              selected="WHO Category"),
                  selectInput("scatbox_num","Numeric to plot",sort(names(df)[numeric_cols_vis]),
                              selected="Days to Engraft P0")
-                 )
-               ),
+                 ),
+#                # Option 5: contingency table of categories
+#                conditionalPanel(
+#                  condition = "input.plotType == 'ctable'",
+#                  selectInput("tablevarA","First category",sort(names(df)[factor_cols_vis]),
+#                              selected = "WHO Category"),
+#                  selectInput("tablevarB","Second category",sort(names(df)[factor_cols_vis]),
+#                              selected = "Latest Passage Banked")
+#                 ),
+               # Option 6: mosaic plot of contingency table.
+               conditionalPanel(
+                 condition = "input.plotType == 'ctable_plot'",
+                 selectInput("ctable_plot_var1","First category",sort(names(df)[factor_cols_vis]),
+                             selected = "WHO Category"),
+                 selectInput("ctable_plot_var2","Second category",sort(names(df)[factor_cols_vis]),
+                             selected = "Latest Passage Banked")
+                )
+             ),
             column(width=8,
-                   plotOutput("plot_various")
-                   )
+                ({ 
+#                   if (input$plotType == 'ctable') {
+#                      tableOutput("table_various")
+#                   } else 
+                    plotOutput("plot_various") 
+                })
+             )
             
           )
         )
@@ -269,6 +293,25 @@ shinyUI(
         )
       )
     ),
+    tabPanel("Contingency Table",
+      sidebarLayout(
+        sidebarPanel(
+          selectInput("ctable_numcats","Number of contingency table categories",
+                      1:2,selected=2),
+          selectInput("tablevar1","First category",sort(names(df)[factor_cols_vis]),
+                      selected = "WHO Category"),
+          conditionalPanel(
+            condition = "input.ctable_numcats > 1",
+            selectInput("tablevar2","Second category",sort(names(df)[factor_cols_vis]),
+                        selected = "Latest Passage Banked")
+          )
+        ),
+        mainPanel(
+          h4("Contingency table. Updates based on filtering in Database Explorer."),
+          tableOutput("table_various")
+        )
+      )
+    ),  # works
     tabPanel("Glossary",
       fluidPage(
         fluidRow(

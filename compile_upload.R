@@ -20,7 +20,7 @@ save.image(file = "pre-compiled.RData")
 # capture.output(shinyapps::showLogs(appName="PRoXe_alpha",account="proxe",entries=5000),file="~/logs5000.txt")
 
 ## 2 - run normally
-runApp()
+# runApp()
 # 
 ## 3 - run for debugging
 # runApp(display.mode = "showcase") # for debugging

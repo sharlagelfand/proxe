@@ -3,10 +3,12 @@
 library(shiny)
 # library(WriteXLS)
 library(xlsx)
-# library(ggplot2)
+library(ggplot2)
 library(DT)
 library(beeswarm)
 # library(rCharts)
+
+op <- par(no.readonly = TRUE)
 
 # setwd, load, and clean data
 # source("clean_data.R")
@@ -118,7 +120,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     } else if (input$plotType == "scatbox"){
       scatbox_df <- df[filtered_row_inds,]
       scatbox_formula <- get(input$scatbox_num) ~ get(input$scatbox_cat)
-      op <- par(no.readonly = TRUE)
+      
       #change settings
       par(mar=c(5, 18, 3, 2) + 0.1)
       num_vars = length(levels(df[,input$scatbox_cat]))
@@ -142,7 +144,20 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       #reset settings
       par(op)
       
-    }
+    } else if (input$plotType == "ctable_plot") {
+      #TODO: add to ui.R
+      tablefunc_df <- df[filtered_row_inds,]
+      # plot(table(tablefunc_df[,input$tablevar1],tablefunc_df[,input$tablevar2]))  # works, but ugly.
+      mosaicplot(table(tablefunc_df[,input$ctable_plot_var1],tablefunc_df[,input$ctable_plot_var2]),
+                 color=rainbow(8), main = "Congingency table plot.\nUpdates based on filtering above",
+                 cex.axis=0.7) # same -- could optimize with color etc?
+      # TODO: fix main and axis labels, maybe margins.
+      # qplot(x=table(tablefunc_df[,input$tablevar1],tablefunc_df[,input$tablevar2]),
+            # stat="summary")  # doesn't work.
+      # ggplot(as.data.frame(table(tablefunc_df)), aes_string(x=input$tablevar1, fill = input$tablevar2)) +
+        # geom_bar(stat="identity")  # doesn't work.
+      
+    } else input$plotType <- plot(0)
     
     
     
@@ -154,6 +169,27 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
           # main="histogram of selected variable: \n updates based on selections above")
 #     m <- ggplot(df[filtered_row_inds,], aes_string(x=input$hist_var))
 #     m + geom_histogram(fill="blue") #input$hist_binwidth)
+  })
+  
+  # for plotting a contingency table in table format
+  output$table_various <- renderTable({
+    filtered_row_inds <- input$table_rows_all
+    ctable_df <- df[filtered_row_inds,]
+    
+    # remove mCLP and Luc lines
+    to_remove <- c(grep("Luc",ctable_df$`PDX Name`),
+                   grep("mCLP",ctable_df$`PDX Name`))
+    ctable_df <- ctable_df[-to_remove,]
+    
+    if (input$ctable_numcats == 1) {
+      tmp_table <- table(ctable_df[,input$tablevar1])
+      names(dimnames(tmp_table)) <- "count"
+      tmp_table
+    } else if (input$ctable_numcats == 2) {
+      table(ctable_df[,input$tablevar1],ctable_df[,input$tablevar2])
+    } else if (input$ctable_numcats == 3) {
+      table(ctable_df[,input$tablevar1],ctable_df[,input$tablevar2],ctable_df[,input$tablevar3])
+    }
   })
   
   output$plot_rna <- renderPlot({
