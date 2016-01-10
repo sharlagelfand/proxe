@@ -59,3 +59,23 @@ oncoPrint <- function(M, sort=TRUE) {
   axis(2, at=(ngenes:1)-.5, labels=rownames(alts), las=2);
   axis(1, at=(nsamples:1)-.5, labels=colnames(alts), las=2); # SPK new line in function
 }
+
+# function from http://stackoverflow.com/questions/18339370/reordering-columns-in-a-large-dataframe
+moveMe <- function(data, tomove, where = "last", ba = NULL) {
+  temp <- setdiff(names(data), tomove)
+  x <- switch(
+    where,
+    first = data[c(tomove, temp)],
+    last = data[c(temp, tomove)],
+    before = {
+      if (is.null(ba)) stop("must specify ba column")
+      if (length(ba) > 1) stop("ba must be a single character string")
+      data[append(temp, values = tomove, after = (match(ba, temp)-1))]
+    },
+    after = {
+      if (is.null(ba)) stop("must specify ba column")
+      if (length(ba) > 1) stop("ba must be a single character string")
+      data[append(temp, values = tomove, after = (match(ba, temp)))]
+    })
+  x
+}

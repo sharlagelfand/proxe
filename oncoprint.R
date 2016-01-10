@@ -145,31 +145,11 @@ m3t <- as.data.frame(m3t,stringsAsFactors = F)
   # match on df$`PDX-RNA-Seq Name`,m3$PDX.RNA.Seq_Name and keep all in df.
 df <- merge(df,m3t,by = "PDX-RNA-Seq Name",all.x=T)
 # move PDX-RNA-Seq Name to just invisible (5, the current condVis_ind)
-  # function from http://stackoverflow.com/questions/18339370/reordering-columns-in-a-large-dataframe
-moveMe <- function(data, tomove, where = "last", ba = NULL) {
-  temp <- setdiff(names(data), tomove)
-  x <- switch(
-    where,
-    first = data[c(tomove, temp)],
-    last = data[c(temp, tomove)],
-    before = {
-      if (is.null(ba)) stop("must specify ba column")
-      if (length(ba) > 1) stop("ba must be a single character string")
-      data[append(temp, values = tomove, after = (match(ba, temp)-1))]
-    },
-    after = {
-      if (is.null(ba)) stop("must specify ba column")
-      if (length(ba) > 1) stop("ba must be a single character string")
-      data[append(temp, values = tomove, after = (match(ba, temp)))]
-    })
-  x
-}
-
 df <- moveMe(df, c( "PDX-RNA-Seq Name"), "after", "Treatment Phase at Time of Sample")
 # move three new columns on right side (91:93) to just after Source Molecular Details (currently 32)
 df <- moveMe(df, c("PDX Molecular Alterations Positive",
                    "PDX Molecular Details"),"after","PDX HemoSeq")
-obInvisRet_ind <- obInvisRet_ind + 3
+obInvisRet_ind <- obInvisRet_ind + 2
 
 #TODO, perhaps: clean up memory/storage/loadtime leaks from unused variables above.
 rm(mut_df,m3,m3t)

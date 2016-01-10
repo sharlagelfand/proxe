@@ -13,6 +13,7 @@
 library(shiny)
 library(readxl)
 library(xlsx)
+source("functions.R")
 
 ###############################################################################
 ### --- Import data and metadata --- ###
@@ -157,7 +158,7 @@ df <- merge(df,fc,by="PDX_Name",all.x=T)
 
 # move inserted columns around, change indices of which columns to show
 new_col_inds <- (ncol(df)-(ncol(fc)-2)):ncol(df)
-new_col_order <- c(1:obInvisRet_ind-1,
+new_col_order <- c(1:(obInvisRet_ind-1),
                    new_col_inds, 
                    (obInvisRet_ind):(ncol(df)-length(new_col_inds))
 )
@@ -184,7 +185,7 @@ df <- merge(df,ihc,by="namenum",all.x=T)
 df <- df[,c(2:ncol(df),1)]
 # move IHC_PDF column to visible section, change indices of which columns to show
 new_col_inds <- which(names(df) == "IHC_PDF")
-new_col_order <- c(1:obInvisRet_ind-1,
+new_col_order <- c(1:(obInvisRet_ind-1),
                    new_col_inds, 
                    (obInvisRet_ind):(ncol(df)-length(new_col_inds)-1),
                    ncol(df)
@@ -210,7 +211,7 @@ df <- df[,c(2:(ncol(df)),1)]
 # df <- df[,c(1:(ncol(df)-2),(ncol(df)-1))]
 new_col_inds <- which(names(df) == "Path_Report_PDF")
 # insert_ind <- (which(names(df) == "P0_Injected")) - 1
-new_col_order <- c(1:obInvisRet_ind-1,
+new_col_order <- c(1:(obInvisRet_ind-1),
                    new_col_inds, 
                    (obInvisRet_ind):(ncol(df)-length(new_col_inds)-1),ncol(df)
 )
@@ -253,7 +254,39 @@ df <- merge(df,inv,by = "PDX_Name",all.x = TRUE)
 # move new columns to visible section, change indices of which columns to show
 new_col_names <- names(inv)[-which(names(inv) == "PDX_Name")]
 new_col_inds <- which(names(df) %in% new_col_names)
-new_col_order <- c(1:obInvisRet_ind-1,
+new_col_order <- c(1:(obInvisRet_ind-1),
+                   new_col_inds, 
+                   (obInvisRet_ind):(ncol(df)-length(new_col_inds))
+)
+
+df <- df[,new_col_order]
+obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
+
+###############################################################################
+### --- Include HLA typing info --- ###
+
+# Mark M.: Someone from the Wu lab applied a program that infers class I HLA type from RNA-Seq data. 
+# HLA type at six alleles for 116 of our samples, according to the abbreviated RNA-Seq name 
+# (e.g., AML01, AML02, etc.)
+# I would label the columns as follows: 
+# > A1 = HLA-A allele 1
+# > A2 = HLA-A allele 2
+# > B1 = HLA-B allele 1
+# > B2 = HLA-B allele 2
+# > C1 = HLA-C allele 1
+# > C2 = HLA-C allele 2
+
+hla <- read_excel("data/hla_results_010816.xlsx",sheet = 1,col_names = TRUE)
+colnames(hla) <- c("PDX-RNA-Seq_Name","HLA-A allele 1","HLA-A allele 2","HLA-B allele 1",
+                   "HLA-B allele 2","HLA-C allele 1","HLA-C allele 2")
+hla <- convert.magic(hla,rep("factor",7))
+hla$`PDX-RNA-Seq_Name` <- as.character(hla$`PDX-RNA-Seq_Name`)
+df <- merge(df,hla,by = "PDX-RNA-Seq_Name",all.x = TRUE)
+
+# move new columns to visible section, change indices of which columns to show
+new_col_names <- names(hla)[-which(names(hla) == "PDX-RNA-Seq_Name")]
+new_col_inds <- which(names(df) %in% new_col_names)
+new_col_order <- c(1:(obInvisRet_ind-1),  #TODO: add parens around all these and see what happens
                    new_col_inds, 
                    (obInvisRet_ind):(ncol(df)-length(new_col_inds))
 )

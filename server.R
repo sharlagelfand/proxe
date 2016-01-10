@@ -24,12 +24,12 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       if (input$selectall %% 2 == 1){
         updateCheckboxGroupInput(session=session, 
                                  inputId="show_vars",
-                                 choices = names(df[1:obInvisRet_ind-1]),
+                                 choices = names(df[1:(obInvisRet_ind-1)]),
                                  selected = c(names(df)))
       } else {
         updateCheckboxGroupInput(session=session, 
                                  inputId="show_vars",
-                                 choices = names(df[1:obInvisRet_ind-1]),
+                                 choices = names(df[1:(obInvisRet_ind-1)]),
                                  selected = c())
       }}
     updateSelectizeInput(session,inputId="rna_genes",
@@ -331,7 +331,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   # download the filtered data
   output$download_filtered = downloadHandler("PRoXe_filtered.xlsx", content = function(filename) {
     filtered_row_inds <- input$table_rows_all
-    dfxl <- df[filtered_row_inds, 1:obInvisRet_ind-1, drop = FALSE] 
+    dfxl <- df[filtered_row_inds, 1:(obInvisRet_ind-1), drop = FALSE] 
 #     WriteXLS(dfxl, ExcelFileName=filename)
 #     write.table(dfxl, filename, quote=FALSE,sep="|",na="",row.names=FALSE)
     write.xlsx(dfxl,filename,row.names=FALSE,showNA=FALSE)
@@ -342,13 +342,13 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     meta3 <- meta2[meta2$Visible_Invisible != "ob_invis",c("PRoXe_Column_Header","Column_Description")]
     meta3 <- as.data.frame(lapply(meta3,gsub,pattern="_",replacement=" "),stringsAsFactors = F)
     names(meta3) <- gsub("_"," ",names(meta3))
-    missing_names <- setdiff(names(df[1:obInvisRet_ind-1]), meta3$`PRoXe Column Header`)
+    missing_names <- setdiff(names(df[1:(obInvisRet_ind-1)]), meta3$`PRoXe Column Header`)
     new_rows_df <- meta_gloss[meta_gloss$PRoXe_Column_Header %in% missing_names,
                               c("PRoXe_Column_Header","Column_Description")]
     names(new_rows_df) <- gsub("_"," ",names(new_rows_df))
     meta3 <- rbind(meta3,new_rows_df)
     # change order to same as Database Explorer
-    meta3[match(meta3$`PRoXe Column Header`,names(df[1:obInvisRet_ind-1])),]
+    meta3[match(meta3$`PRoXe Column Header`,names(df[1:(obInvisRet_ind-1)])),]
     
   },
   filter="top",
