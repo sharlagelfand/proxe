@@ -183,7 +183,7 @@ shinyUI(
         ,fluid=TRUE
       )
     ),
-    tabPanel("Gene Expression",
+    tabPanel("PDX Gene Expression",
       sidebarLayout(
         sidebarPanel(width=2,
           selectInput(
