@@ -339,9 +339,12 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   # add glossary
   output$glossary <- DT::renderDataTable({
+    # take visible columns' header and description
     meta3 <- meta2[meta2$Visible_Invisible != "ob_invis",c("PRoXe_Column_Header","Column_Description")]
+    # reformat
     meta3 <- as.data.frame(lapply(meta3,gsub,pattern="_",replacement=" "),stringsAsFactors = F)
     names(meta3) <- gsub("_"," ",names(meta3))
+    
     missing_names <- setdiff(names(df[1:(obInvisRet_ind-1)]), meta3$`PRoXe Column Header`)
     new_rows_df <- meta_gloss[meta_gloss$PRoXe_Column_Header %in% missing_names,
                               c("PRoXe_Column_Header","Column_Description")]

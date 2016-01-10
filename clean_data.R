@@ -277,8 +277,8 @@ obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
 # > C2 = HLA-C allele 2
 
 hla <- read_excel("data/hla_results_010816.xlsx",sheet = 1,col_names = TRUE)
-colnames(hla) <- c("PDX-RNA-Seq_Name","HLA-A allele 1","HLA-A allele 2","HLA-B allele 1",
-                   "HLA-B allele 2","HLA-C allele 1","HLA-C allele 2")
+colnames(hla) <- c("PDX-RNA-Seq_Name","HLA-A Allele 1","HLA-A Allele 2","HLA-B Allele 1",
+                   "HLA-B Allele 2","HLA-C Allele 1","HLA-C Allele 2")
 hla <- convert.magic(hla,rep("factor",7))
 hla$`PDX-RNA-Seq_Name` <- as.character(hla$`PDX-RNA-Seq_Name`)
 df <- merge(df,hla,by = "PDX-RNA-Seq_Name",all.x = TRUE)
@@ -293,6 +293,15 @@ new_col_order <- c(1:(obInvisRet_ind-1),  #TODO: add parens around all these and
 
 df <- df[,new_col_order]
 obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
+
+# add HLA glossary data to 'meta2'
+hla_meta <- read_excel("data/hla_results_010816.xlsx",sheet = "hla_header_data",col_names = TRUE)
+# hla_meta$Visible_Invisible_int <- rep(NA_integer_,nrow(hla_meta))
+meta_gloss <- rbind(meta_gloss,hla_meta)
+# meta2[meta2$Visible_Invisible == "ob_vis",]$Visible_Invisible_int <- 1
+# meta2[meta2$Visible_Invisible == "cond_vis",]$Visible_Invisible_int <- 2
+# meta2[meta2$Visible_Invisible == "ob_invis",]$Visible_Invisible_int <- 3
+
 
 ###############################################################################
 ### --- Final aesthetic modifications --- ###
