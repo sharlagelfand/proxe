@@ -337,6 +337,34 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     write.xlsx(dfxl,filename,row.names=FALSE,showNA=FALSE)
   })
   
+  # line report
+  output$line_report <- DT::renderDataTable({
+    df_idx <- input$table_rows_selected
+    # print(df_idx)
+    if (length(df_idx) == 0) {
+      return(data.frame(
+        Instructions = "Select a line in the Database Explorer to see a report here.",
+        row.names = ""))
+    } else if (length(df_idx) > 1) {
+      return(data.frame(
+        Problem = "Please select only one row from Database Explorer",
+        row.names = ""))
+    } else if (length(df_idx) == 1) {
+      temp_df <- t(df[df_idx,1:(obInvisRet_ind-1)])
+      colnames(temp_df) <- "sample"
+      return(temp_df) # TODO: filter out non-shown vars.
+      }
+    },
+    escape= FALSE,
+    filter="top",
+    server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
+    rownames=TRUE,
+    options = list(
+      searchHighlight = TRUE,
+      paging = FALSE
+    )
+  )
+  
   # add glossary
   output$glossary <- DT::renderDataTable({
     # take visible columns' header and description
