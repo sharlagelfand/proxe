@@ -313,13 +313,15 @@ shinyUI(
       )
     ),  # works
     tabPanel("Line Report",
-      fluidPage(
-        fluidRow(
-          # h4("Select a line in the Database Explorer to see a report here"),
-          DT::dataTableOutput(outputId="line_report")
-          # TODO: insert selected report format
-          # TODO: decide on report format and PDF rendering option.
-        )
+      basicPage(
+        # h4("Select a line in the Database Explorer to see a report here"),
+        DT::dataTableOutput(outputId="line_report"),
+        h3("Flow Cytometry:"),
+        uiOutput("line_report_FC"),
+        h3("Immunohistochemistry:"),
+        uiOutput("line_report_IHC"),
+        h3("Pathology Report:"),
+        uiOutput("line_report_Path")
       )
     ),
     tabPanel("Glossary",

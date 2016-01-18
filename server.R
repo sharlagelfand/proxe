@@ -6,6 +6,8 @@ library(xlsx)
 library(ggplot2)
 library(DT)
 library(beeswarm)
+# library(knitr)
+library(stringr)
 # library(rCharts)
 
 op <- par(no.readonly = TRUE)
@@ -352,7 +354,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     } else if (length(df_idx) == 1) {
       temp_df <- t(df[df_idx,1:(obInvisRet_ind-1)])
       colnames(temp_df) <- "sample"
-      return(temp_df) # TODO: filter out non-shown vars.
+      return(temp_df)
       }
     },
     escape= FALSE,
@@ -364,6 +366,54 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       paging = FALSE
     )
   )
+  
+  output$line_report_FC <- renderUI({
+    df_idx <- input$table_rows_selected
+    fc_path <- df[df_idx,"Flow Cytometry PDF"]
+    if(length(df_idx)<1){
+      tags$p(" ")
+    } else if(is.na(fc_path)){
+      tags$p("There is no Flow Cytometry data for the selected line.")
+    } else {
+      outfile=str_extract(fc_path,"Flow_Cytometry/.*.pdf")
+      tags$iframe(
+        src=outfile,
+        width="100%",
+        height="800px")
+    }
+  })
+  
+  output$line_report_IHC <- renderUI({
+    df_idx <- input$table_rows_selected
+    fc_path <- df[df_idx,"IHC PDF"]
+    if(length(df_idx)<1){
+      tags$p(" ")
+    } else if(is.na(fc_path)){
+      tags$p("There is no IHC data for the selected line.")
+    } else {
+      outfile=str_extract(fc_path,"IHC/.*.pdf")
+      tags$iframe(
+        src=outfile,
+        width="100%",
+        height="800px")
+    }
+  })
+  
+  output$line_report_Path <- renderUI({
+    df_idx <- input$table_rows_selected
+    fc_path <- df[df_idx,"Path Report PDF"]
+    if(length(df_idx)<1){
+      tags$p(" ")
+    } else if(is.na(fc_path)){
+      tags$p("There is no Path Report for the selected line.")
+    } else {
+      outfile=str_extract(fc_path,"Pathology_Reports/.*.pdf")
+      tags$iframe(
+        src=outfile,
+        width="100%",
+        height="800px")
+    }
+  })
   
   # add glossary
   output$glossary <- DT::renderDataTable({
@@ -391,16 +441,3 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   ))
 })
 
-
-
-### --- Appendix of old code --- ###
-
-# if (!is.null(input$pathDx) && input$pathDx != ""){
-#   data <- data[data$Pathologic_Diagnosis == input$pathDx,]
-# }
-# #     if (input$m1 != "All"){
-# #       data <- data[data$Molecular1 == input$m1,]
-# #     }
-# if (!is.null(input$karyotype) && input$karyotype != ""){
-#   data <- data[data$Source_Karyotype_Simplified == input$karyotype,]
-# }
