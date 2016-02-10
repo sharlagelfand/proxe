@@ -302,6 +302,8 @@ meta_gloss <- rbind(meta_gloss,hla_meta)
 # meta2[meta2$Visible_Invisible == "cond_vis",]$Visible_Invisible_int <- 2
 # meta2[meta2$Visible_Invisible == "ob_invis",]$Visible_Invisible_int <- 3
 
+# Optional line for making WHO_Classification a factor for contingency table purposes.
+# df$WHO_Classification <- as.factor(df$WHO_Classification)
 
 ###############################################################################
 ### --- Final aesthetic modifications --- ###

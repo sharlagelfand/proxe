@@ -342,6 +342,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   # line report
   output$line_report <- DT::renderDataTable({
     df_idx <- input$table_rows_selected
+    # df_idx <- 4
     # print(df_idx)
     if (length(df_idx) == 0) {
       return(data.frame(
@@ -352,15 +353,89 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
         Problem = "Please select only one row from Database Explorer",
         row.names = ""))
     } else if (length(df_idx) == 1) {
-      temp_df <- t(df[df_idx,1:(obInvisRet_ind-1)])
-      colnames(temp_df) <- "sample"
-      return(temp_df)
-      }
-    },
+        temp_df <- as.data.frame(t(df[df_idx,1:(obInvisRet_ind-1)]))
+        colnames(temp_df) <- "sample"
+        temp_df$PRoXe_Column_Header <- rownames(temp_df)
+        rownames(temp_df) <- NULL
+        temp_df <- temp_df[,2:1]
+        
+        # 1. reorder by column groupings
+        m3 <- meta
+        m3$PRoXe_Column_Header <- gsub("_"," ",m3$PRoXe_Column_Header)
+        td2 <- merge(temp_df,m3,by="PRoXe_Column_Header",all.x=T,sort=F)
+        td2$Column_Groupings <- factor(td2$Column_Groupings,levels =c("patient","tumor","pdx","administrative"))
+        td3 <- td2[with(td2, order(Column_Groupings,Row_Order)),]
+        #TODO below: remove columns that are NA as a temporary stopgap. Later get Mark to edit Glossary doc.
+        if(anyNA(td3$Line_Report)){
+          warning("These rows are not yet annotated for Line Report; removing:")
+          warning(td3[is.na(td3$Line_Report),]$PRoXe_Column_Header)
+          td3 <- td3[!is.na(td3$Line_Report),]
+        }
+        
+        # 2. Remove/edit rows as marked in 'Line Report' and 'Line Report Notes' columns.
+          # 0=do not include
+          # 1=include
+          # 2=do not include this column per se, but similar data from an external spreadsheet will be shown
+            # TODO: determine what to do regarding this (see Mark), then include below.
+          # 3=include in report conditionally on instructions in Line Report Notes column.
+          
+          # remove 0s
+        td4 <- td3[td3$Line_Report!=0,]
+        
+          # TODO: discuss with Mark re: 2s
+
+          # conditionally reformat 3s
+          # include FAB Classification only when WHO Cat == AML
+        if(td4[td4$PRoXe_Column_Header=="WHO Category","sample"] != "AML"){
+          td4 <- td4[!(td4$PRoXe_Column_Header=="FAB Classification"),]
+          td4 <- td4[!(td4$PRoXe_Column_Header=="Cytogenetic Risk Category"),]        
+        }
+        
+          # TODO: combine into single row in order CD45,33,34,19,2,3, 
+            # in format CD45(superscript + or -)CD33(etc. no spaces.
+            # If PDX_Other_Immunophenotypes, add ", and" and append to end.
+            # Then remove these rows:
+              # PDX CD45
+              # PDX CD34
+              # PDX CD33
+              # PDX CD19
+              # PDX CD2
+              # PDX CD3
+              # PDX Other Immunophenotype
+        to_combine <- c("PDX CD45","PDX CD33","PDX CD34","PDX CD19",
+          "PDX CD2","PDX CD3","PDX Other Immunophenotype") # note in correct order
+        CDs <- to_combine[-length(to_combine)]
+        temp <- as.character(td4[td4$PRoXe_Column_Header %in% to_combine,]$sample)
+        temp <- gsub("Positive","<sup>+</sup>",temp)
+        temp <- gsub("Negative","<sup>-</sup>",temp)
+        temp <- gsub("Dim","<sup>Dim</sup>",temp)
+        temp <- gsub("Partial","<sup>Part</sup>",temp)
+        names(temp) <- gsub("PDX ","",to_combine)
+        temp <- temp[!is.na(temp)]
+        if(!is.na(temp["Other Immunophenotype"])){
+          oi <- temp["Other Immunophenotype"]
+          temp <- temp[names(temp) != "Other Immunophenotype"]
+        }
+        temp2 <- paste0(names(temp),temp,collapse="")
+        if(exists("oi")) temp2 <- paste0(temp2,", and ", oi)
+        # remove unwanted rows and add new row
+        td5 <- td4[!(td4$PRoXe_Column_Header %in% CDs),]
+        td5[td5$PRoXe_Column_Header == "PDX Other Immunophenotype",1] <- "PDX Immunophenotype"
+        td5$sample <- as.character(td5$sample)
+        td5[td5$PRoXe_Column_Header == "PDX Immunophenotype","sample"] <- temp2
+  
+
+        td8 <- td5[,c("PRoXe_Column_Header","sample","Column_Groupings")] 
+        colnames(td8) <- c("Data Type",
+          as.character(td8[td8$PRoXe_Column_Header=="PDX Name","sample"]),
+          "Column_Groupings")
+        return(td8)
+    }
+  },
     escape= FALSE,
     filter="top",
     server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
-    rownames=TRUE,
+    rownames=FALSE,
     options = list(
       searchHighlight = TRUE,
       paging = FALSE
@@ -415,6 +490,20 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     }
   })
   
+  # download the line report TODO: change filename to reflect line.
+    # TODO: consider pre-processing all these if slow.
+  output$download_filtered = downloadHandler("PRoXe_line_report.pdf", content = function(filename) {
+    df_idx <- input$table_rows_selected
+    library(knitr)
+    library(rmarkdown)
+    if (length(df_idx) == 1) {
+      temp_df <- t(df[df_idx,1:(obInvisRet_ind-1)])
+      colnames(temp_df) <- "sample"
+      knitr::knit2pdf()
+      # rmarkdown::
+    }
+  })
+  
   # add glossary
   output$glossary <- DT::renderDataTable({
     # take visible columns' header and description
@@ -436,6 +525,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
   rownames=FALSE,
   options = list(
+    
     searchHighlight = TRUE,
     paging=FALSE
   ))

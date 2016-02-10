@@ -10,7 +10,7 @@ z <- sapply(ls(), function(x)
   object.size(get(x)))
 as.matrix(rev(sort(z))[1:10])
 
-save.image(file = "pre-compiled.RData")
+save.image(file = "pre-compiled.RData",compress = FALSE)
 
 # -- comment or uncomment sections below as desired -- #
 
