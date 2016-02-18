@@ -34,15 +34,19 @@ factor_cols_vis <- which(sapply(df[,1:obInvisRet_ind], is.factor))
 
 # Define the overall UI
 shinyUI(
-#   fluidPage(
-#     titlePanel("PRoXe: Public Repository of Xenografts"),
-  navbarPage("PRoXe: Public Repository of Xenografts",
+  navbarPage(#"Public Repository of Xenografts",
+    span(img(src="PRoXe-Blue-Small.png",width="90px",
+      style="float:left; padding-right:5px; display:inline; position:relative; top:-10px"),
+    "Public Repository of Xenografts"),
+    windowTitle="PRoXe: Public Repository of Xenografts",
     tabPanel("Database Explorer",
+      # customHeaderPanel("Logo"),
     # Left sidebar for selecting which columns to show
       sidebarLayout(
         sidebarPanel(
           # adjusting sidebar width and text manually with CSS
           tags$head(
+            # tags$link(rel="shortcut icon", href="favicon.ico"),
             # tags$style(type='text/css', ".well { max-width: 310px; }"),
             # tags$style(type='text/css', ".span3 { max-width: 310px; }"),
             tags$style(type='text/css', ".radio, .checkbox { margin-bottom: 2px; }"),
@@ -315,6 +319,16 @@ shinyUI(
     tabPanel("Line Report",
       basicPage(
         # h4("Select a line in the Database Explorer to see a report here"),
+        selectInput(
+          "line_report_input_type","Method for selecting line to show here:",
+          c("Choose from drop-down menu" = "dropdown","Click rows in Database Explorer" = "click"),
+          selected="click"
+        ),
+        conditionalPanel(
+          condition = "input.line_report_input_type == 'dropdown'",
+          selectInput("line_report_name","Type or select a line name below to see a full report",
+            c(df[,"PDX Name"],NULL),selected = "DFTL-85005-R1")
+        ),
         DT::dataTableOutput(outputId="line_report"),
         h3("Flow Cytometry:"),
         uiOutput("line_report_FC"),
@@ -333,5 +347,7 @@ shinyUI(
         )
       )
     )
+  # ,position="fixed-top"
   )  
 )
+# )
