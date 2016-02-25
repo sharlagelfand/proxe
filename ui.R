@@ -61,7 +61,12 @@ shinyUI(
               .col-sm-3 {
                 width: 25%;
                 max-width: 29em;
-              }")#,
+              }"),
+            tags$style(type='text/css', "
+              .container-fluid {
+                padding-top:4em
+              }")
+#,
             # for adding ellipsis to ColVis
   #           tags$style(type='text/css', "
   #             ul.ColVis_collection li span {
@@ -87,8 +92,9 @@ shinyUI(
           # 0. Email us (temporary)
           fluidRow(
             HTML("<p align=\"right\">
-                  <a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback\" target=\"_top\">Email us</a> with feedback or to inquire about lines.
-                </p>")
+                    <a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback\" target=\"_top\">Email us</a> with questions or 
+                    <a href=\"https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform\" target=\"_blank\">click here</a> to request lines.
+                  </p>")
           ),
           # 1. data table. -- maybe add a histogram or something below if desired.
           fluidRow(
@@ -347,7 +353,7 @@ shinyUI(
         )
       )
     )
-  # ,position="fixed-top"
+  ,position="fixed-top"
   )  
 )
 # )
