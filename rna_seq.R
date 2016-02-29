@@ -35,16 +35,16 @@ rna_meta$date <- sub(pattern = "^.*\\.(\\d{8})[\\.pe]*$",replacement="\\1",x=rna
 # add zeros in front of single-digit numbers in $sample
 rna_meta$sample <- sub("([A-Z])([1-9])$",replacement="\\10\\2",x = rna_meta$sample,perl=TRUE)
 
-# then merge with df$`PDX_RNA-Seq Name`
-dfr <- merge(df,rna_meta,by.x="PDX-RNA-Seq Name",by.y="sample",all=F)
+# then merge with df$`PDX RNA-Seq Name`
+dfr <- merge(df,rna_meta,by.x="PDX RNA-Seq Name",by.y="sample",all=F)
 
 # --- remove select duplicates --- #
 
-# dfr[dfr$`PDX-RNA-Seq Name` %in% dups,c("PDX Name","PDX-RNA-Seq Name","full","date")]
+# dfr[dfr$`PDX RNA-Seq Name` %in% dups,c("PDX Name","PDX RNA-Seq Name","full","date")]
 # two types of duplicates
   # 1) sequenced twice, 
     # a) e.g. PE and SE 
-      #               PDX Name PDX-RNA-Seq Name                full     date
+      #               PDX Name PDX RNA-Seq Name                full     date
       # 1        DFAM-68555-V1            AML02    AML2.20150407.pe 20150407
       # 2        DFAM-68555-V1            AML02      AML02.20150519 20150519
     # b) e.g. "Dep", whatever that is.
@@ -59,14 +59,14 @@ dfr <- merge(df,rna_meta,by.x="PDX-RNA-Seq Name",by.y="sample",all=F)
       # 92       DFBL-86381-V3             LY06       LY06.20150414 20150414
       # 93       DFBL-86381-R1             LY06       LY06.20150414 20150414
 
-dups <- dfr[duplicated(dfr$`PDX-RNA-Seq Name`),]$`PDX-RNA-Seq Name` 
+dups <- dfr[duplicated(dfr$`PDX RNA-Seq Name`),]$`PDX RNA-Seq Name` 
 
 # debugging line of code
-# pair[,c("PDX-RNA-Seq Name","PDX Name","full","date")]
+# pair[,c("PDX RNA-Seq Name","PDX Name","full","date")]
 
 # selects between duplicates of type 1 above
 for(dup in dups) {
-  pair <- dfr[dfr$`PDX-RNA-Seq Name` == dup,]
+  pair <- dfr[dfr$`PDX RNA-Seq Name` == dup,]
   if(!identical(pair[1,"PDX Name"],pair[2,"PDX Name"])) next # skips type (2) dups
   # order to keep paired-end, then recent date.
   pair <- arrange(pair,desc(pe),desc(as.numeric(pair$date)))
@@ -91,14 +91,14 @@ dfr$PDX_RNA_abrv <- sub(pattern = "(\\w{4}-\\d{5}-\\w\\d).*$",replacement = "\\1
 dfr$PDX_RNA_abrv <- paste0(dfr$PDX_RNA_abrv,"-",ifelse(dfr$pe,"PE","SE"))
 # Add asterisk if type (2) above and "mCLP","Luc" or "-R\\d"
   # TODO add comment to app explaining asterisk.
-dups <- dfr[duplicated(dfr$`PDX-RNA-Seq Name`),]$`PDX-RNA-Seq Name`
+dups <- dfr[duplicated(dfr$`PDX RNA-Seq Name`),]$`PDX RNA-Seq Name`
 
-to_asterisk <- (dfr$`PDX-RNA-Seq Name` %in% dups)
-# dfr[to_asterisk,c("PDX Name","PDX_RNA_abrv","PDX-RNA-Seq Name","full")] # just to view which
+to_asterisk <- (dfr$`PDX RNA-Seq Name` %in% dups)
+# dfr[to_asterisk,c("PDX Name","PDX_RNA_abrv","PDX RNA-Seq Name","full")] # just to view which
 dfr$PDX_RNA_abrv <- paste0(dfr$PDX_RNA_abrv,ifelse(to_asterisk,"*",""))
 
 for(dup in dups) {
-  pair <- dfr[dfr$`PDX-RNA-Seq Name` == dup,]
+  pair <- dfr[dfr$`PDX RNA-Seq Name` == dup,]
   w <- (grepl("mCLP",pair$`PDX Name`) | grepl("Luc",pair$`PDX Name`) | grepl("-R\\d",pair$`PDX Name`))
   to_replace <- pair[w,]$PDX_RNA_abrv
   replacement <- pair[!w,]$PDX_RNA_abrv

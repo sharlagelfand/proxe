@@ -210,9 +210,9 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       
       # subset for only samples desired
       df_idx <- input$table_rows_selected
-      samp_names <- df$`PDX-RNA-Seq Name`[df_idx]
+      samp_names <- df$`PDX RNA-Seq Name`[df_idx]
       samp_names <- samp_names[complete.cases(samp_names)]
-      rnamat_names <- as.character(dfr[dfr$`PDX-RNA-Seq Name` %in% samp_names,]$PDX_RNA_abrv)
+      rnamat_names <- as.character(dfr[dfr$`PDX RNA-Seq Name` %in% samp_names,]$PDX_RNA_abrv)
       # Note great: nothing extra happens if both samples that point to a single RNA-seq are selected.
     
       if(input$sampleInput == "all"){
@@ -282,7 +282,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     # if desired, subset for only samples selected in Database Explorer
     if(input$oncop_sample_input == "click"){
       df_idx <- input$table_rows_selected
-      samp_names <- df$`PDX-RNA-Seq Name`[df_idx]
+      samp_names <- df$`PDX RNA-Seq Name`[df_idx]
       samp_names <- samp_names[complete.cases(samp_names)]
       M2 <- M2[M2$PDX.RNA.Seq_Name %in% samp_names,]
     }

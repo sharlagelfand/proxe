@@ -36,10 +36,18 @@ meta$read_excel_type[meta$read_excel_type %in% c("logical","numeric")] <- "numer
 
 # read in data
 df <- read_excel(paste0("./data/",prima.filename),sheet="Injected",
-                 col_types = meta$read_excel_type)
+                 col_types =rep("text",nrow(meta))) # meta$read_excel_type)
 
 # convert column names from PRIMAGRAFTS name to desired PRoXe name
+  # order 'meta' by 'meta$Interal_Column_Header' matching names(df)
+meta <- meta[match(names(df),meta$Internal_Column_Header),]
+if(!all(names(df) == meta$Internal_Column_Header)) stop("ordering incorrect")
 names(df) <- meta$PRoXe_Column_Header
+
+# convert numeric columns in meta$read_excel_type to numeric
+df[,which(meta$read_excel_type == "numeric")] <- as.data.frame(lapply(df[,which(meta$read_excel_type == "numeric")],as.numeric))
+
+### TODO: fix fact that all columns are ordered incorrectly now.
 
 ###############################################################################
 ### --- Clean data --- ###
@@ -76,21 +84,6 @@ df$Presenting_WBC[grep("un",df$Presenting_WBC,ignore.case=TRUE)] <- NA # TODO: d
 
 ###############################################################################
 ### --- convert all columns to meta$Data_Type --- ###
-  # source: http://stackoverflow.com/questions/7680959/convert-type-of-multiple-columns-of-a-dataframe-at-once
-convert.magic <- function(obj,types){
-  for (i in 1:length(obj)){
-    FUN <- switch(types[i],character = as.character, 
-                  numeric = as.numeric, 
-                  factor = as.factor,
-                  logical = as.logical,
-                  integer = as.integer,
-                  date = as.POSIXct)
-    if (class(obj[,i]) != types[i]){
-      obj[,i] <- FUN(obj[,i])
-    } 
-  }
-  obj
-}
 df <- convert.magic(df,meta$Data_Type)
 
 ###############################################################################
@@ -281,13 +274,13 @@ hla$A <- paste(hla$A1,hla$A2)
 hla$B <- paste(hla$B1,hla$B2)
 hla$C <- paste(hla$C1,hla$C2)
 hla <- hla[,c("Sample","A","B","C")]
-colnames(hla) <- c("PDX-RNA-Seq_Name","HLA-A Alleles","HLA-B Alleles","HLA-C Alleles")
+colnames(hla) <- c("PDX_RNA-Seq_Name","HLA-A Alleles","HLA-B Alleles","HLA-C Alleles")
 hla <- convert.magic(hla,rep("factor",7))
-hla$`PDX-RNA-Seq_Name` <- as.character(hla$`PDX-RNA-Seq_Name`)
-df <- merge(df,hla,by = "PDX-RNA-Seq_Name",all.x = TRUE)
+hla$`PDX_RNA-Seq_Name` <- as.character(hla$`PDX_RNA-Seq_Name`)
+df <- merge(df,hla,by = "PDX_RNA-Seq_Name",all.x = TRUE)
 
 # move new columns to visible section, change indices of which columns to show
-new_col_names <- names(hla)[-which(names(hla) == "PDX-RNA-Seq_Name")]
+new_col_names <- names(hla)[-which(names(hla) == "PDX_RNA-Seq_Name")]
 new_col_inds <- which(names(df) %in% new_col_names)
 new_col_order <- c(1:(obInvisRet_ind-1),  #TODO: add parens around all these and see what happens
                    new_col_inds, 

@@ -79,3 +79,20 @@ moveMe <- function(data, tomove, where = "last", ba = NULL) {
     })
   x
 }
+
+
+# source: http://stackoverflow.com/questions/7680959/convert-type-of-multiple-columns-of-a-dataframe-at-once
+convert.magic <- function(obj,types){
+  for (i in 1:length(obj)){
+    FUN <- switch(types[i],character = as.character, 
+      numeric = as.numeric, 
+      factor = as.factor,
+      logical = as.logical,
+      integer = as.integer,
+      date = as.POSIXct)
+    if (class(obj[,i]) != types[i]){
+      obj[,i] <- FUN(obj[,i])
+    } 
+  }
+  obj
+}

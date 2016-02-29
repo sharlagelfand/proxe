@@ -136,16 +136,16 @@ m3t <- apply(m3t,2,function(i) gsub(" \\| $","",i,perl = TRUE))
 
 # rename columns and combine with index column
 m3t <- cbind(m3$PDX.RNA.Seq_Name,m3t)
-colnames(m3t) <- c("PDX-RNA-Seq Name","PDX Molecular Alterations Positive",
+colnames(m3t) <- c("PDX RNA-Seq Name","PDX Molecular Alterations Positive",
                   "PDX Molecular Details")
 m3t <- as.data.frame(m3t,stringsAsFactors = F)
 
 
 # Merge with 'df', making sure indexing doesn't change and inner/outer is correct.
-  # match on df$`PDX-RNA-Seq Name`,m3$PDX.RNA.Seq_Name and keep all in df.
-df <- merge(df,m3t,by = "PDX-RNA-Seq Name",all.x=T)
-# move PDX-RNA-Seq Name to just invisible (5, the current condVis_ind)
-df <- moveMe(df, c( "PDX-RNA-Seq Name"), "after", "Treatment Phase at Time of Sample")
+  # match on df$`PDX RNA-Seq Name`,m3$PDX.RNA.Seq_Name and keep all in df.
+df <- merge(df,m3t,by = "PDX RNA-Seq Name",all.x=T)
+# move PDX RNA-Seq Name to just invisible (5, the current condVis_ind)
+df <- moveMe(df, c( "PDX RNA-Seq Name"), "after", "Treatment Phase at Time of Sample")
 # move three new columns on right side (91:93) to just after Source Molecular Details (currently 32)
 df <- moveMe(df, c("PDX Molecular Alterations Positive",
                    "PDX Molecular Details"),"after","PDX HemoSeq")
