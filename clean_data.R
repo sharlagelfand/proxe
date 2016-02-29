@@ -52,6 +52,9 @@ df[,which(meta$read_excel_type == "numeric")] <- as.data.frame(lapply(df[,which(
 ###############################################################################
 ### --- Clean data --- ###
 
+# replace all NA with 'NSG' in Mouse_Strain
+df$Mouse_Strain[is.na(df$Mouse_Strain)] <- "NSG"
+
 # remove rows with blanks in Latest_Passage_Banked column, reset rownames index
 df <- df[!is.na(df$Latest_Passage_Banked),]
 rownames(df) <- NULL
