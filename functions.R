@@ -54,10 +54,12 @@ oncoPrint <- function(M, sort=TRUE) {
   
   colors <- rep("lightgray", cnt);
   colors[ which(oncoCords[, "altered"] == 1) ] <- "black";
-  plot(c(0, nsamples), c(0, ngenes), type="n", main=sprintf("Gene set altered in %.2f%%: %d of %d cases", coverage/nsamples*100, coverage, nsamples), xlab="", ylab="", yaxt="n",xaxt="n");# note SPK added xaxt
+  plot(c(0, nsamples), c(0, ngenes), type="n", 
+    main=sprintf("Gene set altered in %.2f%%: %d of %d cases", coverage/nsamples*100, coverage, nsamples),
+    xlab="", ylab="", yaxt="n",xaxt="n");# note SPK added xaxt
   rect(oncoCords[, "xleft"], oncoCords[, "ybottom"],oncoCords[, "xright"], oncoCords[, "ytop"], col=colors, border="white");
   axis(2, at=(ngenes:1)-.5, labels=rownames(alts), las=2);
-  axis(1, at=(nsamples:1)-.5, labels=colnames(alts), las=2); # SPK new line in function
+  axis(1, at=(1:nsamples)-.5, labels=colnames(alts), las=2); # SPK new line in function
 }
 
 # function from http://stackoverflow.com/questions/18339370/reordering-columns-in-a-large-dataframe

@@ -59,10 +59,6 @@ df$Mouse_Strain[is.na(df$Mouse_Strain)] <- "NSG"
 df <- df[!is.na(df$Latest_Passage_Banked),]
 rownames(df) <- NULL
 
-# change Limited_Distribution to Y/N from 1/0
-df$Limited_Distribution <- factor(df$Limited_Distribution, labels=c("N","Y"))
-# TODO: do this for other boolean columns?
-
 # encode a particular age instead of "pediatric"
 df$Age <- gsub(pattern = "pediatric", replacement = 9.111, x = df$Age)
 df$Age <- round(as.numeric(df$Age),3)
@@ -302,10 +298,28 @@ obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
 # meta2[meta2$Visible_Invisible == "ob_invis",]$Visible_Invisible_int <- 3
 
 # Optional line for making WHO_Classification a factor for contingency table purposes.
-# df$WHO_Classification <- as.factor(df$WHO_Classification)
+df$WHO_Classification <- as.factor(df$WHO_Classification)
 
 ###############################################################################
 ### --- Final aesthetic modifications --- ###
+
+# if Limited_Distribution blank, then if DF make Limited_Distrubtion F else T
+ld_na_count <- 0
+for (i in 1:nrow(df)){
+  if(is.na(df$Limited_Distribution[i])){
+    ld_na_count <- ld_na_count + 1
+    if(grepl("DF",df$PDX_Name[i])){
+      df$Limited_Distribution[i] <- FALSE
+    } else {
+      df$Limited_Distribution[i] <- TRUE
+    }
+  }
+}
+warning(paste(ld_na_count,"samples not annotated for Limited_Distribution. If DF made LD FALSE else TRUE."))
+
+# change Limited_Distribution to Y/N from 1/0
+df$Limited_Distribution <- factor(df$Limited_Distribution, labels=c("N","Y"))
+# TODO: do this for other boolean columns?
 
 # remove all underscores from colnames and make consistent with rest of code.
 names(df) <- gsub(pattern = "_",replacement = " ",x = names(df))

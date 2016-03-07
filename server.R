@@ -17,6 +17,9 @@ op <- par(no.readonly = TRUE)
 # source("rna_seq.R")
 loadedServer <- load("pre-compiled.RData")
 
+# warn if WHO_Classification is a factor -- this was a temporary fix in clean_data.R for production of a contingency table 2/2016.
+if(class(df$`WHO Classification`)=="factor") warning("Reminder: WHO Classification is a factor.")
+
 print("didcomehere4")
 # Define a server for the Shiny app
 shinyServer(function(input, output, session) {  #TODO: read on what 'session' means here.  
@@ -309,6 +312,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
                           "PTPN11","RUNX1","TET2","TP53","WT1"),
                   BA = c("ABL1","CDKN2A","CDKN2B","FLT3","IKZF1","IL7R","JAK1","JAK2","NRAS",
                          "PAX5","RB1","SH2B3","TP53"))
+    # Note T-ALL not implemented yet.
     if(input$oncop_gene_input == "gene_sets"){
       if(input$oncop_gene_set != "all") {
         M3 <- M3[rownames(M3) %in% GOIdf[[input$oncop_gene_set]],]
