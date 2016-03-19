@@ -68,13 +68,34 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   # caption="Note: table filtering (below) resets upon new column selections (left).",
   style="default", # alternative: "bootstrap"
   escape= FALSE,
+    # From SPK: Consider escaping only 'PDF' and future columns that contain hyperlinks via this tip:
+    # Note: Besides TRUE and FALSE, you can also specify which columns you want to escape, e.g.
+      # datatable(m, escape = 1)  # escape the first column
+      # datatable(m, escape = 2)  # escape the second column
+      # datatable(m, escape = c(TRUE, FALSE))  # escape the first column
+      # colnames(m) = c('V1', 'V2')
+      # datatable(m, escape = 'V1')
   filter="top",
   server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
   rownames=FALSE,
-#   extensions = 'ColVis', # testing colVis
+  extensions = c('ColReorder','Responsive'), #'ColVis','Buttons'
   options = list(
-#     dom = 'C<"clear">lfrtip', # testing colVis
-#     colVis = list(activate="click"),#mouseover"), # testing colVis
+    # options related to extensions:
+    dom = 'RlfrtipS',
+    colReorder = list(realtime = TRUE), 
+    # dom = 'C<"clear">lfrtip', # testing colVis
+    # colVis = list(activate="mouseover"),#"click"), # testing colVis
+      # TODO: the major questions with ColVis are whether we can...
+        #1) capture the hidden/not hidden column information
+        #2) format the dropdown to be pretty and more intuitive
+        #3) easily create a 'select all/none' -- old one might work too.
+        #4) create some kind of 'reset' (browser refresh might be good enough)
+    # Update: ColVis status is 'retired' in favor of less-clear 'Buttons' But I think it's not in `DT`.
+      # Buttons was just added but the development version breaks my table -- waiting... 3/18/16 
+      # dom = 'Bfrtip', buttons = c('copy', 'excel', 'pdf', 'print', 'colvis'),
+    
+    # standard options:
+    orderClasses = TRUE,
     searchHighlight = TRUE,
     pageLength = 5, 
     lengthMenu = list(c(5,10,25,50,100,-1),c(5,10,25,50,100,"All"))
