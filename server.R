@@ -78,23 +78,24 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   filter="top",
   server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
   rownames=FALSE,
-  extensions = c('ColReorder','Responsive'), #'ColVis','Buttons'
+  extensions = c('ColReorder','Buttons'), #'ColVis',,,'Responsive'
   options = list(
-    # options related to extensions:
-    dom = 'RlfrtipS',
+#     # options related to extensions:
+    dom = 'RlfrtipB',
     colReorder = list(realtime = TRUE), 
-    # dom = 'C<"clear">lfrtip', # testing colVis
-    # colVis = list(activate="mouseover"),#"click"), # testing colVis
-      # TODO: the major questions with ColVis are whether we can...
-        #1) capture the hidden/not hidden column information
-        #2) format the dropdown to be pretty and more intuitive
-        #3) easily create a 'select all/none' -- old one might work too.
-        #4) create some kind of 'reset' (browser refresh might be good enough)
-    # Update: ColVis status is 'retired' in favor of less-clear 'Buttons' But I think it's not in `DT`.
-      # Buttons was just added but the development version breaks my table -- waiting... 3/18/16 
-      # dom = 'Bfrtip', buttons = c('copy', 'excel', 'pdf', 'print', 'colvis'),
-    
-    # standard options:
+#     # dom = 'C<"clear">lfrtip', # testing colVis
+#     # colVis = list(activate="mouseover"),#"click"), # testing colVis
+#       # TODO: the major questions with ColVis are whether we can...
+#         #1) capture the hidden/not hidden column information
+#         #2) format the dropdown to be pretty and more intuitive
+#         #3) easily create a 'select all/none' -- old one might work too.
+#         #4) create some kind of 'reset' (browser refresh might be good enough)
+#     # Update: ColVis status is 'retired' in favor of less-clear 'Buttons' But I think it's not in `DT`.
+#       # Buttons was just added but the development version breaks my table -- waiting... 3/18/16 
+#       # dom = 'Bfrtip', 
+        buttons = c('copy', 'excel', 'pdf', 'print', 'colvis'),
+#     
+#     # standard options:
     orderClasses = TRUE,
     searchHighlight = TRUE,
     pageLength = 5, 
@@ -588,5 +589,27 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     searchHighlight = TRUE,
     paging=FALSE
   ))
+  
+  output$PDX_methods <- renderUI({
+#     filename <- dir("./data/methods/",pattern = glob2rx("PDX Methods*pdf"))
+#     filename <- file.path("./data/methods/",filename)
+    filename <- "methods/PDX_Methods_for_proxe.pdf"
+    tags$iframe(
+      src=filename,
+      width="100%",
+      height="800px")
+  })
+  
+  output$Renal_methods <- renderUI({
+    filename <- "methods/Renal_capsule_implantation_surgery_Amanda_Christie_2016-2-29.pdf"
+    tags$iframe(
+      src=filename,
+      width="100%",
+      height="800px")
+  })
+  
+  
+  
+  
 })
 

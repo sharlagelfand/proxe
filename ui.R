@@ -352,8 +352,32 @@ shinyUI(
           )
         )
       )
+    ),
+    tabPanel("Line Request",
+      fluidPage(
+        fluidRow(
+          column(width = 12,
+            tags$h1("General PDX methods:"),
+            uiOutput("PDX_methods"),
+#             tags$iframe(
+#               src="methods/PDX_Methods_for_proxe.pdf",
+#               width="100%",
+#               height="800px"
+#               # TODO: change default zoom
+#             ),
+            tags$h1("Renal capsule implantation method:"),
+            uiOutput("Renal_methods")
+#             tags$iframe(
+#               src="methods/Renal_capsule_implantation_surgery_Amanda_Christie_2016-2-29.pdf",
+#               width="100%",
+#               height="800px"
+#               # TODO: change default zoom
+#             )
+          )
+        )
+      )
     )
   ,position="fixed-top"
-  )  
+  )
 )
 # )
