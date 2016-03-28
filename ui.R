@@ -41,7 +41,7 @@ shinyUI(
     windowTitle="PRoXe: Public Repository of Xenografts",
     tabPanel("Database Explorer",
       # customHeaderPanel("Logo"),
-    # Left sidebar for selecting which columns to show
+      # Left sidebar for selecting which columns to show
       sidebarLayout(
         sidebarPanel(
           # adjusting sidebar width and text manually with CSS
@@ -187,119 +187,121 @@ shinyUI(
                     plotOutput("plot_various") 
                 })
              )
-            
+              
+            )
+          )
+          ,fluid=TRUE
+        )
+      ),
+      navbarMenu("PDX Molecular", #new
+      tabPanel("PDX Gene Expression",
+        sidebarLayout(
+          sidebarPanel(width=2,
+            selectInput(
+              "expType", "Graph type",
+              c("Heatmap (2+ genes and samples)" = "heat", "Barplot (1 gene or sample)" = "bar"),
+              selected="heat"
+            ),
+            # Graph Type 1: heatmap
+            conditionalPanel(
+              condition = "input.expType == 'heat'",
+              selectInput(
+                "geneInput", "Type of gene input",
+                c("Individual genes" = "indiv", "Panels" = "panels"),
+                selected="indiv"
+              ),
+              # option 1: Individual genes
+              conditionalPanel(
+                condition = "input.geneInput == 'indiv'",
+                selectizeInput(inputId="rna_genes",label="Select genes",
+                            choices=NULL,multiple=TRUE)
+              ),
+              
+              # option 2: Gene lists
+              conditionalPanel(
+                condition = "input.geneInput == 'panels'",
+                selectInput("rna_panel","Select gene panel list",names(genesets_list),
+                          selected="HemoSeq_v2")
+              ),
+              selectInput(
+                "sampleInput","Type of sample input",
+                c("All samples" = "all","Click rows in Database Explorer" = "click"),
+                selected="all"
+              )
+            ),
+            # Graph Type 2: barplot
+            conditionalPanel(
+              condition = "input.expType == 'bar'",
+              selectInput(
+                "across_bar", "Data type",
+                c("One gene, many samples" = "samples","One sample, many genes" = "gene_set"),
+                selected="samples"
+              ),
+              # option 1: Samples
+              conditionalPanel(
+                condition = "input.across_bar == 'samples'",
+                selectizeInput(inputId="bar_gene",label="Enter/select gene name",
+                               choices=NULL,multiple=FALSE)
+              ),
+              
+              # option 2: Gene set
+              conditionalPanel(
+                condition = "input.across_bar == 'gene_set'",
+                selectInput("bar_rna_panel","Select gene panel list",names(genesets_list),
+                            selected="HemoSeq_v2"),
+                selectizeInput(inputId="bar_rna_sample",label = "Enter/select sample name",
+                               choices = colnames(rnamat_sub),multiple=FALSE,
+                               selected = "AML12.20140429.pe")
+              )
+            )
+          ),
+          mainPanel(
+            plotOutput("plot_rna",height = 1500,width=1300)
           )
         )
-        ,fluid=TRUE
-      )
-    ),
-    tabPanel("PDX Gene Expression",
-      sidebarLayout(
-        sidebarPanel(width=2,
-          selectInput(
-            "expType", "Graph type",
-            c("Heatmap (2+ genes and samples)" = "heat", "Barplot (1 gene or sample)" = "bar"),
-            selected="heat"
-          ),
-          # Graph Type 1: heatmap
-          conditionalPanel(
-            condition = "input.expType == 'heat'",
+      ),
+      tabPanel("PDX Mutations",
+        sidebarLayout(
+          sidebarPanel(width=2,
             selectInput(
-              "geneInput", "Type of gene input",
-              c("Individual genes" = "indiv", "Panels" = "panels"),
-              selected="indiv"
+              "oncop_gene_input", "Type of gene input",
+              c("Gene sets" = "gene_sets","Individual genes" = "indiv"),
+              selected="gene_sets"
             ),
-            # option 1: Individual genes
+            # option 1: Gene lists
             conditionalPanel(
-              condition = "input.geneInput == 'indiv'",
-              selectizeInput(inputId="rna_genes",label="Select genes",
-                          choices=NULL,multiple=TRUE)
+              condition = "input.oncop_gene_input == 'gene_sets'",
+              selectInput(
+                "oncop_gene_set", "Gene set optimized for:",
+                c("all types" = "all", "AML" = "AML", "B-ALL" = "BA"),
+                selected="all"
+              )
             ),
-            
-            # option 2: Gene lists
+            # option 2: Individual genes         ### TODO: make sure this hits server.R ###
             conditionalPanel(
-              condition = "input.geneInput == 'panels'",
-              selectInput("rna_panel","Select gene panel list",names(genesets_list),
-                        selected="HemoSeq_v2")
+              condition = "input.oncop_gene_input == 'indiv'",
+              selectizeInput(inputId="oncop_genes",label="Select genes",
+                             choices=NULL,multiple=TRUE)
             ),
             selectInput(
-              "sampleInput","Type of sample input",
-              c("All samples" = "all","Click rows in Database Explorer" = "click"),
-              selected="all"
+              "oncop_sample_input","Type of sample input",
+              c("Cancer subtype" = "subtype","Click rows in Database Explorer" = "click"), 
+              #TODO: implement 'click' in server.R #TODO: maybe delete -- might be done.
+              selected="subtype"
+            ),
+            conditionalPanel(
+              condition = "input.oncop_sample_input == 'subtype'",
+              selectInput(
+                "oncop_sample_type", "Type of disease samples to show",
+                c("all types" = "all", "AML" = "AML", "B-ALL" = "BA",
+                "T-ALL" = "TA"),
+                selected="all"
+              )
             )
           ),
-          # Graph Type 2: barplot
-          conditionalPanel(
-            condition = "input.expType == 'bar'",
-            selectInput(
-              "across_bar", "Data type",
-              c("One gene, many samples" = "samples","One sample, many genes" = "gene_set"),
-              selected="samples"
-            ),
-            # option 1: Samples
-            conditionalPanel(
-              condition = "input.across_bar == 'samples'",
-              selectizeInput(inputId="bar_gene",label="Enter/select gene name",
-                             choices=NULL,multiple=FALSE)
-            ),
-            
-            # option 2: Gene set
-            conditionalPanel(
-              condition = "input.across_bar == 'gene_set'",
-              selectInput("bar_rna_panel","Select gene panel list",names(genesets_list),
-                          selected="HemoSeq_v2"),
-              selectizeInput(inputId="bar_rna_sample",label = "Enter/select sample name",
-                             choices = colnames(rnamat_sub),multiple=FALSE,
-                             selected = "AML12.20140429.pe")
-            )
+          mainPanel(
+            plotOutput("plot_oncoprint",height = 800,width=1300)
           )
-        ),
-        mainPanel(
-          plotOutput("plot_rna",height = 1500,width=1300)
-        )
-      )
-    ),
-    tabPanel("PDX Mutations",
-      sidebarLayout(
-        sidebarPanel(width=2,
-          selectInput(
-            "oncop_gene_input", "Type of gene input",
-            c("Gene sets" = "gene_sets","Individual genes" = "indiv"),
-            selected="gene_sets"
-          ),
-          # option 1: Gene lists
-          conditionalPanel(
-            condition = "input.oncop_gene_input == 'gene_sets'",
-            selectInput(
-              "oncop_gene_set", "Gene set optimized for:",
-              c("all types" = "all", "AML" = "AML", "B-ALL" = "BA"),
-              selected="all"
-            )
-          ),
-          # option 2: Individual genes         ### TODO: make sure this hits server.R ###
-          conditionalPanel(
-            condition = "input.oncop_gene_input == 'indiv'",
-            selectizeInput(inputId="oncop_genes",label="Select genes",
-                           choices=NULL,multiple=TRUE)
-          ),
-          selectInput(
-            "oncop_sample_input","Type of sample input",
-            c("Cancer subtype" = "subtype","Click rows in Database Explorer" = "click"), 
-            #TODO: implement 'click' in server.R #TODO: maybe delete -- might be done.
-            selected="subtype"
-          ),
-          conditionalPanel(
-            condition = "input.oncop_sample_input == 'subtype'",
-            selectInput(
-              "oncop_sample_type", "Type of disease samples to show",
-              c("all types" = "all", "AML" = "AML", "B-ALL" = "BA",
-              "T-ALL" = "TA"),
-              selected="all"
-            )
-          )
-        ),
-        mainPanel(
-          plotOutput("plot_oncoprint",height = 800,width=1300)
         )
       )
     ),
@@ -344,35 +346,53 @@ shinyUI(
         uiOutput("line_report_Path")
       )
     ),
-    tabPanel("Glossary",
-      fluidPage(
-        fluidRow(
-          column(width = 12,
-            DT::dataTableOutput(outputId="glossary")
+    navbarMenu("About",
+      tabPanel("Glossary",
+        fluidPage(
+          fluidRow(
+            column(width = 12,
+              DT::dataTableOutput(outputId="glossary")
+            )
           )
         )
-      )
-    ),
-    tabPanel("Line Request",
-      fluidPage(
-        fluidRow(
-          column(width = 12,
-            tags$h1("General PDX methods:"),
-            uiOutput("PDX_methods"),
-#             tags$iframe(
-#               src="methods/PDX_Methods_for_proxe.pdf",
-#               width="100%",
-#               height="800px"
-#               # TODO: change default zoom
-#             ),
-            tags$h1("Renal capsule implantation method:"),
-            uiOutput("Renal_methods")
-#             tags$iframe(
-#               src="methods/Renal_capsule_implantation_surgery_Amanda_Christie_2016-2-29.pdf",
-#               width="100%",
-#               height="800px"
-#               # TODO: change default zoom
-#             )
+      ),
+      tabPanel("Methods",
+        fluidPage(
+          fluidRow(
+            column(width = 12,
+              tags$h1("General PDX methods:"),
+              uiOutput("PDX_methods"),
+  #             tags$iframe(
+  #               src="methods/PDX_Methods_for_proxe.pdf",
+  #               width="100%",
+  #               height="800px"
+  #               # TODO: change default zoom
+  #             ),
+              tags$h1("Renal capsule implantation method:"),
+              uiOutput("Renal_methods")
+  #             tags$iframe(
+  #               src="methods/Renal_capsule_implantation_surgery_Amanda_Christie_2016-2-29.pdf",
+  #               width="100%",
+  #               height="800px"
+  #               # TODO: change default zoom
+  #             )
+            )
+          )
+        )
+      ),
+      tabPanel("Line Request",
+        fluidPage(
+          fluidRow(
+            column(width = 12,
+              h1("Request process:"),
+              img(src='line_request_user.png', align = "left", width = "100%"),
+              h1("Pricing:"),
+              # Insert pricing
+              tableOutput("pricing"),
+              h1(a("Click here to request lines",
+                href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform"))
+              
+            )
           )
         )
       )
@@ -380,4 +400,4 @@ shinyUI(
   ,position="fixed-top"
   )
 )
-# )
+

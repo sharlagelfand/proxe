@@ -81,7 +81,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   extensions = c('ColReorder','Buttons'), #'ColVis',,,'Responsive'
   options = list(
 #     # options related to extensions:
-    dom = 'RlfrtipB',
+    dom = 'BRlfrtip',
     colReorder = list(realtime = TRUE), 
 #     # dom = 'C<"clear">lfrtip', # testing colVis
 #     # colVis = list(activate="mouseover"),#"click"), # testing colVis
@@ -608,7 +608,15 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       height="800px")
   })
   
-  
+  output$pricing <- renderTable({
+    pricing <- data.frame(
+      "Service Name" = c("Expansion","Shipping & Handling","Consulting"),
+      "DFCI Rate" = c("$385","$94","$125"),
+      "Academic Rate" = c("$519","$126","$169"),
+      "Consulting" = c("$750","$183","$244")
+    )
+    pricing
+  })
   
   
 })
