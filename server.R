@@ -78,10 +78,10 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   filter="top",
   server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
   rownames=FALSE,
-  extensions = c('ColReorder','Buttons'), #'ColVis',,,'Responsive'
+  extensions = c('ColReorder'),#,'Buttons'), #'ColVis',,,'Responsive'
   options = list(
 #     # options related to extensions:
-    dom = 'BRlfrtip',
+    dom = 'Rlfrtip',
     colReorder = list(realtime = TRUE), 
 #     # dom = 'C<"clear">lfrtip', # testing colVis
 #     # colVis = list(activate="mouseover"),#"click"), # testing colVis
@@ -93,7 +93,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
 #     # Update: ColVis status is 'retired' in favor of less-clear 'Buttons' But I think it's not in `DT`.
 #       # Buttons was just added but the development version breaks my table -- waiting... 3/18/16 
 #       # dom = 'Bfrtip', 
-        buttons = c('copy', 'excel', 'pdf', 'print', 'colvis'),
+    # buttons = c('copy', 'excel', 'pdf', 'print', 'colvis'),
 #     
 #     # standard options:
     orderClasses = TRUE,
@@ -593,7 +593,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   output$PDX_methods <- renderUI({
 #     filename <- dir("./data/methods/",pattern = glob2rx("PDX Methods*pdf"))
 #     filename <- file.path("./data/methods/",filename)
-    filename <- "methods/PDX_Methods_for_proxe.pdf"
+    filename <- "methods/2016-3-28_PDX_Methods_for_proxe.pdf"
     tags$iframe(
       src=filename,
       width="100%",
@@ -601,22 +601,25 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   })
   
   output$Renal_methods <- renderUI({
-    filename <- "methods/Renal_capsule_implantation_surgery_Amanda_Christie_2016-2-29.pdf"
+    filename <- "methods/Renal_capsule_methods.pdf"
     tags$iframe(
       src=filename,
       width="100%",
       height="800px")
   })
   
-  output$pricing <- renderTable({
+  output$pricing <- DT::renderDataTable({
     pricing <- data.frame(
       "Service Name" = c("Expansion","Shipping & Handling","Consulting"),
       "DFCI Rate" = c("$385","$94","$125"),
       "Academic Rate" = c("$519","$126","$169"),
-      "Consulting" = c("$750","$183","$244")
-    )
+      "Consulting" = c("$750","$183","$244"),
+    row.names=NULL)
     pricing
-  })
+  },
+  options = list(
+    dom = 't'
+  ))
   
   
 })

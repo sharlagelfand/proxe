@@ -346,7 +346,7 @@ shinyUI(
         uiOutput("line_report_Path")
       )
     ),
-    navbarMenu("About",
+    navbarMenu("More",
       tabPanel("Glossary",
         fluidPage(
           fluidRow(
@@ -359,23 +359,16 @@ shinyUI(
       tabPanel("Methods",
         fluidPage(
           fluidRow(
-            column(width = 12,
-              tags$h1("General PDX methods:"),
+            column(width = 10,
+              # note these (ABCD) are Mark's ideal ordering:
+              # helpText("A) Xenografting Techniques: with subheadings Tail Vein Injection, Subrenal Capsule Implantation, +/- Subcutaneous Implantation."),
+              # helpText("B) Xenografting Cell Doses: with subheadings For In Vivo Expansion, For In Vivo Treatment Studies"),
+              # helpText("C) Monitoring Xenografted Animals: with subheadings for Cell Banking, for Initiation of Treatment"),
+              # helpText("D) Banking Xenografted Cells: with subheadings Animal Euthanasia, Enriching Malignant Cells from Peripheral Blood, Enriching Malignant Cells from Bone Marrow, Enriching Malignant Cells from Spleen, and Enriching Malignant Cells from Lymph Nodes or Solid Tumors"),
+              tags$h1("PDX methods"),
               uiOutput("PDX_methods"),
-  #             tags$iframe(
-  #               src="methods/PDX_Methods_for_proxe.pdf",
-  #               width="100%",
-  #               height="800px"
-  #               # TODO: change default zoom
-  #             ),
-              tags$h1("Renal capsule implantation method:"),
+              tags$h1("Renal capsule implantation method"),
               uiOutput("Renal_methods")
-  #             tags$iframe(
-  #               src="methods/Renal_capsule_implantation_surgery_Amanda_Christie_2016-2-29.pdf",
-  #               width="100%",
-  #               height="800px"
-  #               # TODO: change default zoom
-  #             )
             )
           )
         )
@@ -383,12 +376,13 @@ shinyUI(
       tabPanel("Line Request",
         fluidPage(
           fluidRow(
-            column(width = 12,
+            column(width = 8,
               h1("Request process:"),
               img(src='line_request_user.png', align = "left", width = "100%"),
+              br(),
               h1("Pricing:"),
-              # Insert pricing
-              tableOutput("pricing"),
+              dataTableOutput("pricing"),
+              br(),
               h1(a("Click here to request lines",
                 href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform"))
               
