@@ -196,8 +196,8 @@ shinyUI(
       navbarMenu("PDX Molecular", #new
       tabPanel("PDX Gene Expression",
         sidebarLayout(
-          sidebarPanel(width=2,
-            selectInput(
+          sidebarPanel(width=3,
+            radioButtons(
               "expType", "Graph type",
               c("Heatmap (2+ genes and samples)" = "heat", "Barplot (1 gene or sample)" = "bar"),
               selected="heat"
@@ -205,7 +205,7 @@ shinyUI(
             # Graph Type 1: heatmap
             conditionalPanel(
               condition = "input.expType == 'heat'",
-              selectInput(
+              radioButtons(
                 "geneInput", "Type of gene input",
                 c("Individual genes" = "indiv", "Panels" = "panels"),
                 selected="indiv"
@@ -223,7 +223,7 @@ shinyUI(
                 selectInput("rna_panel","Select gene panel list",names(genesets_list),
                           selected="HemoSeq_v2")
               ),
-              selectInput(
+              radioButtons(
                 "sampleInput","Type of sample input",
                 c("All samples" = "all","Click rows in Database Explorer" = "click"),
                 selected="all"
@@ -232,7 +232,7 @@ shinyUI(
             # Graph Type 2: barplot
             conditionalPanel(
               condition = "input.expType == 'bar'",
-              selectInput(
+              radioButtons(
                 "across_bar", "Data type",
                 c("One gene, many samples" = "samples","One sample, many genes" = "gene_set"),
                 selected="samples"
@@ -262,8 +262,8 @@ shinyUI(
       ),
       tabPanel("PDX Mutations",
         sidebarLayout(
-          sidebarPanel(width=2,
-            selectInput(
+          sidebarPanel(width=3,
+            radioButtons(
               "oncop_gene_input", "Type of gene input",
               c("Gene sets" = "gene_sets","Individual genes" = "indiv"),
               selected="gene_sets"
@@ -283,7 +283,7 @@ shinyUI(
               selectizeInput(inputId="oncop_genes",label="Select genes",
                              choices=NULL,multiple=TRUE)
             ),
-            selectInput(
+            radioButtons(
               "oncop_sample_input","Type of sample input",
               c("Cancer subtype" = "subtype","Click rows in Database Explorer" = "click"), 
               #TODO: implement 'click' in server.R #TODO: maybe delete -- might be done.
@@ -308,8 +308,10 @@ shinyUI(
     tabPanel("Contingency Table",
       sidebarLayout(
         sidebarPanel(
-          selectInput("ctable_numcats","Number of contingency table categories",
-                      1:2,selected=2),
+          radioButtons("ctable_numcats","Number of contingency table categories",
+                       1:2,selected=2),
+          # selectInput("ctable_numcats","Number of contingency table categories",
+                      # 1:2,selected=2),
           selectInput("tablevar1","First category",sort(names(df)[factor_cols_vis]),
                       selected = "WHO Category"),
           conditionalPanel(
@@ -327,7 +329,7 @@ shinyUI(
     tabPanel("Line Report",
       basicPage(
         # h4("Select a line in the Database Explorer to see a report here"),
-        selectInput(
+        radioButtons(
           "line_report_input_type","Method for selecting line to show here:",
           c("Choose from drop-down menu" = "dropdown","Click rows in Database Explorer" = "click"),
           selected="click"
