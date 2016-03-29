@@ -373,7 +373,7 @@ shinyUI(
           )
         )
       ),
-      tabPanel("Line Request",
+      tabPanel("Line Request/Pricing",
         fluidPage(
           fluidRow(
             column(width = 8,
@@ -384,7 +384,7 @@ shinyUI(
               dataTableOutput("pricing"),
               br(),
               h1(a("Click here to request lines",
-                href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform"))
+                href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank"))
               
             )
           )

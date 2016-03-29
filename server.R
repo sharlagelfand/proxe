@@ -613,8 +613,10 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       "Service Name" = c("Expansion","Shipping & Handling","Consulting"),
       "DFCI Rate" = c("$385","$94","$125"),
       "Academic Rate" = c("$519","$126","$169"),
-      "Consulting" = c("$750","$183","$244"),
+      "Corporate Rate" = c("$750","$183","$244"),
     row.names=NULL)
+    # change colnames to remove automatic periods instead of spaces.
+    colnames(pricing) <- c("Service Name","DFCI Rate","Academic Rate","Corporate Rate")
     pricing
   },
   options = list(
