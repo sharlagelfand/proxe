@@ -386,12 +386,12 @@ shinyUI(
           br(),
           h5("We are happy to help discuss scientific details to help you order the appropriate line.  
             For simple inquires, this is free, but for projects that will take more than 30 minutes, 
-            after agreement with you we will charge a consulting rate of $125/hour."),
+            after agreement with you we will charge the consulting rate above."),
           h5("Note: We can offer one vial per line. If more are required, please",
             a("contact us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20extra%20vial%20request"),
             "to discuss."),
           br(),
-          h2(a("Click here to request lines",
+          h2(a("Click here to request lines.",
             href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank"))
           
         )
