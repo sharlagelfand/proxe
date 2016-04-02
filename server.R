@@ -46,6 +46,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     updateSelectizeInput(session,inputId="oncop_genes",
                           choices=sort(M2_genes), server=TRUE,
                           selected=c("TP53","KRAS","NRAS"))
+    if(input$Request_link != 0) updateTabsetPanel(session, inputId="mainNavBar", selected="Line Request/Pricing")
   })
   
   # Filter data based on selections
@@ -613,12 +614,13 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       "Service Name" = c("Expansion","Shipping & Handling","Consulting"),
       "DFCI Rate" = c("$385","$94","$125"),
       "Academic Rate" = c("$519","$126","$169"),
-      "Corporate Rate" = c("$750","$183","$244"),
+      "Corporate Rate" = "<a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20corporate%20rates\" target=\"_top\">contact us</a>",
     row.names=NULL)
     # change colnames to remove automatic periods instead of spaces.
     colnames(pricing) <- c("Service Name","DFCI Rate","Academic Rate","Corporate Rate")
     pricing
   },
+  escape= FALSE,
   options = list(
     dom = 't'
   ))

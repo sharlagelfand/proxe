@@ -35,6 +35,7 @@ factor_cols_vis <- which(sapply(df[,1:obInvisRet_ind], is.factor))
 # Define the overall UI
 shinyUI(
   navbarPage(#"Public Repository of Xenografts",
+    id="mainNavBar",
     span(img(src="PRoXe-Blue-Small.png",width="90px",
       style="float:left; padding-right:5px; display:inline; position:relative; top:-10px"),
     "Public Repository of Xenografts"),
@@ -91,10 +92,12 @@ shinyUI(
         mainPanel(
           # 0. Email us (temporary)
           fluidRow(
-            HTML("<p align=\"right\">
-                    <a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback\" target=\"_top\">Email us</a> with questions or 
-                    <a href=\"https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform\" target=\"_blank\">click here</a> to request lines.
-                  </p>")
+            p(
+              a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
+              " with questions.",
+              actionButton("Request_link","Request lines"),
+              align="right"
+            )
           ),
           # 1. data table. -- maybe add a histogram or something below if desired.
           fluidRow(
@@ -195,6 +198,7 @@ shinyUI(
       ),
       navbarMenu("PDX Molecular", #new
       tabPanel("PDX Gene Expression",
+        h1("PDX Gene Expression"),
         sidebarLayout(
           sidebarPanel(width=3,
             radioButtons(
@@ -261,6 +265,7 @@ shinyUI(
         )
       ),
       tabPanel("PDX Mutations",
+        h1("PDX Mutations"),
         sidebarLayout(
           sidebarPanel(width=3,
             radioButtons(
@@ -327,6 +332,7 @@ shinyUI(
       )
     ),  # works
     tabPanel("Line Report",
+      h1("Line Report"),
       basicPage(
         # h4("Select a line in the Database Explorer to see a report here"),
         radioButtons(
@@ -350,46 +356,58 @@ shinyUI(
     ),
     navbarMenu("More",
       tabPanel("Glossary",
-        fluidPage(
-          fluidRow(
-            column(width = 12,
-              DT::dataTableOutput(outputId="glossary")
-            )
+      h1("Glossary"),
+          column(width = 12,
+            DT::dataTableOutput(outputId="glossary")
           )
-        )
       ),
       tabPanel("Methods",
-        fluidPage(
-          fluidRow(
-            column(width = 10,
-              # note these (ABCD) are Mark's ideal ordering:
-              # helpText("A) Xenografting Techniques: with subheadings Tail Vein Injection, Subrenal Capsule Implantation, +/- Subcutaneous Implantation."),
-              # helpText("B) Xenografting Cell Doses: with subheadings For In Vivo Expansion, For In Vivo Treatment Studies"),
-              # helpText("C) Monitoring Xenografted Animals: with subheadings for Cell Banking, for Initiation of Treatment"),
-              # helpText("D) Banking Xenografted Cells: with subheadings Animal Euthanasia, Enriching Malignant Cells from Peripheral Blood, Enriching Malignant Cells from Bone Marrow, Enriching Malignant Cells from Spleen, and Enriching Malignant Cells from Lymph Nodes or Solid Tumors"),
-              tags$h1("PDX methods"),
-              uiOutput("PDX_methods"),
-              tags$h1("Renal capsule implantation method"),
-              uiOutput("Renal_methods")
-            )
-          )
+        h1("Methods"),
+        column(width = 10,
+          # note these (ABCD) are Mark's ideal ordering:
+          # helpText("A) Xenografting Techniques: with subheadings Tail Vein Injection, Subrenal Capsule Implantation, +/- Subcutaneous Implantation."),
+          # helpText("B) Xenografting Cell Doses: with subheadings For In Vivo Expansion, For In Vivo Treatment Studies"),
+          # helpText("C) Monitoring Xenografted Animals: with subheadings for Cell Banking, for Initiation of Treatment"),
+          # helpText("D) Banking Xenografted Cells: with subheadings Animal Euthanasia, Enriching Malignant Cells from Peripheral Blood, Enriching Malignant Cells from Bone Marrow, Enriching Malignant Cells from Spleen, and Enriching Malignant Cells from Lymph Nodes or Solid Tumors"),
+          tags$h2("PDX methods"),
+          uiOutput("PDX_methods"),
+          tags$h2("Renal capsule implantation method"),
+          uiOutput("Renal_methods")
         )
       ),
       tabPanel("Line Request/Pricing",
-        fluidPage(
-          fluidRow(
-            column(width = 8,
-              h1("Request process:"),
-              img(src='line_request_user.png', align = "left", width = "100%"),
-              br(),
-              h1("Pricing:"),
-              dataTableOutput("pricing"),
-              br(),
-              h1(a("Click here to request lines",
-                href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank"))
-              
-            )
-          )
+        h1("Line Request / Pricing"),
+        column(width = 8,
+          h2("Request process:"),
+          img(src='line_request_user.png', align = "left", width = "100%"),
+          br(),
+          h2("Pricing:"),
+          dataTableOutput("pricing"),
+          br(),
+          h5("We are happy to help discuss scientific details to help you order the appropriate line.  
+            For simple inquires, this is free, but for projects that will take more than 30 minutes, 
+            after agreement with you we will charge a consulting rate of $125/hour."),
+          h5("Note: We can offer one vial per line. If more are required, please",
+            a("contact us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20extra%20vial%20request"),
+            "to discuss."),
+          br(),
+          h2(a("Click here to request lines",
+            href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank"))
+          
+        )
+      ),
+      tabPanel("About",
+        h1("About PRoXe"),
+        column(width = 8,
+          p("PRoXe is a product of the",
+            a("Weinstock Lab",href="http://weinstock.dfci.harvard.edu/",target="_blank"),
+            "at Dana-Farber Cancer Institute in Boston, MA."),
+          p("PRoXe is written mainly in the R programming language. As an open-source project, 
+            its code and latest updates can be viewed",
+            a("in this Bitbucket repository.",href="https://bitbucket.org/scottkall/proxe")),
+          HTML("<p>Please 
+                <a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback\" target=\"_top\">email us</a> 
+            with any questions or feedback.</p>")
         )
       )
     )
