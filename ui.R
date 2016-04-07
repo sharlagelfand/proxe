@@ -379,13 +379,13 @@ shinyUI(
         h1("Line Request / Pricing"),
         column(width = 8,
           h2("Request process:"),
-          img(src='line_request_user.png', align = "left", width = "100%"),
-          br(),
+          img(src='line_request_user2.png', align = "left", width = "100%"),
+          br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),
           h2("Pricing:"),
           dataTableOutput("pricing"),
           br(),
-          h5("We are happy to help discuss scientific details to help you order the appropriate line.  
-            For simple inquires, this is free, but for projects that will take more than 30 minutes, 
+          h5("We are happy to discuss scientific details to help you order the appropriate line.  
+            For simple inquires, this is free, but for projects that will take more than 5 minutes, 
             after agreement with you we will charge the consulting rate above."),
           h5("Note: We can offer one vial per line. If more are required, please",
             a("contact us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20extra%20vial%20request"),
