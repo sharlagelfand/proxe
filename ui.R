@@ -231,7 +231,8 @@ shinyUI(
                 "sampleInput","Type of sample input",
                 c("All samples" = "all","Click rows in Database Explorer" = "click"),
                 selected="all"
-              )
+              ),
+              helpText("Note: not all rows selected in Database Explorer will have associated RNA-seq data.")
             ),
             # Graph Type 2: barplot
             conditionalPanel(
