@@ -363,7 +363,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     dfxl <- df[filtered_row_inds, 1:(obInvisRet_ind-1), drop = FALSE] 
 #     WriteXLS(dfxl, ExcelFileName=filename)
 #     write.table(dfxl, filename, quote=FALSE,sep="|",na="",row.names=FALSE)
-    write.xlsx(dfxl,filename,row.names=FALSE,showNA=FALSE)
+    write.xlsx(x=dfxl,file=filename,row.names=FALSE,showNA=FALSE)
   })
   
   # line report
@@ -553,17 +553,17 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   # download the line report TODO: change filename to reflect line.
     # TODO: consider pre-processing all these if slow.
-  output$download_filtered = downloadHandler("PRoXe_line_report.pdf", content = function(filename) {
-    df_idx <- input$table_rows_selected
-    library(knitr)
-    library(rmarkdown)
-    if (length(df_idx) == 1) {
-      temp_df <- t(df[df_idx,1:(obInvisRet_ind-1)])
-      colnames(temp_df) <- "sample"
-      knitr::knit2pdf()
-      # rmarkdown::
-    }
-  })
+#   output$download_line_report = downloadHandler("PRoXe_line_report.pdf", content = function(filename) {
+#     df_idx <- input$table_rows_selected
+#     library(knitr)
+#     library(rmarkdown)
+#     if (length(df_idx) == 1) {
+#       temp_df <- t(df[df_idx,1:(obInvisRet_ind-1)])
+#       colnames(temp_df) <- "sample"
+#       knitr::knit2pdf()
+#       # rmarkdown::
+#     }
+#   })
   
   # add glossary
   output$glossary <- DT::renderDataTable({
