@@ -380,16 +380,16 @@ shinyUI(
         column(width = 8,
           h2("Request process:"),
           img(src='line_request_user2.png', align = "left", width = "100%"),
-          br(),br(),br(),br(),br(),br(),br(),br(),br(),br(),
+          br(),br(),br(),br(),br(),br(),br(),
           h2("Pricing:"),
           dataTableOutput("pricing"),
           br(),
-          h5("We are happy to discuss scientific details to help you order the appropriate line.  
-            For simple inquires, this is free, but for projects that will take more than 5 minutes, 
-            after agreement with you we will charge the consulting rate above."),
-          h5("Note: We can offer one vial per line. If more are required, please",
+          h5("Vials: We can offer one vial per line. If more are required, please",
             a("contact us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20extra%20vial%20request"),
             "to discuss."),
+          h5("Consulting: We are happy to discuss scientific details to help you order the appropriate line.  
+            For simple inquires, this is free, but for projects that will take more than 5 minutes, 
+            after agreement with you we will charge the consulting rate above."),
           br(),
           h2(a("Click here to request lines.",
             href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank"))
@@ -407,7 +407,26 @@ shinyUI(
             a("in this Bitbucket repository.",href="https://bitbucket.org/scottkall/proxe")),
           HTML("<p>Please 
                 <a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback\" target=\"_top\">email us</a> 
-            with any questions or feedback.</p>")
+            with any questions or feedback.</p>"),
+          br(),br(),
+          p("Prafulla Gohalle, Ph.D."),
+          p("Head of Experimental Therapeutics Core"),
+          p("Belfer Center for Applied Cancer Science"),
+          p("27 Drydock Avenue, DD472"),
+          p("Boston, MA 02210"),
+          a("prafulla_gokhale@dfci.harvard.edu",href="mailto:prafulla_gokhale@dfci.harvard.edu?Subject=PRoXe"),
+          br(),
+          a("http://belfercenter.dfci.harvard.edu",href="http://belfercenter.dfci.harvard.edu",target="_blank"),
+          br(),br(),br(),
+          p("David Weinstock, M.D."),
+          p("Associate Professor of Medicine, Harvard Medical School"),
+          p("Attending Physician, Medical Oncology Service, Dana-Farber Cancer Institute"),
+          p("Associate Member, Cancer Biology, Broad Institute of MIT and Harvard"),
+          p("450 Brookline Avenue"),
+          p("Dana Building, Room 512"),
+          p("Boston, MA 02215"),
+          a("davidm_weinstock@dfci.harvard.edu",href="mailto:davidm_weinstock@dfci.harvard.edu?Subject=PRoXe"),br(),
+          a("http://weinstock.dfci.harvard.edu",href="http://weinstock.dfci.harvard.edu",target="_blank")
         )
       )
     )
