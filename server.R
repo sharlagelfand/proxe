@@ -611,7 +611,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   output$pricing <- DT::renderDataTable({
     pricing <- data.frame(
-      "Service Name" = c("Per vial","Shipping & handling","Consulting (hourly)"),
+      "Service Name" = c("Per vial","Shipping & handling (domestic)","Consulting (hourly)"),
       "DFCI Rate" = c("$385","$94","$125"),
       "Academic Rate" = c("$519","$126","$169"),
       "Corporate Rate" = "<a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20corporate%20rates\" target=\"_top\">contact us</a>",

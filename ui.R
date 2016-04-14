@@ -338,7 +338,7 @@ shinyUI(
         # h4("Select a line in the Database Explorer to see a report here"),
         radioButtons(
           "line_report_input_type","Method for selecting line to show here:",
-          c("Choose from drop-down menu" = "dropdown","Click rows in Database Explorer" = "click"),
+          c("Choose from drop-down menu" = "dropdown","Click a row in Database Explorer" = "click"),
           selected="click"
         ),
         conditionalPanel(
@@ -452,7 +452,7 @@ shinyUI(
           ),
           p(tags$b("App web development."),"PRoXe is written mainly in the R programming language. As an open-source project, 
             its code and latest updates can be viewed",
-            a("in this Bitbucket repository.",href="https://bitbucket.org/scottkall/proxe")),
+            a("in this Bitbucket repository.",href="https://bitbucket.org/scottkall/proxe",target="_blank")),
           HTML("<p>If you have ideas for ways to improve PRoXe, please 
                 <a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback\" target=\"_top\">tell us</a> 
             .</p>"),
