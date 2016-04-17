@@ -44,6 +44,7 @@ shinyUI(
       # customHeaderPanel("Logo"),
       # Left sidebar for selecting which columns to show
       sidebarLayout(
+        conditionalPanel(condition = "input.hide_sidebar == false",
         sidebarPanel(
           # adjusting sidebar width and text manually with CSS
           tags$head(
@@ -86,12 +87,13 @@ shinyUI(
                              selected=names(df)[1:(condVis_ind-1)]
                              )
           ,width=3 # used to be width 4. 3 works better for full screenwidth. Would prefer fixed to longest name length. TODO.
-          ),
-        
+          )
+        ),
         # Right panel for showing table with subsettable columns, alphabetized.
         mainPanel(
           # 0. Email us (temporary)
           fluidRow(
+            checkboxInput("hide_sidebar","Hide sidebar",FALSE),
             p(
               a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
               " with questions.",
@@ -194,7 +196,7 @@ shinyUI(
             )
           )
           ,fluid=TRUE
-        )
+        )          
       ),
       navbarMenu("PDX Molecular", #new
       tabPanel("PDX Gene Expression",
