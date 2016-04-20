@@ -611,9 +611,9 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   output$pricing <- DT::renderDataTable({
     pricing <- data.frame(
-      "Service Name" = c("Per vial","Shipping & handling (domestic)","Consulting (hourly)"),
-      "DFCI Rate" = c("$385","$94","$125"),
-      "Academic Rate" = c("$519","$126","$169"),
+      "Service Name" = c("Per vial","Handling rate (per shipment)","Consulting (hourly)","Shipping (domestic)","Shipping (international)"),
+      "DFCI Rate" = c("$385","$94","$125","varies","n/a"),
+      "Academic Rate" = c("$519","$126","$169","by shipment zone","by shipment address"),
       "Corporate Rate" = "<a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20corporate%20rates\" target=\"_top\">contact us</a>",
     row.names=NULL)
     # change colnames to remove automatic periods instead of spaces.

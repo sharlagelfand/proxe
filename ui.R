@@ -41,6 +41,7 @@ shinyUI(
     "Public Repository of Xenografts"),
     windowTitle="PRoXe: Public Repository of Xenografts",
     tabPanel("Database Explorer",
+      checkboxInput("hide_sidebar","Hide sidebar",FALSE),
       # customHeaderPanel("Logo"),
       # Left sidebar for selecting which columns to show
       sidebarLayout(
@@ -80,7 +81,7 @@ shinyUI(
               
           ),
           h4(strong("First, select columns to show:")),
-          actionButton("selectall", label="Select/Deselect all"),
+          actionButton("selectall", label="(Un)select all"),
           checkboxGroupInput("show_vars",
                              NULL,
                              names(df[1:(obInvisRet_ind-1)]),
@@ -93,7 +94,7 @@ shinyUI(
         mainPanel(
           # 0. Email us (temporary)
           fluidRow(
-            checkboxInput("hide_sidebar","Hide sidebar",FALSE),
+            # checkboxInput("hide_sidebar","Hide sidebar",FALSE),
             p(
               a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
               " with questions.",
@@ -387,17 +388,21 @@ shinyUI(
           h2("Pricing:"),
           dataTableOutput("pricing"),
           br(),
-          p(tags$b("Please read the following before requesting lines. "),
-            "General information relevant to PDX acquisition and use is available on PRoXe.  Each line is annotated with available demographic, pathologic and genomic information, as well as details like the time from injection to engraftment.  Protocols for a variety of PDX approaches, including expansion and subrenal capsule implantation are available in the Methods tab.  We provide consulting to assist Investigators, but this is intended to focus on the selection and use of ",tags$i("individual")," PDXs."),
-          h5("Vials: We can offer one vial per line. If more are required, please",
+          p(strong("Shipping:"),"For domestic shipments, shipping fees are calculated by shipment zone (zone 2-16, based on FedEx Standard Overnight).
+            For international shipments, shipping fees are calculated using FedEx Rate Tools prior to submitting a billing estimate (based on FedEx International First rates.)"),
+          p(strong("Vials:"),"We can offer one vial per line. If more are required, please",
             a("contact us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20extra%20vial%20request"),
             "to discuss."),
-          h5("Consulting: We are happy to discuss scientific details to help you order the appropriate line.  
+          p(strong("Consulting:"),"We are happy to discuss scientific details to help you order the appropriate line.  
             For simple inquires, this is free, but for projects that will take more than 5 minutes, 
             after agreement with you we will charge the consulting rate above."),
           br(),
+          p(tags$b("Please read the following before requesting lines. "),
+            "General information relevant to PDX acquisition and use is available on PRoXe.  Each line is annotated with available demographic, pathologic and genomic information, as well as details like the time from injection to engraftment.  Protocols for a variety of PDX approaches, including expansion and subrenal capsule implantation are available in the Methods tab.  We provide consulting to assist Investigators, but this is intended to focus on the selection and use of ",tags$i("individual")," PDXs. Note that billing is processed through the DFCI iLab Solutions platform, and requests are fulfilled by the DFCI Leukemia / Lymphoma Xenograft (LLX) core facility."),
+          br(),
           h2(a("Click here to request lines.",
-            href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank"))
+            href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank")),
+          br(),br(),br()
           
         )
       ),
