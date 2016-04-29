@@ -303,22 +303,23 @@ df$WHO_Classification <- as.factor(df$WHO_Classification)
 ###############################################################################
 ### --- Final aesthetic modifications --- ###
 
-# if Limited_Distribution blank, then if DF make Limited_Distrubtion F else T
+# if Available_for_Distribution blank, then if DF make F else T
 ld_na_count <- 0
 for (i in 1:nrow(df)){
-  if(is.na(df$Limited_Distribution[i])){
+  if(is.na(df$Available_for_Distribution[i])){
     ld_na_count <- ld_na_count + 1
     if(grepl("DF",df$PDX_Name[i])){
-      df$Limited_Distribution[i] <- FALSE
+      df$Available_for_Distribution[i] <- FALSE
     } else {
-      df$Limited_Distribution[i] <- TRUE
+      df$Available_for_Distribution[i] <- TRUE
     }
   }
 }
-warning(paste(ld_na_count,"samples not annotated for Limited_Distribution. If DF made LD FALSE else TRUE."))
+warning(paste(ld_na_count,"samples not annotated for Available_for_Distribution. If DF made FALSE else TRUE."))
 
-# change Limited_Distribution to Y/N from 1/0
-df$Limited_Distribution <- factor(df$Limited_Distribution, labels=c("N","Y"))
+# change Available_for_Distribution to Y/N from 1/0
+  # note 0 == available and 1 = not.
+df$Available_for_Distribution <- factor(df$Available_for_Distribution, labels=c("yes","no"))
 # TODO: do this for other boolean columns?
 
 # remove all underscores from colnames and make consistent with rest of code.

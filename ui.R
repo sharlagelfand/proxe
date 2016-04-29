@@ -49,6 +49,8 @@ shinyUI(
         sidebarPanel(
           # adjusting sidebar width and text manually with CSS
           tags$head(
+            # tags$style(type='text/css', ".col-sm-8 { margin-left: 10px;}"),
+            # tags$style(type='text/css', ".col-sm-3 { margin-right: -20px;}"),
             # tags$link(rel="shortcut icon", href="favicon.ico"),
             # tags$style(type='text/css', ".well { max-width: 310px; }"),
             # tags$style(type='text/css', ".span3 { max-width: 310px; }"),
@@ -68,6 +70,10 @@ shinyUI(
             tags$style(type='text/css', "
               .container-fluid {
                 padding-top:4em
+              }"),
+            tags$style(type='text/css', "
+              #hidebox {
+                display:inline;
               }")
 #,
             # for adding ellipsis to ColVis
@@ -94,7 +100,7 @@ shinyUI(
         mainPanel(
           # 0. Email us (temporary)
           fluidRow(
-            # checkboxInput("hide_sidebar","Hide sidebar",FALSE),
+            # p(checkboxInput("hide_sidebar","Hide sidebar",FALSE),id="hidebox"),
             p(
               a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
               " with questions.",
@@ -405,6 +411,14 @@ shinyUI(
           br(),br(),br()
           
         )
+      ),
+      tabPanel("iLab Billing Platform",
+        h1(a("iLab Solutions",
+          href="https://dfci.ilabsolutions.com/service_center/show_external/7625?name=leukemia-lymphoma-xenograft-core-llx",
+          target="_blank"),"Billing Platform"),
+        h2("Manual"),
+        uiOutput("iLab_manual")
+        
       ),
       tabPanel("About",
         h1("About PRoXe"),

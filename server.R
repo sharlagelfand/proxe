@@ -417,7 +417,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     td4 <- td3[td3$Line_Report!=0,]
     
       # TODO: discuss further with Mark re: 2s
-        # the only columns that is 2 currently is 'Limited Distribution'
+        # the only columns that is 2 currently is 'Limited Distribution' (now Available for Distribution)
         # Mark says can read this in from a spreadsheet he's shared wiht me
         # but has not yet fully determined which spreadsheet that is
         # Maybe the BODFI tracking sheet or something like it.
@@ -628,6 +628,13 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     ordering = FALSE
   ))
   
+  output$iLab_manual <- renderUI({
+    filename <- "iLab_Customer_Manual_for_LLX.pdf"
+    tags$iframe(
+      src=filename,
+      width="80%",
+      height="800px")
+  })
   
 })
 
