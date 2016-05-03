@@ -592,9 +592,17 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   ))
   
   output$PDX_methods <- renderUI({
-#     filename <- dir("./data/methods/",pattern = glob2rx("PDX Methods*pdf"))
-#     filename <- file.path("./data/methods/",filename)
-    filename <- "methods/2016-3-28_PDX_Methods_for_proxe.pdf"
+    # filename <- dir(path = "www/methods",pattern="_PDX_Methods_for_proxe.pdf",full.names=T)
+    # TODO: later functionalize this
+    filename <- dir(path = "www/methods",pattern="_PDX_Methods_for_proxe.pdf",full.names=T)
+    if(length(filename) < 1) warning("Where is the methods pdf?")
+    if(length(filename) > 1) {
+      warning("> 1 methods PDFs in www/methods folder. Taking last saved.")
+      tmp <- sapply(filename,function(i) file.info(i)$mtime)
+      newest_file <- sort(tmp,decreasing=T)[1]
+      filename <- names(newest_file)
+    }
+    filename <- gsub("www/","",filename)
     tags$iframe(
       src=filename,
       width="100%",
