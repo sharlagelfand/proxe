@@ -495,7 +495,7 @@ shinyUI(
             "450 Brookline Avenue",br(),
             "Boston, MA 02215"),
           br(),
-          p("Prafulla Gohalle, Ph.D.",br(),
+          p("Prafulla Gokhale, Ph.D.",br(),
             "Head of Experimental Therapeutics Core",br(),
             "Belfer Center for Applied Cancer Science",br(),
             "27 Drydock Avenue, DD472",br(),
