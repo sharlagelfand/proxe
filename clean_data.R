@@ -61,6 +61,7 @@ rownames(df) <- NULL
 
 # encode a particular age instead of "pediatric"
 df$Age <- gsub(pattern = "pediatric", replacement = 9.111, x = df$Age)
+df$Age <- gsub(pattern = "10.01-17.99", replacement = 15.555, x = df$Age)
 df$Age <- round(as.numeric(df$Age),3)
 
 # remove 80+ ages because they are PHI. Changing all to 81.
@@ -80,6 +81,11 @@ df$Percent_Tissue_Involvement <- as.integer(df$Percent_Tissue_Involvement)
 # convert appropriate chars to numeric after removing "unknown", "uncertain", etc.
 df$Presenting_WBC[grep(">1000",df$Presenting_WBC,ignore.case=TRUE)] <- 1111
 df$Presenting_WBC[grep("un",df$Presenting_WBC,ignore.case=TRUE)] <- NA # TODO: discuss w/ Mark
+df$Presenting_WBC[grep(">50000",df$Presenting_WBC,ignore.case=TRUE)] <- 55555
+if(any(grepl(">",df$Presenting_WBC))) {
+  warning("No specific rule for df$Presenting_WBC entry, replacing '>' with ''")
+  df$Presenting_WBC <- gsub(">","",df$Presenting_WBC)
+}
 
 ###############################################################################
 ### --- convert all columns to meta$Data_Type --- ###
