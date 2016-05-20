@@ -3,6 +3,17 @@
   # TODO: determine whether it needs to be sourced in both UI and SERVER or just one.
 
 ###############################################################################
+### --- Outline of this document --- ###
+# 1. Read in libraries.
+# 2. Import glossary, metadata, line data.
+# 3. Clean data.
+# 4. Convert all
+# 
+# 
+# 
+
+
+###############################################################################
 ### --- Commented code for dev/debugging work --- ###
 
 # setwd("/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app")
@@ -31,6 +42,7 @@ meta <- read_excel(paste0("./data/",prima.filename),sheet="Header_Data")
 
 # convert column in 'meta' to specify type as "blank", "numeric", "date" or "text" for read_excel()
   # original types: "character" "date" "factor" "logical" "numeric"  
+stopifnot(all(names(levels(meta$read_excel_type)) %in% c("character","factor","logical","numeric")))
 meta$read_excel_type[meta$read_excel_type %in% c("character","factor")] <- "text"
 meta$read_excel_type[meta$read_excel_type %in% c("logical","numeric")] <- "numeric"
 
@@ -47,7 +59,6 @@ names(df) <- meta$PRoXe_Column_Header
 # convert numeric columns in meta$read_excel_type to numeric
 df[,which(meta$read_excel_type == "numeric")] <- as.data.frame(lapply(df[,which(meta$read_excel_type == "numeric")],as.numeric))
 
-### TODO: fix fact that all columns are ordered incorrectly now.
 
 ###############################################################################
 ### --- Clean data --- ###
@@ -67,9 +78,6 @@ df$Age <- round(as.numeric(df$Age),3)
 # remove 80+ ages because they are PHI. Changing all to 81.
 df$Age[which(df$Age >= 80)] <- 81
 
-# eliminate all date columns ($P0_Injected to $P4_Banked)
-# cols_to_drop <- grep(pattern="^P[0-4]_(Injected|Banked)$",colnames(df),perl=TRUE) # commented out because included in below.
-
 # remove ">95" and ">90" -- simply convert to integer.
 df$Percent_Tissue_Involvement <- gsub(">","",df$Percent_Tissue_Involvement)
 # explicitly convert "Unclear" to NA
@@ -80,7 +88,7 @@ df$Percent_Tissue_Involvement <- as.integer(df$Percent_Tissue_Involvement)
 
 # convert appropriate chars to numeric after removing "unknown", "uncertain", etc.
 df$Presenting_WBC[grep(">1000",df$Presenting_WBC,ignore.case=TRUE)] <- 1111
-df$Presenting_WBC[grep("un",df$Presenting_WBC,ignore.case=TRUE)] <- NA # TODO: discuss w/ Mark
+df$Presenting_WBC[grep("un",df$Presenting_WBC,ignore.case=TRUE)] <- NA
 df$Presenting_WBC[grep(">50000",df$Presenting_WBC,ignore.case=TRUE)] <- 55555
 if(any(grepl(">",df$Presenting_WBC))) {
   warning("No specific rule for df$Presenting_WBC entry, replacing '>' with ''")
@@ -219,15 +227,20 @@ obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
 ###############################################################################
 ### --- Include inventory information --- ###
 
+# confirm inventory files
+inv.filename.adult <- dir("./data/Inventory_Tracking/",pattern = glob2rx("2*_Adult_Inventory.xlsx"))
+inv.filename.ped <- dir("./data/Inventory_Tracking/",pattern = glob2rx("2*_Pediatric_Inventory.xlsx"))
+if((length(inv.filename.adult) != 1) | length(inv.filename.ped) != 1) stop("too few or too many Inventory sheets in data/Inventory_Tracking/")
+
 #TODO: Ask Mark whether also to show BM and Tumor vials.
 # Read in and sum number of spleen vials left from both adult and pediatric PDXs.
 # inv <- read_excel("data/Inventory_Tracking/2015-9-2_Adult_Inventory.xlsx",1)
-inv <- read.xlsx2(file = "data/Inventory_Tracking/2015-9-2_Adult_Inventory.xlsx",sheetIndex = 1,stringsAsFactors=FALSE)
+inv <- read.xlsx2(file = file.path("data/Inventory_Tracking/",inv.filename.adult),sheetName = "Banked",stringsAsFactors=FALSE)
 
 inv <- inv[,c("New.PDX.ID","Spleen....vials.")]
 names(inv) <- c("PDX_Name","Spleen_Vials")
 
-pedinv <- read.xlsx2("data/Inventory_Tracking/2015-9-2_Pediatric_Inventory.xlsx",sheetIndex = 1,stringsAsFactors=F)
+pedinv <- read.xlsx2(file.path("data/Inventory_Tracking/",inv.filename.ped),sheetName = "Banked",stringsAsFactors=F)
 pedinv <- pedinv[,c("PDX.NEW.Name","Spleen....vials.")]
 names(pedinv) <- c("PDX_Name","Spleen_Vials")
 
@@ -238,16 +251,29 @@ for (i in 1:length(inv$Spleen_Vials)){
   inv$Spleen_Vials_Left[i] <- sum(as.numeric(unlist(strsplit(inv$Spleen_Vials[i],"/"))))
 }
 
+# remove columns missing name
+inv <- inv[!is.na(inv$PDX_Name),]
+inv <- inv[inv$PDX_Name != "",]
+
+# sum vials for samples with multiple rows
+inv <- aggregate(Spleen_Vials_Left~PDX_Name,data=inv,FUN=sum)
+
+# remove any duplicates still in inventory -- should never run now because of 'aggregage' above
+if(anyDuplicated(inv$PDX_Name)){
+  warning("Some inventory PDX_Name occur on multiple rows. Decide what to do; currently removing latter.")
+  inv_dups <- inv[duplicated(inv$PDX_Name),]$PDX_Name
+  print("Duplicated, removing:")
+  print(inv[inv$PDX_Name %in% inv_dups,])
+  inv <- inv[-which(duplicated(inv$PDX_Name)),]
+  df <- merge(df,inv,by = "PDX_Name",all.x = TRUE)
+}
+
 # prepare and merge selected, processed inventory columns with main dataset.
 inv$At_Least_6_Spleen_Vials_Left <- as.factor(inv$Spleen_Vials_Left >= 6)
 levels(inv$At_Least_6_Spleen_Vials_Left) <- c("No","Yes")
-cols_to_drop <- which(names(inv) %in% c("Spleen_Vials","Spleen_Vials_Left"))
-inv <- inv[,-cols_to_drop]
-inv <- inv[!is.na(inv$PDX_Name),]
 
-# TODO: perhaps remove duplicates from inventory -- NOTE THIS IS A TEMPORARY STOPGAP
-inv <- inv[-which(duplicated(inv$PDX_Name)),]
-df <- merge(df,inv,by = "PDX_Name",all.x = TRUE)
+# drop unwanted columns
+inv <- inv[,c("PDX_Name","At_Least_6_Spleen_Vials_Left")]
 
 # move new columns to visible section, change indices of which columns to show
 new_col_names <- names(inv)[-which(names(inv) == "PDX_Name")]
@@ -309,23 +335,23 @@ df$WHO_Classification <- as.factor(df$WHO_Classification)
 ###############################################################################
 ### --- Final aesthetic modifications --- ###
 
-# if Available_for_Distribution blank, then if DF make F else T
+# if MTA_Permissive blank, then if DF make T else F
 ld_na_count <- 0
 for (i in 1:nrow(df)){
-  if(is.na(df$Available_for_Distribution[i])){
+  if(is.na(df$MTA_Permissive[i])){
     ld_na_count <- ld_na_count + 1
     if(grepl("DF",df$PDX_Name[i])){
-      df$Available_for_Distribution[i] <- FALSE
+      df$MTA_Permissive[i] <- 1
     } else {
-      df$Available_for_Distribution[i] <- TRUE
+      df$MTA_Permissive[i] <- 0
     }
   }
 }
-warning(paste(ld_na_count,"samples not annotated for Available_for_Distribution. If DF made FALSE else TRUE."))
+if(ld_na_count > 0) warning(paste(ld_na_count,"samples not annotated for MTA_Permissive. If DF made 1 else 0"))
 
-# change Available_for_Distribution to Y/N from 1/0
+# change MTA_Permissive to Y/N from 1/0
   # note 0 == available and 1 = not.
-df$Available_for_Distribution <- factor(df$Available_for_Distribution, labels=c("yes","no"))
+# df$MTA_Permissive <- factor(df$MTA_Permissive, labels=c("yes","no"))
 # TODO: do this for other boolean columns?
 
 # remove all underscores from colnames and make consistent with rest of code.
