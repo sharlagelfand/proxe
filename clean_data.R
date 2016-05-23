@@ -351,7 +351,9 @@ if(ld_na_count > 0) warning(paste(ld_na_count,"samples not annotated for MTA_Per
 
 # change MTA_Permissive to Y/N from 1/0
   # note 0 == available and 1 = not.
-# df$MTA_Permissive <- factor(df$MTA_Permissive, labels=c("yes","no"))
+df$MTA_Permissive <- factor(df$MTA_Permissive, labels=c("None currently","Academic+Industry"))
+meta2[meta2$PRoXe_Column_Header == "MTA_Permissive","Column_Description"] <- "Indicates to whom relevant materials transfer agreements permit distribution."
+warning("Note edited MTA_Permissive description in app, not PRIMAGRAFTS. Temporary fix.")
 # TODO: do this for other boolean columns?
 
 # remove all underscores from colnames and make consistent with rest of code.
