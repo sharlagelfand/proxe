@@ -265,7 +265,6 @@ if(anyDuplicated(inv$PDX_Name)){
   print("Duplicated, removing:")
   print(inv[inv$PDX_Name %in% inv_dups,])
   inv <- inv[-which(duplicated(inv$PDX_Name)),]
-  df <- merge(df,inv,by = "PDX_Name",all.x = TRUE)
 }
 
 # prepare and merge selected, processed inventory columns with main dataset.
@@ -274,6 +273,9 @@ levels(inv$At_Least_6_Spleen_Vials_Left) <- c("No","Yes")
 
 # drop unwanted columns
 inv <- inv[,c("PDX_Name","At_Least_6_Spleen_Vials_Left")]
+
+# merge with df
+df <- merge(df,inv,by = "PDX_Name",all.x = TRUE)
 
 # move new columns to visible section, change indices of which columns to show
 new_col_names <- names(inv)[-which(names(inv) == "PDX_Name")]
