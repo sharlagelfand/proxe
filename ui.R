@@ -40,6 +40,8 @@ shinyUI(
       style="float:left; padding-right:5px; display:inline; position:relative; top:-10px"),
     "Public Repository of Xenografts"),
     windowTitle="PRoXe: Public Repository of Xenografts",
+#     navbarMenu("Database Explorer",
+#     tabPanel("Hematological",
     tabPanel("Database Explorer",
       checkboxInput("hide_sidebar","Hide sidebar",FALSE),
       # customHeaderPanel("Logo"),
@@ -205,6 +207,11 @@ shinyUI(
           ,fluid=TRUE
         )          
       ),
+#       tabPanel("Solid",
+#         h1("Solid"),
+#         DT::dataTableOutput(outputId="solid_table")
+#       )
+#       ),
       navbarMenu("PDX Molecular", #new
       tabPanel("PDX Gene Expression",
         h1("PDX Gene Expression"),

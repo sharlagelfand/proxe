@@ -4,6 +4,7 @@ setwd("/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app")
 source("clean_data.R")
 source("rna_seq.R")
 source("oncoprint.R")
+source("clean_solid.R")
 
 # check on largest-memory items
 z <- sapply(ls(), function(x)

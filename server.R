@@ -104,6 +104,11 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     )
   )
   
+#   # create solid tumor data
+#   output$solid_table <- DT::renderDataTable({
+#     solid
+#   })
+  
   output$plot_various <- renderPlot({
     filtered_row_inds <- input$table_rows_all
       
@@ -218,7 +223,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     } else if (input$ctable_numcats == 3) {
       table(ctable_df[,input$tablevar1],ctable_df[,input$tablevar2],ctable_df[,input$tablevar3])
     }
-  })
+  },striped=T,hover=T,bordered=T,rownames=T)
   
   output$plot_rna <- renderPlot({
     
