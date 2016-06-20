@@ -355,7 +355,7 @@ shinyUI(
         radioButtons(
           "line_report_input_type","Method for selecting line to show here:",
           c("Choose from drop-down menu" = "dropdown","Click a row in Database Explorer" = "click"),
-          selected="click"
+          selected="dropdown"
         ),
         conditionalPanel(
           condition = "input.line_report_input_type == 'dropdown'",
