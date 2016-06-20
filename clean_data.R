@@ -46,6 +46,8 @@ stopifnot(all(names(levels(meta$read_excel_type)) %in% c("character","factor","l
 meta$read_excel_type[meta$read_excel_type %in% c("character","factor")] <- "text"
 meta$read_excel_type[meta$read_excel_type %in% c("logical","numeric")] <- "numeric"
 
+#TODO here: consider writing a few lines of code that read in df naively, then compare col names with 'meta' and throw a detailed bidirectional setdiff() error if they don't match.
+
 # read in data
 df <- read_excel(paste0("./data/",prima.filename),sheet="Injected",
                  col_types =rep("text",nrow(meta))) # meta$read_excel_type)
@@ -337,25 +339,34 @@ df$WHO_Classification <- as.factor(df$WHO_Classification)
 ###############################################################################
 ### --- Final aesthetic modifications --- ###
 
-# if MTA_Permissive blank, then if DF make T else F
+# if Distribution_Permissions blank, then if DF make T else F
 ld_na_count <- 0
 for (i in 1:nrow(df)){
-  if(is.na(df$MTA_Permissive[i])){
+  if(is.na(df$Distribution_Permissions[i])){
     ld_na_count <- ld_na_count + 1
     if(grepl("DF",df$PDX_Name[i])){
-      df$MTA_Permissive[i] <- 1
+      df$Distribution_Permissions[i] <- 1
     } else {
-      df$MTA_Permissive[i] <- 0
+      df$Distribution_Permissions[i] <- 0
     }
   }
 }
-if(ld_na_count > 0) warning(paste(ld_na_count,"samples not annotated for MTA_Permissive. If DF made 1 else 0"))
+if(ld_na_count > 0) warning(paste(ld_na_count,"samples not annotated for Distribution_Permissions. If DF made 1 else 0"))
 
-# change MTA_Permissive to Y/N from 1/0
-  # note 0 == available and 1 = not.
-df$MTA_Permissive <- factor(df$MTA_Permissive, labels=c("None currently","Academic+Industry"))
-meta2[meta2$PRoXe_Column_Header == "MTA_Permissive","Column_Description"] <- "Indicates to whom relevant materials transfer agreements permit distribution."
-warning("Note edited MTA_Permissive description in app, not PRIMAGRAFTS. Temporary fix.")
+# change Distribution_Permissions to text from 0/1/2/3
+  # coded as follows: 
+  #   0=no distribution OK
+  #   1=distribution to academic, industry-sponsored academic, and industry OK
+  #   2=distribution to academic, industry-sponsored academic OK.  Not OK for industry. Note that this doesn't apply to any lines right now.
+  #   3=distribution to academic only. Not OK for industry-sponsored academic or industry.
+df$Distribution_Permissions <- factor(df$Distribution_Permissions,
+  levels=0:3,
+  labels=c("none currently",
+    "academic, industry-sponsored academic, and industry",
+    "academic, industry-sponsored academic",
+    "academic only"))
+meta2[meta2$PRoXe_Column_Header == "Distribution_Permissions","Column_Description"] <- "Indicates to whom relevant materials transfer agreements permit distribution."
+warning("Note edited Distribution_Permissions description in app, not PRIMAGRAFTS. Temporary fix.")
 # TODO: do this for other boolean columns?
 
 # remove all underscores from colnames and make consistent with rest of code.
