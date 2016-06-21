@@ -97,6 +97,51 @@ if(any(grepl(">",df$Presenting_WBC))) {
   df$Presenting_WBC <- gsub(">","",df$Presenting_WBC)
 }
 
+## Create new Distribution_Permissions column from Consent columns
+# Rules: 
+# (1) If "1" in 01-206, 11-104, 06-078, or 13-563, then OK for academic, industry-sponsored academic, and industry 
+# [of note these consents override limitations imposed by other tissue banking or study protocols]; 
+# (2) If "1" in 05-001 or 11-001 and nothing in 01-206, 11-104, 06-078, and 13-563, then OK for academic only for now. 
+# For all other samples, the vast majority of which will have been contributed from external collaborators, 
+# the permission level will be dictated by the BODFI spreadsheet; in absence of any specific information, 
+# default will be "not available".
+narmEqual <- function(x,equalTo){
+  if(!is.na(x)){
+    if(x == equalTo){
+      return(TRUE)
+    } else {
+      return(FALSE)
+    } 
+  } else {
+    return(FALSE)
+  }
+}
+df$Distribution_Permissions <- NA
+for (i in 1:nrow(df)){
+  if (narmEqual(df$`01-206 Consent`[i],"1") | narmEqual(df$`11-104 Consent`[i],"1") | 
+      narmEqual(df$`06-078 Consent`[i],"1") | narmEqual(df$`13-563 Consent`[i],"1") ){
+    df$Distribution_Permissions[i] <- 1
+  } else if ((narmEqual(df$`05-001 Consent`[i],"1") | narmEqual(df$`11-001 Consent`[i],"1"))){
+    df$Distribution_Permissions[i] <- 3
+  } else {
+    df$Distribution_Permissions[i] <- 0
+  }
+}
+# change Distribution_Permissions to text from 0/1/2/3
+# coded as follows: 
+#   0=no distribution OK
+#   1=distribution to academic, industry-sponsored academic, and industry OK
+#   2=distribution to academic, industry-sponsored academic OK.  Not OK for industry. Note that this doesn't apply to any lines right now.
+#   3=distribution to academic only. Not OK for industry-sponsored academic or industry.
+df$Distribution_Permissions <- factor(df$Distribution_Permissions,
+  levels=0:3,
+  labels=c("none currently",
+    "academic, industry-sponsored academic, and industry",
+    "academic, industry-sponsored academic",
+    "academic only"))
+meta[meta$PRoXe_Column_Header == "Distribution_Permissions","Column_Description"] <- "Indicates to whom relevant materials transfer agreements permit distribution."
+warning("Note edited Distribution_Permissions description in app, not PRIMAGRAFTS. Temporary fix.")
+
 ###############################################################################
 ### --- convert all columns to meta$Data_Type --- ###
 df <- convert.magic(df,meta$Data_Type)
@@ -353,21 +398,7 @@ for (i in 1:nrow(df)){
 }
 if(ld_na_count > 0) warning(paste(ld_na_count,"samples not annotated for Distribution_Permissions. If DF made 1 else 0"))
 
-# change Distribution_Permissions to text from 0/1/2/3
-  # coded as follows: 
-  #   0=no distribution OK
-  #   1=distribution to academic, industry-sponsored academic, and industry OK
-  #   2=distribution to academic, industry-sponsored academic OK.  Not OK for industry. Note that this doesn't apply to any lines right now.
-  #   3=distribution to academic only. Not OK for industry-sponsored academic or industry.
-df$Distribution_Permissions <- factor(df$Distribution_Permissions,
-  levels=0:3,
-  labels=c("none currently",
-    "academic, industry-sponsored academic, and industry",
-    "academic, industry-sponsored academic",
-    "academic only"))
-meta2[meta2$PRoXe_Column_Header == "Distribution_Permissions","Column_Description"] <- "Indicates to whom relevant materials transfer agreements permit distribution."
-warning("Note edited Distribution_Permissions description in app, not PRIMAGRAFTS. Temporary fix.")
-# TODO: do this for other boolean columns?
+# TODO: recode some boolean/factor columns as explanatory text (i.e. T/F to Y/N)?
 
 # remove all underscores from colnames and make consistent with rest of code.
 names(df) <- gsub(pattern = "_",replacement = " ",x = names(df))
