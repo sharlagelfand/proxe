@@ -118,10 +118,10 @@ narmEqual <- function(x,equalTo){
 }
 df$Distribution_Permissions <- NA
 for (i in 1:nrow(df)){
-  if (narmEqual(df$`01-206 Consent`[i],"1") | narmEqual(df$`11-104 Consent`[i],"1") | 
-      narmEqual(df$`06-078 Consent`[i],"1") | narmEqual(df$`13-563 Consent`[i],"1") ){
+  if (narmEqual(df$`01-206_Consent`[i],"1") | narmEqual(df$`11-104_Consent`[i],"1") | 
+      narmEqual(df$`06-078_Consent`[i],"1") | narmEqual(df$`13-563_Consent`[i],"1") ){
     df$Distribution_Permissions[i] <- 1
-  } else if ((narmEqual(df$`05-001 Consent`[i],"1") | narmEqual(df$`11-001 Consent`[i],"1"))){
+  } else if ((narmEqual(df$`05-001_Consent`[i],"1") | narmEqual(df$`11-001_Consent`[i],"1"))){
     df$Distribution_Permissions[i] <- 3
   } else {
     df$Distribution_Permissions[i] <- 0
