@@ -5,7 +5,7 @@ source("clean_data.R")
 source("rna_seq.R")
 source("oncoprint.R")
 # source("clean_solid.R")
-
+# testing github push with this comment.
 # check on largest-memory items
 z <- sapply(ls(), function(x)
   object.size(get(x)))
