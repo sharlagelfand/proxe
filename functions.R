@@ -100,11 +100,17 @@ convert.magic <- function(obj,types){
 }
 
 # dropdownMenu button
-dropdownButton <- function(label = "", status = c("default", "primary", "success", "info", "warning", "danger"), ..., width = NULL) {
+dropdownButton <- function(
+  label = "", # note label should be simple, perhaps A-z. Not sure what characters are allowed in CSS IDs.
+  status = c("default", "primary", "success", "info", "warning", "danger"),
+  ...,
+  width = NULL) {
   
   status <- match.arg(status)
+  css_id <- paste0("dropdownButton-",label)
   # dropdown button content
   html_ul <- list(
+    id = css_id,
     class = "dropdown-menu",
     style = if (!is.null(width)) 
       paste0("width: ", validateCssUnit(width), ";"),
@@ -124,8 +130,11 @@ dropdownButton <- function(label = "", status = c("default", "primary", "success
     do.call(tags$button, html_button),
     do.call(tags$ul, html_ul),
     tags$script(
-      "$('.dropdown-menu').click(function(e) {
-      e.stopPropagation();
-      });")
+      paste0(
+        "$('#",css_id,"').click(function(e) {
+          e.stopPropagation();
+        });"
+      )
+    )
   )
-  }
+}

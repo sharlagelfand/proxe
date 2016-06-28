@@ -52,10 +52,8 @@ shinyUI(
           
           ### testing dropdownMenu here. Later move elsewhere. ###
           dropdownButton(
-            label = "First, select columns to show:", status = "primary", width = 10,
+            label = "columns", status = "primary", width = 10,
             actionButton(inputId = "a2z", label = "Sort A to Z", icon = icon("sort-alpha-asc")),
-            actionButton(inputId = "z2a", label = "Sort Z to A", icon = icon("sort-alpha-desc")),
-            br(),
             actionButton(inputId = "all", label = "(Un)select all"),
             checkboxGroupInput(inputId = "check2", label = "Choose",
               choices = names(df[1:(obInvisRet_ind-1)]), selected = names(df)[1:(condVis_ind-1)])

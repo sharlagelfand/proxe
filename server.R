@@ -651,13 +651,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   # Sorting asc
   observeEvent(input$a2z, {
     updateCheckboxGroupInput(
-      session = session, inputId = "check2", choices = paste(1:26, ") Choice ", LETTERS), selected = input$check2
-    )
-  })
-  # Sorting desc
-  observeEvent(input$z2a, {
-    updateCheckboxGroupInput(
-      session = session, inputId = "check2", choices = paste(26:1, ") Choice ", rev(LETTERS)), selected = input$check2
+      session = session, inputId = "check2", choices = sort(names(df[1:(obInvisRet_ind-1)])), selected = input$check2
     )
   })
   output$res2 <- renderPrint({
