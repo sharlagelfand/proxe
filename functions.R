@@ -94,7 +94,7 @@ convert.magic <- function(obj,types){
       date = as.POSIXct)
     if (class(obj[,i]) != types[i]){
       obj[,i] <- FUN(obj[,i])
-    } 
+    }
   }
   obj
 }

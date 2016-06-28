@@ -46,6 +46,8 @@ stopifnot(all(names(levels(meta$read_excel_type)) %in% c("character","factor","l
 meta$read_excel_type[meta$read_excel_type %in% c("character","factor")] <- "text"
 meta$read_excel_type[meta$read_excel_type %in% c("logical","numeric")] <- "numeric"
 
+#TODO here: consider writing a few lines of code that read in df naively, then compare col names with 'meta' and throw a detailed bidirectional setdiff() error if they don't match.
+
 # read in data
 df <- read_excel(paste0("./data/",prima.filename),sheet="Injected",
                  col_types =rep("text",nrow(meta))) # meta$read_excel_type)
@@ -94,6 +96,51 @@ if(any(grepl(">",df$Presenting_WBC))) {
   warning("No specific rule for df$Presenting_WBC entry, replacing '>' with ''")
   df$Presenting_WBC <- gsub(">","",df$Presenting_WBC)
 }
+
+## Create new Distribution_Permissions column from Consent columns
+# Rules: 
+# (1) If "1" in 01-206, 11-104, 06-078, or 13-563, then OK for academic, industry-sponsored academic, and industry 
+# [of note these consents override limitations imposed by other tissue banking or study protocols]; 
+# (2) If "1" in 05-001 or 11-001 and nothing in 01-206, 11-104, 06-078, and 13-563, then OK for academic only for now. 
+# For all other samples, the vast majority of which will have been contributed from external collaborators, 
+# the permission level will be dictated by the BODFI spreadsheet; in absence of any specific information, 
+# default will be "not available".
+narmEqual <- function(x,equalTo){
+  if(!is.na(x)){
+    if(x == equalTo){
+      return(TRUE)
+    } else {
+      return(FALSE)
+    } 
+  } else {
+    return(FALSE)
+  }
+}
+df$Distribution_Permissions <- NA
+for (i in 1:nrow(df)){
+  if (narmEqual(df$`01-206_Consent`[i],"1") | narmEqual(df$`11-104_Consent`[i],"1") | 
+      narmEqual(df$`06-078_Consent`[i],"1") | narmEqual(df$`13-563_Consent`[i],"1") ){
+    df$Distribution_Permissions[i] <- 1
+  } else if ((narmEqual(df$`05-001_Consent`[i],"1") | narmEqual(df$`11-001_Consent`[i],"1"))){
+    df$Distribution_Permissions[i] <- 3
+  } else {
+    df$Distribution_Permissions[i] <- 0
+  }
+}
+# change Distribution_Permissions to text from 0/1/2/3
+# coded as follows: 
+#   0=no distribution OK
+#   1=distribution to academic, industry-sponsored academic, and industry OK
+#   2=distribution to academic, industry-sponsored academic OK.  Not OK for industry. Note that this doesn't apply to any lines right now.
+#   3=distribution to academic only. Not OK for industry-sponsored academic or industry.
+df$Distribution_Permissions <- factor(df$Distribution_Permissions,
+  levels=0:3,
+  labels=c("none currently",
+    "academic, industry-sponsored academic, and industry",
+    "academic, industry-sponsored academic",
+    "academic only"))
+meta[meta$PRoXe_Column_Header == "Distribution_Permissions","Column_Description"] <- "Indicates to whom relevant materials transfer agreements permit distribution."
+warning("Note edited Distribution_Permissions description in app, not PRIMAGRAFTS. Temporary fix.")
 
 ###############################################################################
 ### --- convert all columns to meta$Data_Type --- ###
@@ -337,26 +384,21 @@ df$WHO_Classification <- as.factor(df$WHO_Classification)
 ###############################################################################
 ### --- Final aesthetic modifications --- ###
 
-# if MTA_Permissive blank, then if DF make T else F
+# if Distribution_Permissions blank, then if DF make T else F
 ld_na_count <- 0
 for (i in 1:nrow(df)){
-  if(is.na(df$MTA_Permissive[i])){
+  if(is.na(df$Distribution_Permissions[i])){
     ld_na_count <- ld_na_count + 1
     if(grepl("DF",df$PDX_Name[i])){
-      df$MTA_Permissive[i] <- 1
+      df$Distribution_Permissions[i] <- 1
     } else {
-      df$MTA_Permissive[i] <- 0
+      df$Distribution_Permissions[i] <- 0
     }
   }
 }
-if(ld_na_count > 0) warning(paste(ld_na_count,"samples not annotated for MTA_Permissive. If DF made 1 else 0"))
+if(ld_na_count > 0) warning(paste(ld_na_count,"samples not annotated for Distribution_Permissions. If DF made 1 else 0"))
 
-# change MTA_Permissive to Y/N from 1/0
-  # note 0 == available and 1 = not.
-df$MTA_Permissive <- factor(df$MTA_Permissive, labels=c("None currently","Academic+Industry"))
-meta2[meta2$PRoXe_Column_Header == "MTA_Permissive","Column_Description"] <- "Indicates to whom relevant materials transfer agreements permit distribution."
-warning("Note edited MTA_Permissive description in app, not PRIMAGRAFTS. Temporary fix.")
-# TODO: do this for other boolean columns?
+# TODO: recode some boolean/factor columns as explanatory text (i.e. T/F to Y/N)?
 
 # remove all underscores from colnames and make consistent with rest of code.
 names(df) <- gsub(pattern = "_",replacement = " ",x = names(df))
