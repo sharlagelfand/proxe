@@ -61,11 +61,12 @@ shinyUI(
 #               choices = {meta4 <- meta3[(meta3$`Column Groupings` == "administrative"),]; meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`},
 #               selected = names(df)[1:(condVis_ind-1)])
 #           ),
+          h4(strong("First, select columns to show:")),
           mydropdownButton("administrative"),
           mydropdownButton("tumor"),
           mydropdownButton("patient"),
           mydropdownButton("pdx"),
-          verbatimTextOutput(outputId = "res2"),
+          # verbatimTextOutput(outputId = "res2"),
           ### end of dropdownMenu testing###
           
           
@@ -108,14 +109,7 @@ shinyUI(
             
               
           ),
-          h4(strong("First, select columns to show:")),
-          actionButton("selectall", label="(Un)select all"),
-          checkboxGroupInput("show_vars",
-                             NULL,
-                             names(df[1:(obInvisRet_ind-1)]),
-                             selected=names(df)[1:(condVis_ind-1)]
-                             )
-          ,width=3 # used to be width 4. 3 works better for full screenwidth. Would prefer fixed to longest name length. TODO.
+          width=3 # used to be width 4. 3 works better for full screenwidth. Would prefer fixed to longest name length. TODO.
           )
         ),
         # Right panel for showing table with subsettable columns, alphabetized.

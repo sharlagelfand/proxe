@@ -153,7 +153,7 @@ dropdownButton <- function(
 
 mydropdownButton <- function(lab) {
   dropdownButton(
-    label = lab, status = "primary", width = 10,
+    label = lab, status = "primary", width = "40ex",
     actionButton(inputId = paste0("a2z_",lab), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc"))),
     actionButton(inputId = paste0("all_",lab), label = "(Un)select all"),
     checkboxGroupInput(inputId = paste0("check2_",lab), label = "Choose",

@@ -25,18 +25,6 @@ print("didcomehere4")
 shinyServer(function(input, output, session) {  #TODO: read on what 'session' means here.  
   # select/deselect all using action button
   observe({
-    if (input$selectall > 0) {
-      if (input$selectall %% 2 == 1){
-        updateCheckboxGroupInput(session=session, 
-                                 inputId="show_vars",
-                                 choices = names(df[1:(obInvisRet_ind-1)]),
-                                 selected = c(names(df)))
-      } else {
-        updateCheckboxGroupInput(session=session, 
-                                 inputId="show_vars",
-                                 choices = names(df[1:(obInvisRet_ind-1)]),
-                                 selected = c())
-      }}
     updateSelectizeInput(session,inputId="rna_genes",
                    choices=sort(rownames(rnamat_sub)), server=TRUE,
                    selected=c("BCL2","TP53","FLT3","MYC","JAK2"))
@@ -51,10 +39,12 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   # Filter data based on selections
   output$table <- DT::renderDataTable({
-    if (is.null(input$show_vars)){
+    cols_selected <- c(input$check2_administrative,input$check2_tumor,input$check2_patient,input$check2_pdx)
+    if (is.null(cols_selected)){
       data.frame("no variables selected" = c("no variables selected"))
     } else{
-      data <- df[,input$show_vars, drop=FALSE]
+      data <- df[,cols_selected, drop=FALSE]
+      # todo: perhaps work on column sorting here.
       data
     # # note this code changes formatting of data table. Useful to play with later.
     # # this is a substitute for 'data' above.
@@ -689,9 +679,11 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
 #       selected = input[["check2_",lab]]
 #     )
 #   })
-  output$res2 <- renderPrint({
-    c(input$check2_administrative,input$check2_tumor,input$check2_patient,input$check2_pdx)
-  })
+  
+  # leaving in for testing:
+#   output$res2 <- renderPrint({
+#     c(input$check2_administrative,input$check2_tumor,input$check2_patient,input$check2_pdx)
+#   })
   
   # Select all / Unselect all
   observeEvent(input$all_administrative, {
