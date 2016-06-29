@@ -51,13 +51,20 @@ shinyUI(
         sidebarPanel(
           
           ### testing dropdownMenu here. Later move elsewhere. ###
-          dropdownButton(
-            label = "columns", status = "primary", width = 10,
-            actionButton(inputId = "a2z", label = "Sort A to Z", icon = icon("sort-alpha-asc")),
-            actionButton(inputId = "all", label = "(Un)select all"),
-            checkboxGroupInput(inputId = "check2", label = "Choose",
-              choices = names(df[1:(obInvisRet_ind-1)]), selected = names(df)[1:(condVis_ind-1)])
-          ),
+          # unique(meta3$`Column Groupings` # "administrative" "tumor"          "patient"        "pdx"  
+          
+#           dropdownButton(
+#             label = "administrative", status = "primary", width = 10,
+#             actionButton(inputId = "a2z_administrative", label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc"))),
+#             actionButton(inputId = paste0("all_administrative"), label = "(Un)select all"),
+#             checkboxGroupInput(inputId = paste0("check2_administrative"), label = "Choose",
+#               choices = {meta4 <- meta3[(meta3$`Column Groupings` == "administrative"),]; meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`},
+#               selected = names(df)[1:(condVis_ind-1)])
+#           ),
+          mydropdownButton("administrative"),
+          mydropdownButton("tumor"),
+          mydropdownButton("patient"),
+          mydropdownButton("pdx"),
           verbatimTextOutput(outputId = "res2"),
           ### end of dropdownMenu testing###
           

@@ -138,3 +138,96 @@ dropdownButton <- function(
     )
   )
 }
+
+# for ui.R
+# mydropdownButton <- function(label){
+#   dropdownButton(
+#     label = label, status = "primary", width = 10,
+#     actionButton(inputId = paste0("a2z_",label), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc_",label))),
+#     actionButton(inputId = paste0("all_",label), label = "(Un)select all"),
+#     checkboxGroupInput(inputId = paste0("check2_",label), label = "Choose",
+#       choices = {meta4 <- meta3[(meta3$`Column Groupings` == label),]; meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`},
+#       selected = names(df)[1:(condVis_ind-1)])
+#   )
+# }
+
+mydropdownButton <- function(lab) {
+  dropdownButton(
+    label = lab, status = "primary", width = 10,
+    actionButton(inputId = paste0("a2z_",lab), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc"))),
+    actionButton(inputId = paste0("all_",lab), label = "(Un)select all"),
+    checkboxGroupInput(inputId = paste0("check2_",lab), label = "Choose",
+      choices = {meta4 <- meta3[(meta3$`Column Groupings` == lab),]; meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`},
+      selected = names(df)[1:(condVis_ind-1)])
+  )
+}
+
+# Module UI function
+# mydropdownButton3 <- function(id, label = "default label") {
+#   # Create a namespace function using the provided id
+#   ns <- NS(id)
+#   
+#   dropdownButton(
+#     label = label, status = "primary", width = 10,
+#     actionButton(inputId = ns("a2z"), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc"))),
+#     actionButton(inputId = ns("all"), label = "(Un)select all"),
+#     checkboxGroupInput(inputId = ns("check2"), label = "Choose",
+#       choices = {meta4 <- meta3[(meta3$`Column Groupings` == id),]; meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`},
+#       selected = names(df)[1:(condVis_ind-1)])
+#   )
+# }
+# # for server.R
+# observeA2Z <- function(label){
+#   observeEvent(input[[paste0("a2z_",label)]], {
+#     updateCheckboxGroupInput(
+#       session = session, inputId = paste0("check2_",label),
+#       choices = sort(meta3[(meta3$`Column Groupings` == label),]),
+#       selected = input[[paste0("check2_",label)]]
+#       )
+#   })
+# }
+
+# for(lab in unique(meta3$`Column Groupings`)){
+#   lab = "administrative"
+#   observeEvent(input[[paste0("a2z_",lab)]], {
+#     updateCheckboxGroupInput(
+#       session = session, inputId = paste0("check2_",lab),
+#       choices = sort(meta3[(meta3$`Column Groupings` == lab),]$`PRoXe Column Header`),
+#       selected = input[["check2_",lab]]
+#     )
+#   })
+# }
+# observeEvent(input[[paste0("a2z_",lab)]], {
+#   updateCheckboxGroupInput(
+#     session = session, inputId = paste0("check2_",lab),
+#     choices = sort(meta3[(meta3$`Column Groupings` == lab),]$`PRoXe Column Header`),
+#     selected = input[["check2_",lab]]
+#   )
+# })
+
+# # Module server function -- not yet done (if ever)
+# observeA3 <- function(input, output, session, id) {  # other params necy? add in if so.
+#   # The selected file, if any
+#   userFile <- reactive({
+#     # If no file is selected, don't do anything
+#     validate(need(input$a2z, message = FALSE))
+#     input$a2z
+#   })
+#   
+#   # The user's data, parsed into a data frame
+#   dataframe <- reactive({
+#     read.csv(userFile()$datapath,
+#       header = input$heading,
+#       quote = input$quote,
+#       stringsAsFactors = stringsAsFactors)
+#   })
+#   
+#   # We can run observers in here if we want to
+#   observe({
+#     msg <- sprintf("File %s was uploaded", userFile()$name)
+#     cat(msg, "\n")
+#   })
+#   
+#   # Return the reactive that yields the data frame
+#   return(dataframe)
+# }

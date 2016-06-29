@@ -51,7 +51,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   # Filter data based on selections
   output$table <- DT::renderDataTable({
-    if (is.null(input$show_vars)){
+    if (is.null(input$show_vars2)){
       data.frame("no variables selected" = c("no variables selected"))
     } else{
       data <- df[,input$show_vars, drop=FALSE]
@@ -570,20 +570,20 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   # add glossary
   output$glossary <- DT::renderDataTable({
-    # take visible columns' header and description
-    meta3 <- meta2[meta2$Visible_Invisible != "ob_invis",c("PRoXe_Column_Header","Column_Description")]
-    # reformat
-    meta3 <- as.data.frame(lapply(meta3,gsub,pattern="_",replacement=" "),stringsAsFactors = F)
-    names(meta3) <- gsub("_"," ",names(meta3))
-    
-    missing_names <- setdiff(names(df[1:(obInvisRet_ind-1)]), meta3$`PRoXe Column Header`)
-    new_rows_df <- meta_gloss[meta_gloss$PRoXe_Column_Header %in% missing_names,
-                              c("PRoXe_Column_Header","Column_Description")]
-    names(new_rows_df) <- gsub("_"," ",names(new_rows_df))
-    meta3 <- rbind(meta3,new_rows_df)
-    # change order to same as Database Explorer
-    meta3[match(meta3$`PRoXe Column Header`,names(df[1:(obInvisRet_ind-1)])),]
-    
+#     # take visible columns' header and description
+#     meta3 <- meta2[meta2$Visible_Invisible != "ob_invis",c("PRoXe_Column_Header","Column_Description")]
+#     # reformat
+#     meta3 <- as.data.frame(lapply(meta3,gsub,pattern="_",replacement=" "),stringsAsFactors = F)
+#     names(meta3) <- gsub("_"," ",names(meta3))
+#     
+#     missing_names <- setdiff(names(df[1:(obInvisRet_ind-1)]), meta3$`PRoXe Column Header`)
+#     new_rows_df <- meta_gloss[meta_gloss$PRoXe_Column_Header %in% missing_names,
+#                               c("PRoXe_Column_Header","Column_Description")]
+#     names(new_rows_df) <- gsub("_"," ",names(new_rows_df))
+#     meta3 <- rbind(meta3,new_rows_df)
+#     # change order to same as Database Explorer
+#     meta3[match(meta3$`PRoXe Column Header`,names(df[1:(obInvisRet_ind-1)])),]
+    meta3[,c("PRoXe Column Header","Column Description")]
   },
   filter="top",
   server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
@@ -649,24 +649,95 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   ### testing dropdownMenu ###
   # Sorting asc
-  observeEvent(input$a2z, {
+
+  observeEvent(input[["a2z_administrative"]], {
     updateCheckboxGroupInput(
-      session = session, inputId = "check2", choices = sort(names(df[1:(obInvisRet_ind-1)])), selected = input$check2
+      session = session, inputId = "check2_administrative",
+      choices = sort(meta3[(meta3$`Column Groupings` == "administrative"),]$`PRoXe Column Header`),
+      selected = input$check2_administrative
     )
   })
+  
+  observeEvent(input[["a2z_tumor"]], {
+    updateCheckboxGroupInput(
+      session = session, inputId = "check2_tumor",
+      choices = sort(meta3[(meta3$`Column Groupings` == "tumor"),]$`PRoXe Column Header`),
+      selected = input$check2_tumor
+    )
+  })
+  
+  observeEvent(input[["a2z_patient"]], {
+    updateCheckboxGroupInput(
+      session = session, inputId = "check2_patient",
+      choices = sort(meta3[(meta3$`Column Groupings` == "patient"),]$`PRoXe Column Header`),
+      selected = input$check2_patient
+    )
+  })
+  
+  observeEvent(input[["a2z_pdx"]], {
+    updateCheckboxGroupInput(
+      session = session, inputId = "check2_pdx",
+      choices = sort(meta3[(meta3$`Column Groupings` == "pdx"),]$`PRoXe Column Header`),
+      selected = input$check2_pdx
+    )
+  })
+  
+#   observeEvent(input[[paste0("a2z_",lab)]], {
+#     updateCheckboxGroupInput(
+#       session = session, inputId = paste0("check2_",lab),
+#       choices = sort(meta3[(meta3$`Column Groupings` == lab),]$`PRoXe Column Header`),
+#       selected = input[["check2_",lab]]
+#     )
+#   })
   output$res2 <- renderPrint({
-    input$check2
+    c(input$check2_administrative,input$check2_tumor,input$check2_patient,input$check2_pdx)
   })
   
   # Select all / Unselect all
-  observeEvent(input$all, {
-    if (is.null(input$check2)) {
+  observeEvent(input$all_administrative, {
+    if (is.null(input$check2_administrative)) {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2", selected = names(df[1:(obInvisRet_ind-1)])
+        session = session, inputId = "check2_administrative", selected = names(df[1:(obInvisRet_ind-1)])
       )
     } else {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2", selected = ""
+        session = session, inputId = "check2_administrative", selected = ""
+      )
+    }
+  })
+  
+  observeEvent(input$all_tumor, {
+    if (is.null(input$check2_tumor)) {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_tumor", selected = names(df[1:(obInvisRet_ind-1)])
+      )
+    } else {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_tumor", selected = ""
+      )
+    }
+  })
+  
+  observeEvent(input$all_patient, {
+    if (is.null(input$check2_patient)) {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_patient", selected = names(df[1:(obInvisRet_ind-1)])
+      )
+    } else {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_patient", selected = ""
+      )
+    }
+  })
+  
+  observeEvent(input$all_pdx, {
+    if (is.null(input$check2_pdx)) {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_pdx", selected = names(df[1:(obInvisRet_ind-1)])
+      )
+    } else {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_pdx", selected = ""
       )
     }
   })
