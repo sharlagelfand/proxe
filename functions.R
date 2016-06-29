@@ -151,7 +151,7 @@ dropdownButton <- function(
 #   )
 # }
 
-mydropdownButton <- function(lab) {
+mydropdownButton <- function(lab,meta3,condVis_ind) {
   dropdownButton(
     label = lab, status = "primary", width = "40ex",
     actionButton(inputId = paste0("a2z_",lab), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc"))),

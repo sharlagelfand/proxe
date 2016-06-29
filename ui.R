@@ -62,10 +62,11 @@ shinyUI(
 #               selected = names(df)[1:(condVis_ind-1)])
 #           ),
           h4(strong("First, select columns to show:")),
-          mydropdownButton("administrative"),
-          mydropdownButton("tumor"),
-          mydropdownButton("patient"),
-          mydropdownButton("pdx"),
+          ## TODO possibly in this function: figure out why nothing is selected (only at shinyapps.io). Maybe pass 'df' to it.
+          mydropdownButton("administrative",meta3,condVis_ind),
+          mydropdownButton("tumor",meta3,condVis_ind),
+          mydropdownButton("patient",meta3,condVis_ind),
+          mydropdownButton("pdx",meta3,condVis_ind),
           # verbatimTextOutput(outputId = "res2"),
           ### end of dropdownMenu testing###
           
