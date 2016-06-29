@@ -21,6 +21,9 @@ save.image(file = "pre-compiled.RData",compress = FALSE)
 #           appName = "PRoXe", account = "proxe")
 # capture.output(shinyapps::showLogs(appName="PRoXe_alpha",account="proxe",entries=5000),file="~/logs5000.txt")
 
+# interesting way to visualize dependencies: enable, then press cmd+fn+F3 while app is running.
+# options(shiny.reactlog = TRUE)
+
 ## 2 - run normally
 runApp()
 # 
