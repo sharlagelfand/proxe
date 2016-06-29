@@ -51,7 +51,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   # Filter data based on selections
   output$table <- DT::renderDataTable({
-    if (is.null(input$show_vars2)){
+    if (is.null(input$show_vars)){
       data.frame("no variables selected" = c("no variables selected"))
     } else{
       data <- df[,input$show_vars, drop=FALSE]
