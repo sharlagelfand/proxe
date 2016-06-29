@@ -110,6 +110,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
 #   })
   
   output$plot_various <- renderPlot({
+    req(input$table_rows_all)
     filtered_row_inds <- input$table_rows_all
       
     # choose type of plot
@@ -123,8 +124,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       # find a way to use the table output by output$table above.
       if(input$breaks != "custom") hist_breaks = input$breaks
       else hist_breaks = input$breakCount
-      # note hist() results in a transient error when app is first loaded bedcause input$table_rows_all is initially empty
-        # could fix if desired, but doesn't affect how the app works.
       hist(hist_x,
            breaks= hist_breaks,
            main="Histogram of selected variable.\nUpdates based on filtering above.",
