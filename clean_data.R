@@ -281,23 +281,15 @@ obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
 ### --- Include inventory information --- ###
 
 # confirm inventory files
-inv.filename.adult <- dir("./data/Inventory_Tracking/",pattern = glob2rx("2*_Adult_Inventory.xlsx"))
-inv.filename.ped <- dir("./data/Inventory_Tracking/",pattern = glob2rx("2*_Pediatric_Inventory.xlsx"))
-if((length(inv.filename.adult) != 1) | length(inv.filename.ped) != 1) stop("too few or too many Inventory sheets in data/Inventory_Tracking/")
+inv.filename.pdx <- dir("./data/Inventory_Tracking/",pattern = glob2rx("2*_PDX_Inventory.xlsx"))
+if(length(inv.filename.pdx) != 1) stop("too few or too many Inventory sheets in data/Inventory_Tracking/")
 
-#TODO: Ask Mark whether also to show BM and Tumor vials.
+#TODO: Ask Mark whether also to show BM and Tumor vials. -- no for now, later yes to Tumor for solid (-Amanda)
 # Read in and sum number of spleen vials left from both adult and pediatric PDXs.
 # inv <- read_excel("data/Inventory_Tracking/2015-9-2_Adult_Inventory.xlsx",1)
-inv <- read.xlsx2(file = file.path("data/Inventory_Tracking/",inv.filename.adult),sheetName = "Banked",stringsAsFactors=FALSE)
-
+inv <- read.xlsx2(file = file.path("data/Inventory_Tracking/",inv.filename.pdx),sheetName = "Banked",stringsAsFactors=FALSE)
 inv <- inv[,c("New.PDX.ID","Spleen....vials.")]
 names(inv) <- c("PDX_Name","Spleen_Vials")
-
-pedinv <- read.xlsx2(file.path("data/Inventory_Tracking/",inv.filename.ped),sheetName = "Banked",stringsAsFactors=F)
-pedinv <- pedinv[,c("PDX.NEW.Name","Spleen....vials.")]
-names(pedinv) <- c("PDX_Name","Spleen_Vials")
-
-inv <- rbind(inv,pedinv)
 
 # Convert "/"-separated vials counts to total number. #TODO: vectorize, perhaps.
 for (i in 1:length(inv$Spleen_Vials)){
