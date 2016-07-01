@@ -40,6 +40,12 @@ prima.filename <- dir("./data/",pattern = glob2rx("PRIMAGRAFTS*xlsx"))
 if(length(prima.filename) != 1) stop("too few or too many PRIMAGRAFTS sheets in dropbox")
 meta <- read_excel(paste0("./data/",prima.filename),sheet="Header_Data")
 
+# warn if all rows in 'meta' don't exist in meta_gloss
+if (length(setdiff(meta$Internal_Column_Header,meta_gloss$Internal_Column_Header) != 0)){
+  warning(paste("The following fields are in PRIMAGRAFTS but not Master_Glossary:\n",
+    setdiff(meta$Internal_Column_Header,meta_gloss$Internal_Column_Header)))
+}
+
 # convert column in 'meta' to specify type as "blank", "numeric", "date" or "text" for read_excel()
   # original types: "character" "date" "factor" "logical" "numeric"  
 stopifnot(all(names(levels(meta$read_excel_type)) %in% c("character","factor","logical","numeric")))

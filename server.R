@@ -426,11 +426,14 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
 
       # conditionally reformat 3s
       # include FAB Classification only when WHO Cat == AML
-    if(td4[td4$PRoXe_Column_Header=="WHO Category","sample"] != "AML"){
-      td4 <- td4[!(td4$PRoXe_Column_Header=="FAB Classification"),]
-      td4 <- td4[!(td4$PRoXe_Column_Header=="Cytogenetic Risk Category"),]        
+    who_cat = td4[td4$PRoXe_Column_Header=="WHO Category","sample"]
+    if(!is.na(who_cat)){
+      if(who_cat != "AML"){
+        td4 <- td4[!(td4$PRoXe_Column_Header=="FAB Classification"),]
+        td4 <- td4[!(td4$PRoXe_Column_Header=="Cytogenetic Risk Category"),]        
+      }
     }
-    
+
       # combine into single row in order CD45,33,34,19,2,3, 
         # in format CD45(superscript + or -)CD33(etc. no spaces.
         # If PDX_Other_Immunophenotypes, add ", and" and append to end.
