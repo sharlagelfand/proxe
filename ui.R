@@ -141,7 +141,7 @@ shinyUI(
                  "plotType", "Plot Type",
                  c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
                     "2D Contingency Table" = "ctable_plot"),
-                 selected = "hist"
+                 selected = "scatbox"
                  ),
                
                # Option 1: show histogram.
