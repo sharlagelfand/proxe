@@ -7,11 +7,16 @@ if(T) {
   # drop column
   meta3$Visible_Invisible_int <- NULL
   # reformat
-  meta3 <- as.data.frame(lapply(meta3,gsub,pattern="_",replacement=" "),stringsAsFactors = F)
+  if(F){
+    # not sure why I had this -- reformats too many things!
+    meta3 <- as.data.frame(lapply(meta3,gsub,pattern="_",replacement=" "),stringsAsFactors = F)
+  }
+  meta3$PRoXe_Column_Header <- gsub("_"," ",meta3$PRoXe_Column_Header)
   names(meta3) <- gsub("_"," ",names(meta3))
   
   missing_names <- setdiff(names(df[1:(obInvisRet_ind-1)]), meta3$`PRoXe Column Header`)
   new_rows_df <- meta_gloss[meta_gloss$PRoXe_Column_Header %in% missing_names,]
+  new_rows_df$`In_PRIMAGRAFTS` <- NULL
   names(new_rows_df) <- gsub("_"," ",names(new_rows_df))
   meta3 <- rbind(meta3,new_rows_df)
   # change order to same as Database Explorer
