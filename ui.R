@@ -43,184 +43,161 @@ shinyUI(
 #     navbarMenu("Database Explorer",
 #     tabPanel("Hematological",
     tabPanel("Database Explorer",
-      checkboxInput("hide_sidebar","Hide sidebar",FALSE),
       # customHeaderPanel("Logo"),
-      # Left sidebar for selecting which columns to show
-      sidebarLayout(
-        conditionalPanel(condition = "input.hide_sidebar == false",
-        sidebarPanel(
-          
-          ### testing dropdownMenu here. Later move elsewhere. ###
-          # unique(meta3$`Column Groupings` # "administrative" "tumor"          "patient"        "pdx"  
-          
-#           dropdownButton(
-#             label = "administrative", status = "primary", width = 10,
-#             actionButton(inputId = "a2z_administrative", label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc"))),
-#             actionButton(inputId = paste0("all_administrative"), label = "(Un)select all"),
-#             checkboxGroupInput(inputId = paste0("check2_administrative"), label = "Choose",
-#               choices = {meta4 <- meta3[(meta3$`Column Groupings` == "administrative"),]; meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`},
-#               selected = names(df)[1:(condVis_ind-1)])
-#           ),
-          h4(strong("First, select columns to show:")),
-          ## TODO possibly in this function: figure out why nothing is selected (only at shinyapps.io). Maybe pass 'df' to it.
-          mydropdownButton("administrative",meta3,condVis_ind),
-          mydropdownButton("tumor",meta3,condVis_ind),
-          mydropdownButton("patient",meta3,condVis_ind),
-          mydropdownButton("pdx",meta3,condVis_ind),
-          # verbatimTextOutput(outputId = "res2"),
-          ### end of dropdownMenu testing###
-          
-          
-          # adjusting sidebar width and text manually with CSS
-          tags$head(
-            # tags$style(type='text/css', ".col-sm-8 { margin-left: 10px;}"),
-            # tags$style(type='text/css', ".col-sm-3 { margin-right: -20px;}"),
-            # tags$link(rel="shortcut icon", href="favicon.ico"),
-            # tags$style(type='text/css', ".well { max-width: 310px; }"),
-            # tags$style(type='text/css', ".span3 { max-width: 310px; }"),
-            tags$style(type='text/css', ".radio, .checkbox { margin-bottom: 2px; }"),
-            tags$style(type='text/css', ".radio label, .checkbox label {
-              width: 100%;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
+      tags$div(
+        style="margin:15px;",
+        tags$head(
+          ## TODO: consider which of these should stay or go.
+          # tags$style(type='text/css', ".col-sm-8 { margin-left: 10px;}"),
+          # tags$style(type='text/css', ".col-sm-3 { margin-right: -20px;}"),
+          # tags$link(rel="shortcut icon", href="favicon.ico"),
+          # tags$style(type='text/css', ".well { max-width: 310px; }"),
+          # tags$style(type='text/css', ".span3 { max-width: 310px; }"),
+          tags$style(type='text/css', ".radio, .checkbox { margin-bottom: 2px; }"),
+          tags$style(type='text/css', ".radio label, .checkbox label {
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             }"),
             tags$style(type='text/css', "
               @media (min-width: 768px)
               .col-sm-3 {
-                width: 25%;
-                max-width: 29em;
+              width: 25%;
+              max-width: 29em;
               }"),
             tags$style(type='text/css', "
               .container-fluid {
-                padding-top:4em
+              padding-top:4em
               }"),
             tags$style(type='text/css', "
               #hidebox {
-                display:inline;
+              display:inline;
               }")
-#,
-            # for adding ellipsis to ColVis
-  #           tags$style(type='text/css', "
-  #             ul.ColVis_collection li span {
-  #               overflow: hidden;
-  #               text-overflow: ellipsis;
-  #               width: 90%;
-  #             }")
-            
-              
+        #,
+          # for adding ellipsis to ColVis
+          #           tags$style(type='text/css', "
+          #             ul.ColVis_collection li span {
+          #               overflow: hidden;
+          #               text-overflow: ellipsis;
+          #               width: 90%;
+          #             }")
+          
+          
           ),
-          width=3 # used to be width 4. 3 works better for full screenwidth. Would prefer fixed to longest name length. TODO.
+        # Right panel for showing table with subsettable columns, alphabetized.
+        tags$div(
+          style="display: flex;",
+          tags$h5("First, select columns to show:",style="margin-right: 15px"),
+          mydropdownButton("administrative",meta3,condVis_ind),
+          mydropdownButton("tumor",meta3,condVis_ind),
+          mydropdownButton("patient",meta3,condVis_ind),
+          mydropdownButton("pdx",meta3,condVis_ind)
+        ),
+        # TODO: change this to a single row by using a div and appropriate CSS.
+        fluidRow(
+          p(
+            a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
+            " with questions.",
+            actionButton("Request_link","Request lines"),
+            align="right"
           )
         ),
-        # Right panel for showing table with subsettable columns, alphabetized.
-        mainPanel(
-          # 0. Email us (temporary)
-          fluidRow(
-            # p(checkboxInput("hide_sidebar","Hide sidebar",FALSE),id="hidebox"),
-            p(
-              a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
-              " with questions.",
-              actionButton("Request_link","Request lines"),
-              align="right"
-            )
-          ),
-          # 1. data table. -- maybe add a histogram or something below if desired.
-          fluidRow(
-            DT::dataTableOutput(outputId="table")
-          ),
-          # 2. Create download button below table
-          fluidRow(h4(" ")), # just an empty space.
-          fluidRow(
-            p(class = 'text-center', downloadButton('download_filtered', 'Download Filtered Data'))
-          ),
-          # 2. TODO: take filtered data table and apply some kind of graphical analysis.
-          fluidRow(
-            sidebarPanel(
-               selectInput(
-                 "plotType", "Plot Type",
-                 c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
-                    "2D Contingency Table" = "ctable_plot"),
-                 selected = "scatbox"
-                 ),
-               
-               # Option 1: show histogram.
-               conditionalPanel(
-                 condition = "input.plotType == 'hist'",
-                 selectInput("hist_var","Variable to plot",
-                             sort(names(df)[numeric_cols_vis]),selected="Age"),
-                 selectInput(
-                   "hist_log","Scaling",
-                   c(linear=FALSE,log10=TRUE)
-                   ),
-                 selectInput(
-                   "breaks", "Breaks",
-                   c("[Custom]" = "custom", "Sturges",
-                     "Scott","Freedman-Diaconis")
-                   ),
-                 # Only show this sub-panel if Custom is selected
-                 conditionalPanel(
-                   condition = "input.breaks == 'custom'",
-                   sliderInput("breakCount", "Break Count", min=1, max=100, value=25)
-                   
-                  )
-                 
-                ),
-               
-               # Option 2: show scatterplot.
-               conditionalPanel(
-                 condition = "input.plotType == 'scatter'",
-                 selectInput("scat_var_x","X variable to plot",sort(names(df)[numeric_cols_vis]),
-                             selected="Age"),
-                 selectInput("scat_var_y","Y variable to plot",sort(names(df)[numeric_cols_vis]),
-                             selected="Presenting WBC")
-                 ),
-               
-               # Option 3: show barplot.
-               conditionalPanel(
-                 condition = "input.plotType == 'bar'",
-                 selectInput("bar_var","Category to plot",sort(names(df)[factor_cols_vis]),
-                             selected="WHO Category")
-                 ),
-               
-               # Option 4: show 1D-scatter+boxplot.
-               conditionalPanel(
-                 condition = "input.plotType == 'scatbox'",
-                 selectInput("scatbox_cat","Category to plot",sort(names(df)[factor_cols_vis]),
-                             selected="WHO Category"),
-                 selectInput("scatbox_num","Numeric to plot",sort(names(df)[numeric_cols_vis]),
-                             selected="Days to Engraft P0")
-                 ),
-#                # Option 5: contingency table of categories
-#                conditionalPanel(
-#                  condition = "input.plotType == 'ctable'",
-#                  selectInput("tablevarA","First category",sort(names(df)[factor_cols_vis]),
-#                              selected = "WHO Category"),
-#                  selectInput("tablevarB","Second category",sort(names(df)[factor_cols_vis]),
-#                              selected = "Latest Passage Banked")
-#                 ),
-               # Option 6: mosaic plot of contingency table.
-               conditionalPanel(
-                 condition = "input.plotType == 'ctable_plot'",
-                 selectInput("ctable_plot_var1","First category",sort(names(df)[factor_cols_vis]),
-                             selected = "WHO Category"),
-                 selectInput("ctable_plot_var2","Second category",sort(names(df)[factor_cols_vis]),
-                             selected = "Latest Passage Banked")
-                )
-             ),
-            column(width=8,
-                ({ 
-#                   if (input$plotType == 'ctable') {
-#                      tableOutput("table_various")
-#                   } else 
-                    plotOutput("plot_various") 
-                })
-             )
+        # 1. data table. -- maybe add a histogram or something below if desired.
+        fluidRow(
+          DT::dataTableOutput(outputId="table")
+        ),
+        # 2. Create download button below table
+        fluidRow(h4(" ")), # just an empty space.
+        fluidRow(
+          p(class = 'text-center', downloadButton('download_filtered', 'Download Filtered Data'))
+        ),
+        # 2. TODO: take filtered data table and apply some kind of graphical analysis.
+        fluidRow(
+          sidebarPanel(
+            selectInput(
+              "plotType", "Plot Type",
+              c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
+                "2D Contingency Table" = "ctable_plot"),
+              selected = "scatbox"
+            ),
+            
+            # Option 1: show histogram.
+            conditionalPanel(
+              condition = "input.plotType == 'hist'",
+              selectInput("hist_var","Variable to plot",
+                sort(names(df)[numeric_cols_vis]),selected="Age"),
+              selectInput(
+                "hist_log","Scaling",
+                c(linear=FALSE,log10=TRUE)
+              ),
+              selectInput(
+                "breaks", "Breaks",
+                c("[Custom]" = "custom", "Sturges",
+                  "Scott","Freedman-Diaconis")
+              ),
+              # Only show this sub-panel if Custom is selected
+              conditionalPanel(
+                condition = "input.breaks == 'custom'",
+                sliderInput("breakCount", "Break Count", min=1, max=100, value=25)
+                
+              )
               
+            ),
+            
+            # Option 2: show scatterplot.
+            conditionalPanel(
+              condition = "input.plotType == 'scatter'",
+              selectInput("scat_var_x","X variable to plot",sort(names(df)[numeric_cols_vis]),
+                selected="Age"),
+              selectInput("scat_var_y","Y variable to plot",sort(names(df)[numeric_cols_vis]),
+                selected="Presenting WBC")
+            ),
+            
+            # Option 3: show barplot.
+            conditionalPanel(
+              condition = "input.plotType == 'bar'",
+              selectInput("bar_var","Category to plot",sort(names(df)[factor_cols_vis]),
+                selected="WHO Category")
+            ),
+            
+            # Option 4: show 1D-scatter+boxplot.
+            conditionalPanel(
+              condition = "input.plotType == 'scatbox'",
+              selectInput("scatbox_cat","Category to plot",sort(names(df)[factor_cols_vis]),
+                selected="WHO Category"),
+              selectInput("scatbox_num","Numeric to plot",sort(names(df)[numeric_cols_vis]),
+                selected="Days to Engraft P0")
+            ),
+            #                # Option 5: contingency table of categories
+            #                conditionalPanel(
+            #                  condition = "input.plotType == 'ctable'",
+            #                  selectInput("tablevarA","First category",sort(names(df)[factor_cols_vis]),
+            #                              selected = "WHO Category"),
+            #                  selectInput("tablevarB","Second category",sort(names(df)[factor_cols_vis]),
+            #                              selected = "Latest Passage Banked")
+            #                 ),
+            # Option 6: mosaic plot of contingency table.
+            conditionalPanel(
+              condition = "input.plotType == 'ctable_plot'",
+              selectInput("ctable_plot_var1","First category",sort(names(df)[factor_cols_vis]),
+                selected = "WHO Category"),
+              selectInput("ctable_plot_var2","Second category",sort(names(df)[factor_cols_vis]),
+                selected = "Latest Passage Banked")
             )
+          ),
+          column(width=8,
+            ({ 
+              #                   if (input$plotType == 'ctable') {
+              #                      tableOutput("table_various")
+              #                   } else 
+              plotOutput("plot_various") 
+            })
           )
-          ,fluid=TRUE
-        )          
+          
+        )
+        
+        )
       ),
 #       tabPanel("Solid",
 #         h1("Solid"),
