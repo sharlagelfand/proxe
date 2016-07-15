@@ -152,13 +152,21 @@ dropdownButton <- function(
 # }
 
 mydropdownButton <- function(lab,meta3,condVis_ind) {
+  # prep variables for checkboxGroupInput
+  # 0. for testing: # lab = "administrative"
+  # 1. choices
+  meta4 <- meta3[(meta3$`Column Groupings` == lab),];
+  my_choices <- meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`
+  # 2. selected
+  my_selected <- intersect(names(df)[1:(condVis_ind-1)],my_choices)
   dropdownButton(
     label = lab, status = "primary", width = "40ex",
     actionButton(inputId = paste0("a2z_",lab), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc"))),
     actionButton(inputId = paste0("all_",lab), label = "(Un)select all"),
     checkboxGroupInput(inputId = paste0("check2_",lab), label = "Choose",
-      choices = {meta4 <- meta3[(meta3$`Column Groupings` == lab),]; meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`},
-      selected = names(df)[1:(condVis_ind-1)])
+      choices = my_choices,
+      selected = my_selected
+    )
   )
 }
 

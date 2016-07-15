@@ -86,21 +86,24 @@ shinyUI(
           
           ),
         # Right panel for showing table with subsettable columns, alphabetized.
-        tags$div(
-          style="display: flex;",
-          tags$h5("First, select columns to show:",style="margin-right: 15px"),
-          mydropdownButton("administrative",meta3,condVis_ind),
-          mydropdownButton("tumor",meta3,condVis_ind),
-          mydropdownButton("patient",meta3,condVis_ind),
-          mydropdownButton("pdx",meta3,condVis_ind)
-        ),
-        # TODO: change this to a single row by using a div and appropriate CSS.
         fluidRow(
-          p(
-            a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
-            " with questions.",
-            actionButton("Request_link","Request lines"),
-            align="right"
+          column(6,
+            tags$div(
+              style="display: flex;",
+              tags$h5("First, select columns to show:",style="margin-right: 15px"),
+              mydropdownButton("administrative",meta3,condVis_ind),
+              mydropdownButton("tumor",meta3,condVis_ind),
+              mydropdownButton("patient",meta3,condVis_ind),
+              mydropdownButton("pdx",meta3,condVis_ind)
+            )
+          ),
+          column(6,
+            p(
+              a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
+              " with questions.",
+              actionButton("Request_link","Request lines"),
+              align="right"
+            )
           )
         ),
         # 1. data table. -- maybe add a histogram or something below if desired.
