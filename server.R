@@ -1,5 +1,7 @@
 # server.R
 
+# note ./global.R is run before any of this.
+
 library(shiny)
 # library(WriteXLS)
 library(xlsx)
@@ -11,11 +13,6 @@ library(stringr)
 # library(rCharts)
 
 op <- par(no.readonly = TRUE)
-
-# setwd, load, and clean data
-# source("clean_data.R")
-# source("rna_seq.R")
-loadedServer <- load("pre-compiled.RData")
 
 # warn if WHO_Classification is a factor -- this was a temporary fix in clean_data.R for production of a contingency table 2/2016.
 if(class(df$`WHO Classification`)=="factor") warning("Reminder: WHO Classification is a factor.")

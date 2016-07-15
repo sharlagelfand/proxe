@@ -14,6 +14,10 @@ as.matrix(rev(sort(z))[1:10])
 
 save.image(file = "pre-compiled.RData",compress = FALSE)
 
+# print size of PRoXe_app folder
+cat("Size of app:\n")
+system("du -h -d 0 ../PRoXe_app")
+
 # -- comment or uncomment sections below as desired -- #
 
 ## 1 - deploy
@@ -25,6 +29,7 @@ save.image(file = "pre-compiled.RData",compress = FALSE)
 # options(shiny.reactlog = TRUE)
 
 ## 2 - run normally
+rm(list=ls()) # this cleans environment to mimic shinyapps.io
 runApp()
 # 
 ## 3 - run for debugging

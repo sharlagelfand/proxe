@@ -1,5 +1,7 @@
 # ui.R #
 
+# note ./global.R is run before any of this.
+
 library(shiny)
 library(DT)
 library(ggplot2)
@@ -8,17 +10,6 @@ library(xlsx)
 library(gplots)
 library(RColorBrewer)
 library(plyr)
-
-
-# setwd, load, and clean data
-# commenting out because not necessary in both server and UI
-# delete later if still unnecessary
-loaded <- load("pre-compiled.RData")
-
-# source("clean_data.R")
-# source("rna_seq.R")
-# source("oncoprint.R") #TODO: debug here
-source("functions.R")
 
 print("didcomehere3")
 # # make lists of which variables to show as options
@@ -85,9 +76,10 @@ shinyUI(
           
           
           ),
-        # Right panel for showing table with subsettable columns, alphabetized.
+        # top row of app
         fluidRow(
           column(6,
+            # dropdown buttons - left side
             tags$div(
               style="display: flex;",
               tags$h5("First, select columns to show:",style="margin-right: 15px"),
@@ -98,6 +90,7 @@ shinyUI(
             )
           ),
           column(6,
+            # links, buttons on right side
             p(
               a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
               " with questions.",
