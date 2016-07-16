@@ -35,6 +35,7 @@ shinyUI(
 #     tabPanel("Hematological",
     tabPanel("Database Explorer",
       # customHeaderPanel("Logo"),
+      fluidPage( #testing123
       tags$div(
         style="margin:15px;",
         tags$head(
@@ -82,7 +83,7 @@ shinyUI(
             # dropdown buttons - left side
             tags$div(
               style="display: flex;",
-              tags$h5("First, select columns to show:",style="margin-right: 15px"),
+              tags$h5("First, select columns to show:",style="margin-right: 15px; font-weight: bold;"),
               mydropdownButton("administrative",meta3,condVis_ind),
               mydropdownButton("tumor",meta3,condVis_ind),
               mydropdownButton("patient",meta3,condVis_ind),
@@ -95,7 +96,7 @@ shinyUI(
               a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
               " with questions.",
               actionButton("Request_link","Request lines",icon("arrow-circle-o-right"),#icon("paper-plane"), 
-                style="color: #fff; background-color: #1486ba; border-color: #2e6da4"),
+                class="btn btn-primary"), # style="background-color: #1486ba; color: #fff; border-color: #2e6da4"
               align="right"
             )
           )
@@ -195,6 +196,7 @@ shinyUI(
         )
         
         )
+        ) #fluidPage testing
       ),
 #       tabPanel("Solid",
 #         h1("Solid"),
@@ -404,9 +406,9 @@ shinyUI(
           br(),
           a(
             HTML(
-              "<button type='button' style='border-radius: 4px; color:#fff; background-color: #1486ba; 
-                border: #fff; padding-left: 20px; padding-right: 20px;'>
-                <h2>Click here to request lines</h2>
+              "<button type='button' class='btn btn-primary' style='border-radius: 4px;
+                 padding-left: 20px; padding-right: 20px; font-size: x-large;'>
+                Click here to request lines
               </button>"
             ),
             href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank"
