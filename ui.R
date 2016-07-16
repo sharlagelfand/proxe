@@ -94,7 +94,8 @@ shinyUI(
             p(
               a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
               " with questions.",
-              actionButton("Request_link","Request lines"),
+              actionButton("Request_link","Request lines",icon("arrow-circle-o-right"),#icon("paper-plane"), 
+                style="color: #fff; background-color: #1486ba; border-color: #2e6da4"),
               align="right"
             )
           )
@@ -401,10 +402,16 @@ shinyUI(
           p(tags$b("Please read the following before requesting lines. "),
             "General information relevant to PDX acquisition and use is available on PRoXe.  Each line is annotated with available demographic, pathologic and genomic information, as well as details like the time from injection to engraftment.  Protocols for a variety of PDX approaches, including expansion and subrenal capsule implantation are available in the Methods tab.  We provide consulting to assist Investigators, but this is intended to focus on the selection and use of ",tags$i("individual")," PDXs. Note that billing is processed through the DFCI iLab Solutions platform, and requests are fulfilled by the DFCI Leukemia / Lymphoma Xenograft (LLX) core facility."),
           br(),
-          h2(a("Click here to request lines.",
-            href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank")),
+          a(
+            HTML(
+              "<button type='button' style='border-radius: 4px; color:#fff; background-color: #1486ba; 
+                border: #fff; padding-left: 20px; padding-right: 20px;'>
+                <h2>Click here to request lines</h2>
+              </button>"
+            ),
+            href="https://docs.google.com/forms/d/1RiQU4ABOWssH6vzy24jhdn6qhIjDcSprr6jiC1pLpQQ/viewform",target="_blank"
+          ),
           br(),br(),br()
-          
         )
       ),
       tabPanel("iLab Billing Platform",
