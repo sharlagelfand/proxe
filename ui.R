@@ -35,7 +35,6 @@ shinyUI(
 #     tabPanel("Hematological",
     tabPanel("Database Explorer",
       # customHeaderPanel("Logo"),
-      fluidPage( #testing123
       tags$div(
         style="margin:15px;",
         tags$head(
@@ -196,7 +195,6 @@ shinyUI(
         )
         
         )
-        ) #fluidPage testing
       ),
 #       tabPanel("Solid",
 #         h1("Solid"),
