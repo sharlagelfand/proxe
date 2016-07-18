@@ -65,6 +65,10 @@ shinyUI(
               #hidebox {
                 display:inline;
               }"),
+            # note this is a fix that only applies to situations with many items in navbar
+              # with navbar position='fixed-top',
+              # because navbar doubles in height at < 1201px screen width.
+              # remove middle section with 50px if number of items in navbar changes.
             tags$style(type='text/css',"
               /* fix padding under menu after resize */
               @media screen and (max-width: 767px) {
