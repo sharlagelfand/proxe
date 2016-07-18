@@ -63,19 +63,30 @@ shinyUI(
               }"),
             tags$style(type='text/css', "
               #hidebox {
-              display:inline;
-              }")
-        #,
-          # for adding ellipsis to ColVis
-          #           tags$style(type='text/css', "
-          #             ul.ColVis_collection li span {
-          #               overflow: hidden;
-          #               text-overflow: ellipsis;
-          #               width: 90%;
-          #             }")
-          
-          
-          ),
+                display:inline;
+              }"),
+            tags$style(type='text/css',"
+              /* fix padding under menu after resize */
+              @media screen and (max-width: 767px) {
+                body { padding-top: 0; }
+              }
+              @media screen and (min-width:768px) and (max-width: 1200px) {
+                body { padding-top: 50px; }
+              }
+              @media screen and (min-width: 1201px) {
+                body { padding-top: 0; }
+              } 
+            ")
+#,
+            # for adding ellipsis to ColVis
+  #           tags$style(type='text/css', "
+  #             ul.ColVis_collection li span {
+  #               overflow: hidden;
+  #               text-overflow: ellipsis;
+  #               width: 90%;
+  #             }")
+
+        ),
         # top row of app
         fluidRow(
           column(6,
@@ -508,7 +519,8 @@ shinyUI(
         )
       )
     )
-  ,position="fixed-top"
+  # navbarPage options
+  ,position="fixed-top",collapsible=TRUE
   )
 )
 
