@@ -520,7 +520,8 @@ shinyUI(
         )
       )
     )
-  ,position="fixed-top"
+  # navbarPage options
+  ,position="fixed-top",collapsible=TRUE
   )
 )
 
