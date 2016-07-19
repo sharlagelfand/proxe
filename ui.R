@@ -78,10 +78,10 @@ shinyUI(
               @media screen and (max-width: 767px) {
                 body { padding-top: 0; }
               }
-              @media screen and (min-width:768px) and (max-width: 1200px) {
+              @media screen and (min-width:768px) and (max-width: 1199px) {
                 body { padding-top: 50px; }
               }
-              @media screen and (min-width: 1201px) {
+              @media screen and (min-width: 1200px) {
                 body { padding-top: 0; }
               } 
             "),
