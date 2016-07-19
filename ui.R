@@ -88,7 +88,9 @@ shinyUI(
               @media screen and (min-width: 1201px) {
                 body { padding-top: 0; }
               } 
-            ")
+            "),
+            # Google Analytics
+            includeScript("google_analytics.js")
 #,
             # for adding ellipsis to ColVis
   #           tags$style(type='text/css', "
