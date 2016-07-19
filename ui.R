@@ -51,45 +51,38 @@ shinyUI(
             text-overflow: ellipsis;
             white-space: nowrap;
             }"),
-            tags$style(type='text/css', "
-              @media (min-width: 768px)
-              .col-sm-3 {
-              width: 25%;
-              max-width: 29em;
-              }"),
-            tags$style(type='text/css', "
-              .container-fluid {
-              padding-top:4em
-              }"),
-            tags$style(type='text/css', "
-              #hidebox {
-                display:inline;
-              }"),
-            # note this is a fix that only applies to situations with many items in navbar
-              # with navbar position='fixed-top',
-              # because navbar doubles in height at < 1201px screen width.
-              # remove middle section with 50px if number of items in navbar changes.
-            tags$style(type='text/css',"
-              /* fix padding under menu after resize */
-              @media screen and (max-width: 767px) {
-                body { padding-top: 0; }
-              }
-              @media screen and (min-width:768px) and (max-width: 1200px) {
-                body { padding-top: 50px; }
-              }
-              @media screen and (min-width: 1201px) {
-                body { padding-top: 0; }
-              } 
-            ")
-#,
-            # for adding ellipsis to ColVis
-  #           tags$style(type='text/css', "
-  #             ul.ColVis_collection li span {
-  #               overflow: hidden;
-  #               text-overflow: ellipsis;
-  #               width: 90%;
-  #             }")
-
+          tags$style(type='text/css', "
+            @media (min-width: 768px)
+            .col-sm-3 {
+            width: 25%;
+            max-width: 29em;
+            }"),
+          tags$style(type='text/css', "
+            .container-fluid {
+            padding-top:4em
+            }"),
+          # note this is a fix that only applies to situations with many items in navbar
+            # with navbar position='fixed-top',
+            # because navbar doubles in height at < 1201px screen width.
+            # remove middle section with 50px if number of items in navbar changes.
+          tags$style(type='text/css',"
+            /* fix padding under menu after resize */
+            @media screen and (max-width: 767px) {
+              body { padding-top: 0; }
+            }
+            @media screen and (min-width:768px) and (max-width: 1199px) {
+              body { padding-top: 50px; }
+            }
+            @media screen and (min-width: 1200px) {
+              body { padding-top: 0; }
+            } 
+          "),
+          # Google Analytics
+          includeScript("google_analytics.js")
+          
+          # playing with jQuery code -- another way to roll up sidebar.
+          # ,includeScript("testing.js")
+          # this code has not yet and probably won't be added to the git repo
         ),
         # top row of app
         fluidRow(
