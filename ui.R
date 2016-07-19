@@ -73,10 +73,6 @@ shinyUI(
               .container-fluid {
                 padding-top:4em
               }"),
-            tags$style(type='text/css', "
-              #hidebox {
-                display:inline;
-              }"),
             tags$style(type='text/css',"
               /* fix padding under menu after resize */
               @media screen and (max-width: 767px) {
@@ -91,16 +87,11 @@ shinyUI(
             "),
             # Google Analytics
             includeScript("google_analytics.js")
-#,
-            # for adding ellipsis to ColVis
-  #           tags$style(type='text/css', "
-  #             ul.ColVis_collection li span {
-  #               overflow: hidden;
-  #               text-overflow: ellipsis;
-  #               width: 90%;
-  #             }")
             
-              
+            # playing with jQuery code -- another way to roll up sidebar.
+            # ,includeScript("testing.js")
+            # this code has not yet and probably won't be added to the git repo
+          
           ),
           h4(strong("First, select columns to show:")),
           actionButton("selectall", label="(Un)select all"),
@@ -116,7 +107,6 @@ shinyUI(
         mainPanel(
           # 0. Email us (temporary)
           fluidRow(
-            # p(checkboxInput("hide_sidebar","Hide sidebar",FALSE),id="hidebox"),
             p(
               a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
               " with questions.",
