@@ -458,7 +458,7 @@ shinyUI(
           p("Open repositories of cell lines, plasmids, and transgenic mouse models have been essential for advancing discovery and preclinical translation in cancer.  PRoXe is an open-source website designed to disseminate information relevant to patient-derived xenografts (PDXs), and particularly PDXs generated from patients with leukemia or lymphoma.   The site and repository were developed by the ",
             tags$a("Weinstock laboratory",href="http://weinstock.dfci.harvard.edu/",target="_blank"),
             " through philanthropic funds and published in April 2016 (",
-            tags$a("Townsend et al. Cancer Cell",href="http://authors.elsevier.com/a/1SsLj5TA51E0Td",target="_blank"),
+            tags$a("Townsend et al. Cancer Cell 2016",href="http://www.cell.com/cancer-cell/fulltext/S1535-6108(16)30268-9",target="_blank"),
             # tags$a("Townsend et al. Cancer Cell",href="http://www.cell.com/cancer-cell/fulltext/S1535-6108(16)30090-3",target="_blank"),
             ").  A subset of PDXs hosted on PRoXe are available for distribution through the Leukemia and Lymphoma Xenograft (LLX) core laboratory we established at ",
             tags$a("Dana-Farber Cancer Institute (DFCI)",href="http://www.dana-farber.org/",target="_blank"),
@@ -505,7 +505,7 @@ shinyUI(
           ),
           p(tags$b("App web development."),"PRoXe is written mainly in the R programming language. As an open-source project, 
             its code and latest updates can be viewed",
-            a("in this Bitbucket repository.",href="https://bitbucket.org/scottkall/proxe",target="_blank")),
+            a("in this GitHub repository.",href="https://github.com/scottkall/proxe",target="_blank")),
           HTML("<p>If you have ideas for ways to improve PRoXe, please 
                 <a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback\" target=\"_top\">tell us</a> 
             .</p>"),
