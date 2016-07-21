@@ -132,7 +132,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       par(mar=c(5, 18, 2, 2) + 0.1)
       num_vars = length(levels(df[,input$bar_var]))
       par(cex=1+log(7/num_vars,base=100)) # simply scaling plot size to number of variables
-      barplot(bar_table,las=2,horiz=TRUE,col = rainbow(length(bar_table)), border = "white", xlab = input$bar_var,
+      barplot(rev(bar_table),las=2,horiz=TRUE,col = rainbow(length(bar_table)), border = "white", xlab = input$bar_var,
               main="Barplot of counts in selected category.\nUpdates based on filtering above.")
       #reset settings
       par(op)
@@ -153,6 +153,8 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       # TODO: adjust par(mar) according to length of variable names so they aren't cut off. (Also for barplot.)
         # or adjust long variable names to a maximum length. 
         # now may need to incorporate num_vars or par(cex) into this calculation
+      # reverse vertical order of categories
+      scatbox_df[,input$scatbox_cat] = with(scatbox_df, factor(get(input$scatbox_cat), levels = rev(levels(get(input$scatbox_cat)))))
       beeswarm(scatbox_formula, data = scatbox_df, 
                log = FALSE, pch = 21, col = rainbow(5), bg = "gray", corral = "wrap", 
                horizontal=TRUE, las=2, ylab="", xlab=input$scatbox_num, 
