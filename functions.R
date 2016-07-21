@@ -128,13 +128,14 @@ dropdownButton <- function(
   tags$div(
     class = "dropdown",
     do.call(tags$button, html_button),
-    do.call(tags$ul, html_ul),
-    tags$script(
-      paste0(
-        "$('#",css_id,"').click(function(e) {
+    do.call(tags$ul, html_ul)
+    ,tags$script(
+      paste0("
+        $('#",css_id,"').click(function(e) {
+        // $('.dropdown').click(function(e) { //
           e.stopPropagation();
-        });"
-      )
+        });
+      ")
     )
   )
 }
@@ -160,12 +161,17 @@ mydropdownButton <- function(lab,meta3,condVis_ind) {
   # 2. selected
   my_selected <- intersect(names(df)[1:(condVis_ind-1)],my_choices)
   dropdownButton(
-    label = lab, status = "primary", width = "40ex",
-    actionButton(inputId = paste0("a2z_",lab), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc"))),
-    actionButton(inputId = paste0("all_",lab), label = "(Un)select all"),
+    label = lab, status = "primary",
+    # dynamic width based on content length:
+    width = paste0(max(sapply(my_choices,nchar))/1.5,"em"),
+    tags$div(
+      actionButton(inputId = paste0("all_",lab), label = "(Un)select all"),
+      actionButton(inputId = paste0("a2z_",lab), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc")))
+    ),
     checkboxGroupInput(inputId = paste0("check2_",lab), label = "Choose",
       choices = my_choices,
-      selected = my_selected
+      selected = my_selected,
+      width="100%"
     )
   )
 }

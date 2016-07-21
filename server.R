@@ -143,7 +143,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       #change settings
       par(mar=c(5, 18, 3, 2) + 0.1)
       num_vars = length(levels(df[,input$scatbox_cat]))
-      par(cex=1+log(7/num_vars,base=100)) # scales plot to number of variables
+      par(cex=1.3+log(7/num_vars,base=100)) # scales plot to number of variables
       # Done: incorporate proportionality to number of variables into height of this (and barplot).
         # Failed avenues: par(din), dev.size(), 'height' parameter in different parts of UI.,
         # try: check other par() parameters

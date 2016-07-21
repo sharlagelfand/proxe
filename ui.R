@@ -61,7 +61,7 @@ shinyUI(
             .container-fluid {
             padding-top:4em
             }"),
-          # note this is a fix that only applies to situations with many items in navbar
+          # note below is a fix that only applies to situations with many items in navbar
             # with navbar position='fixed-top',
             # because navbar doubles in height at < 1201px screen width.
             # remove middle section with 50px if number of items in navbar changes.
@@ -75,7 +75,27 @@ shinyUI(
             }
             @media screen and (min-width: 1200px) {
               body { padding-top: 0; }
-            } 
+            }
+
+            /* -- Padding tweaks -- */
+
+            /* align top of Database Explorer left */
+            #dt-col-select {
+              padding-left: 0px;
+            }
+            /* align top of Database Explorer right */
+            #email-request {
+              padding-right:0px;
+            }
+            /* add padding between dropdown buttons */
+            #dt-col-select div div {
+              padding-left: 3px;
+            }
+
+            /* Show the dropdown menu on hover TODO: solve problem where this goes away because not contiguous with botton. A javascript solution might be better. */
+            /* .dropdown:hover .dropdown-menu {
+               display: block;
+            } */
           "),
           # Google Analytics
           includeScript("google_analytics.js")
@@ -88,9 +108,10 @@ shinyUI(
         fluidRow(
           column(6,
             # dropdown buttons - left side
+            id="dt-col-select",
             tags$div(
               style="display: flex;",
-              tags$h5("First, select columns to show:",style="margin-right: 15px; font-weight: bold;"),
+              tags$h4("First, select columns to show:",style="margin-right: 15px; font-weight: bold;"),
               mydropdownButton("administrative",meta3,condVis_ind),
               mydropdownButton("tumor",meta3,condVis_ind),
               mydropdownButton("patient",meta3,condVis_ind),
@@ -99,6 +120,7 @@ shinyUI(
           ),
           column(6,
             # links, buttons on right side
+            id="email-request",
             p(
               a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
               " with questions.",
@@ -119,7 +141,7 @@ shinyUI(
         ),
         # 2. TODO: take filtered data table and apply some kind of graphical analysis.
         fluidRow(
-          sidebarPanel(
+          sidebarPanel(width=4,
             selectInput(
               "plotType", "Plot Type",
               c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
@@ -196,7 +218,7 @@ shinyUI(
               #                   if (input$plotType == 'ctable') {
               #                      tableOutput("table_various")
               #                   } else 
-              plotOutput("plot_various") 
+              plotOutput("plot_various",height="600px") 
             })
           )
           

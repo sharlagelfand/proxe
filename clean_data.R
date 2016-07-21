@@ -33,12 +33,18 @@ source("functions.R")
 gloss.filename <- dir("./data/",pattern = glob2rx("Master_Glossary*xlsx"))
 if(length(gloss.filename) != 1) stop("too few or too many Master_Glossary sheets in dropbox")
 meta_gloss <- read_excel(paste0("./data/",gloss.filename),sheet=1)
-meta_gloss$PRoXe_Column_Header <- gsub("_"," ",meta_gloss$PRoXe_Column_Header)
 
 # read in metadata
 prima.filename <- dir("./data/",pattern = glob2rx("PRIMAGRAFTS*xlsx"))
 if(length(prima.filename) != 1) stop("too few or too many PRIMAGRAFTS sheets in dropbox")
 meta <- read_excel(paste0("./data/",prima.filename),sheet="Header_Data")
+
+# add meta into meta_gloss
+tmp <- meta
+tmp$In_PRIMAGRAFTS <- 1
+meta_gloss <- rbind(meta_gloss,tmp)
+# reformat
+meta_gloss$PRoXe_Column_Header <- gsub("_"," ",meta_gloss$PRoXe_Column_Header)
 
 # warn if all rows in 'meta' don't exist in meta_gloss
 if (length(setdiff(meta$Internal_Column_Header,meta_gloss$Internal_Column_Header) != 0)){
@@ -54,9 +60,12 @@ meta$read_excel_type[meta$read_excel_type %in% c("logical","numeric")] <- "numer
 
 #TODO here: consider writing a few lines of code that read in df naively, then compare col names with 'meta' and throw a detailed bidirectional setdiff() error if they don't match.
 
-# read in data
+# read in data, returning difference with meta if error.
+# try(expr={ # TODO: implement try-else-print-debugging
 df <- read_excel(paste0("./data/",prima.filename),sheet="Injected",
-                 col_types =rep("text",nrow(meta))) # meta$read_excel_type)
+  col_types =rep("text",nrow(meta))) # meta$read_excel_type)
+# })
+
 
 # convert column names from PRIMAGRAFTS name to desired PRoXe name
   # order 'meta' by 'meta$Interal_Column_Header' matching names(df)
