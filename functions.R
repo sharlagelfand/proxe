@@ -168,7 +168,7 @@ mydropdownButton <- function(lab,meta3,condVis_ind) {
       actionButton(inputId = paste0("all_",lab), label = "(Un)select all"),
       actionButton(inputId = paste0("a2z_",lab), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc")))
     ),
-    checkboxGroupInput(inputId = paste0("check2_",lab), label = "Choose",
+    checkboxGroupInput(inputId = paste0("check2_",lab), label = NULL,
       choices = my_choices,
       selected = my_selected,
       width="100%"
