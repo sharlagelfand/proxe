@@ -130,15 +130,20 @@ narmEqual <- function(x,equalTo){
 }
 
 # Implementing new rules 7/22/16 from Mark:
+tmp_dist <- df$Distribution_Permissions # for testing below.
 warn_BODFI <- FALSE
+warn_PRIMAmore <- 0
+warn_PRIMAless <- 0
+perm_order <- c(1,2,3,0) # from least to most restrictive
 for (i in 1:nrow(df)){
+
   # first look at institution of origin; 
   inst_ori <- stringr::str_sub(df$PDX_Name[i],1,2)
   # if non-DFCI/BWH/CHB,
-  if(!(inst_ori %in% c("CB","DF","BW"))){
+  if(!(inst_ori %in% c("CB","DF","BW"))){  # note none currently (7-2016) are "BW", but that will change.
     # Permissions are as per BODFI spreadsheet
     warn_BODFI <- TRUE
-    if(inst_ori %in% c("MD","WC","MU")) { # MD = MDACC, WC = MSK (Weill-Cornell), MU = Munich
+    if(inst_ori %in% c("MD","WC","MU")) { # MD = MDACC, WC = MSK (Weill-Cornell), MU = Munich are all prohibited in BODFI spreadsheet.
       df$Distribution_Permissions[i] <- 0
     }
     # in lieu of which they are as per primagrafts "Distribution_Permissions" column. 
@@ -146,28 +151,58 @@ for (i in 1:nrow(df)){
   } else {
     # If institution of origin is DFCI/BWH/CHB, 
     # Then permissions are first as per primagrafts "Distribution_Permissions" column (some are singled out as not available for unique reasons), 
-    # SPK: TODO: VERIFY. Assuming this means only change if not already restricted to some degree. Could implement only more restrictive change. (1->2->3->0)
-    if(df$Distribution_Permissions[i] == 1) {
-      # Otherwise as per tissue banking consents with our current rules.
-        # Numbered-Consent-based Rules: 
-        # (1) If "1" in 01-206, 11-104, 06-078, or 13-563, then OK for academic, industry-sponsored academic, and industry 
-        # [of note these consents override limitations imposed by other tissue banking or study protocols]; 
-        # (2) If "1" in 05-001 or 11-001 and nothing in 01-206, 11-104, 06-078, and 13-563, then OK for academic only for now. 
-        # For all other samples, the vast majority of which will have been contributed from external collaborators, 
-        # the permission level will be dictated by the BODFI spreadsheet; in absence of any specific information, 
-        # default will be "not available".
-      if (narmEqual(df$`01-206_Consent`[i],"1") | narmEqual(df$`11-104_Consent`[i],"1") | 
-          narmEqual(df$`06-078_Consent`[i],"1") | narmEqual(df$`13-563_Consent`[i],"1") ){
-        df$Distribution_Permissions[i] <- 1
-      } else if ((narmEqual(df$`05-001_Consent`[i],"1") | narmEqual(df$`11-001_Consent`[i],"1"))){
-        df$Distribution_Permissions[i] <- 3
-      } else {
-        df$Distribution_Permissions[i] <- 0
-      }
+    # Note now Distribution_Permissions always overrides this system if anything is written in it.
+    # Mark: "The net effect of this is that the Distribution_Permissions code in primagrafts should never 
+      # be more permissive than what would be derived from the tissue banking consents; in other words 
+      # Distribution_Permissions is a place to manually restrict distribution regardless of the consents."
+    # Scott: "I'm taking this to mean that we should always keep the Distribution_Permissions if more stringent than the Consent-logic below, but not less."
+
+    # store original permission
+    primaperm <- df$Distribution_Permissions[i]
+    
+    # Otherwise as per tissue banking consents with our current rules.
+      # Numbered-Consent-based Rules: 
+      # (1) If "1" in 01-206, 11-104, 06-078, or 13-563, then OK for academic, industry-sponsored academic, and industry 
+      # [of note these consents override limitations imposed by other tissue banking or study protocols]; 
+      # (2) If "1" in 05-001 or 11-001 and nothing in 01-206, 11-104, 06-078, and 13-563, then OK for academic only for now. 
+      # For all other samples, the vast majority of which will have been contributed from external collaborators, 
+      # the permission level will be dictated by the BODFI spreadsheet; in absence of any specific information, 
+      # default will be "not available"
+    
+    # calculate Consent-logic permission
+    if (narmEqual(df$`01-206_Consent`[i],"1") | narmEqual(df$`11-104_Consent`[i],"1") | 
+        narmEqual(df$`06-078_Consent`[i],"1") | narmEqual(df$`13-563_Consent`[i],"1") ){
+      df$Distribution_Permissions[i] <- 1
+    } else if ((narmEqual(df$`05-001_Consent`[i],"1") | narmEqual(df$`11-001_Consent`[i],"1"))){
+      df$Distribution_Permissions[i] <- 3
+    } else {
+      df$Distribution_Permissions[i] <- 0
+    }
+
+    ## if Consent-logic permission is more restrictive, keep it
+    ## Note that essentially this section takes the more restrictive of the original and Consent-based logic. TODO: make that the theme of this section upon code reorganization. 
+    # higher number = more restrictive
+    prima_restr = which(perm_order==primaperm)
+    consent_restr = which(perm_order==df$Distribution_Permissions[i])
+    if(prima_restr > consent_restr){
+      #print(paste("prima more restr - prima:",primaperm,"consent:",df$Distribution_Permissions[i],"PDX:",df$PDX_Name[i]))
+      df$Distribution_Permissions[i] <- primaperm
+      warn_PRIMAmore = warn_PRIMAmore + 1
+    } else if(prima_restr < consent_restr){
+      # print(paste("consent more restr - prima:",primaperm,"consent:",df$Distribution_Permissions[i],"PDX:",df$PDX_Name[i]))
+      warn_PRIMAless = warn_PRIMAless + 1
     }
   }
 }
 if(warn_BODFI == TRUE) warning("BODFI 3-30-16 permissions are hardcoded. (No distribution to MD, WC, MU.)")
+if(warn_PRIMAmore > 0) warning(paste(warn_PRIMAmore,"samples have *more* restrictive permissions in PRIMAGRAFTS Distribution_Permissions than by Consent calculation. Keeping original Distribution_Permissions (more restrictive)."))
+if(warn_PRIMAless > 0) warning(paste(warn_PRIMAless,"samples have *less* restrictive permissions in PRIMAGRAFTS Distribution_Permissions than by Consent calculation. Keeping Consent-derived (more restrictive)."))
+
+# testing results -- this shows which have changed.
+tmp_oldnew <- as.data.frame(cbind(tmp_dist,df$Distribution_Permissions,df$PDX_Name))
+colnames(tmp_oldnew) <- c("prima","new","PDX_Name")
+tmp_oldnew[tmp_oldnew$prima != tmp_oldnew$new,]
+  # NOTE this shows currently that nothing has changed.
 
 # change Distribution_Permissions to text from 0/1/2/3
   # NOTE 2 does not apply to any lines right now (7/21/16)
