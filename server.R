@@ -205,7 +205,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     
     if (input$ctable_numcats == 1) {
       tmp_table <- table(ctable_df[,input$tablevar1])
-      names(dimnames(tmp_table)) <- "count"
+      names(dimnames(tmp_table)) <- "category"
       tmp_table
     } else if (input$ctable_numcats == 2) {
       as.data.frame.matrix(table(ctable_df[,input$tablevar1],ctable_df[,input$tablevar2]))
