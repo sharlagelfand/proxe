@@ -32,6 +32,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
                           choices=sort(M2_genes), server=TRUE,
                           selected=c("TP53","KRAS","NRAS"))
     if(input$Request_link != 0) updateTabsetPanel(session, inputId="mainNavBar", selected="Line Request/Pricing")
+    if(input$Methods_link != 0) updateTabsetPanel(session, inputId="mainNavBar", selected="Methods")
   })
   
   # Filter data based on selections
