@@ -364,7 +364,10 @@ shinyUI(
                 "T-ALL" = "TA"),
                 selected="all"
               )
-            )
+            ),
+            tags$h5(tags$b("HemoSeq 2.0 coordinates")),
+            a("HemoSeq 2.0 baits",href="methods/150127_Hemoseq_2.0_Baits.interval_list",download="150127_Hemoseq_2.0_Baits"),br(),
+            a("HemoSeq 2.0 targets",href="methods/150127_Hemoseq_2.0_Targets.interval_list",download="150127_Hemoseq_2.0_Targets"),br()
           ),
           mainPanel(
             plotOutput("plot_oncoprint",height = 800,width=1300)
