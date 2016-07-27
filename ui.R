@@ -46,6 +46,11 @@ shinyUI(
           # tags$style(type='text/css', ".span3 { max-width: 310px; }"),
           
           # probably overkill code for favicon, as per http://www.favicon-generator.org/
+            # unimportant TODO: determine whether href to root ("/fav..." rather than "fav...") even works.
+            # relevant to this, `a("text",href="methods/file.txt",download="file")` works, while
+              # `a("text",href="/methods/file.txt",download="file")` doesn't work. This occurred in Methods page below.
+            # I thought of this because some of the tags$link below have root and some (perhaps the critical ones) don't.
+            # Could easy test on tiny_test_app
           tags$link(rel="apple-touch-icon", sizes = "57x57", href = "/favicon_files/apple-icon-57x57.png"),
           tags$link(rel="apple-touch-icon", sizes = "60x60", href = "/favicon_files/apple-icon-60x60.png"),
           tags$link(rel="apple-touch-icon", sizes = "72x72", href = "/favicon_files/apple-icon-72x72.png"),
@@ -427,8 +432,8 @@ shinyUI(
           # helpText("C) Monitoring Xenografted Animals: with subheadings for Cell Banking, for Initiation of Treatment"),
           # helpText("D) Banking Xenografted Cells: with subheadings Animal Euthanasia, Enriching Malignant Cells from Peripheral Blood, Enriching Malignant Cells from Bone Marrow, Enriching Malignant Cells from Spleen, and Enriching Malignant Cells from Lymph Nodes or Solid Tumors"),
           tags$h2("HemoSeq 2.0 coordinates"),
-          a("HemoSeq 2.0 baits",href="/methods/150127_Hemoseq_2.0_Baits.interval_list",download="150127_Hemoseq_2.0_Baits.interval_list"),br(),
-          a("HemoSeq 2.0 targets",href="/methods/150127_Hemoseq_2.0_Targets.interval_list",download="150127_Hemoseq_2.0_Targets.interval_list"),br(),
+          a("HemoSeq 2.0 baits",href="methods/150127_Hemoseq_2.0_Baits.interval_list",download="150127_Hemoseq_2.0_Baits"),br(),
+          a("HemoSeq 2.0 targets",href="methods/150127_Hemoseq_2.0_Targets.interval_list",download="150127_Hemoseq_2.0_Targets"),br(),
           tags$h2("PDX methods"),
           uiOutput("PDX_methods"),
           tags$h2("Renal capsule implantation method"),
