@@ -139,8 +139,8 @@ shinyUI(
               style="display: flex;",
               tags$h4("First, select columns to show:",style="margin-right: 15px; font-weight: bold;"),
               mydropdownButton("administrative",meta3,condVis_ind),
-              mydropdownButton("tumor",meta3,condVis_ind),
               mydropdownButton("patient",meta3,condVis_ind),
+              mydropdownButton("tumor",meta3,condVis_ind),
               mydropdownButton("pdx",meta3,condVis_ind)
             )
           ),
