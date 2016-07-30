@@ -689,49 +689,49 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   # Select all / Unselect all
   observeEvent(input$all_administrative, {
-    if (is.null(input$check2_administrative)) {
+    if (all(meta3[meta3$`Column Groupings`=="administrative",]$`PRoXe Column Header` %in% input$check2_administrative)) {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_administrative", selected = names(df[1:(obInvisRet_ind-1)])
+        session = session, inputId = "check2_administrative", selected = ""
       )
     } else {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_administrative", selected = ""
+        session = session, inputId = "check2_administrative", selected = names(df[1:(obInvisRet_ind-1)])
       )
     }
   })
   
   observeEvent(input$all_tumor, {
-    if (is.null(input$check2_tumor)) {
+    if (all(meta3[meta3$`Column Groupings`=="tumor",]$`PRoXe Column Header` %in% input$check2_tumor)) {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_tumor", selected = names(df[1:(obInvisRet_ind-1)])
+        session = session, inputId = "check2_tumor", selected = ""
       )
     } else {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_tumor", selected = ""
+        session = session, inputId = "check2_tumor", selected = names(df[1:(obInvisRet_ind-1)])
       )
     }
   })
   
   observeEvent(input$all_patient, {
-    if (is.null(input$check2_patient)) {
+    if (all(meta3[meta3$`Column Groupings`=="patient",]$`PRoXe Column Header` %in% input$check2_patient)) {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_patient", selected = names(df[1:(obInvisRet_ind-1)])
+        session = session, inputId = "check2_patient", selected = ""
       )
     } else {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_patient", selected = ""
+        session = session, inputId = "check2_patient", selected = names(df[1:(obInvisRet_ind-1)])
       )
     }
   })
   
   observeEvent(input$all_pdx, {
-    if (is.null(input$check2_pdx)) {
+    if (all(meta3[meta3$`Column Groupings`=="pdx",]$`PRoXe Column Header` %in% input$check2_pdx)) {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_pdx", selected = names(df[1:(obInvisRet_ind-1)])
+        session = session, inputId = "check2_pdx", selected = ""
       )
     } else {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_pdx", selected = ""
+        session = session, inputId = "check2_pdx", selected = names(df[1:(obInvisRet_ind-1)])
       )
     }
   })
