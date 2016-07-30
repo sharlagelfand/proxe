@@ -687,6 +687,25 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
 #     c(input$check2_administrative,input$check2_tumor,input$check2_patient,input$check2_pdx)
 #   })
   
+  
+  # TODO: functionalize call of observeEvent()s below via for loop or other mechanism
+  if(F){ # Note this does not work. Determine why. # Test: does it work ok to access input as list like this?
+  for(colgrp in levels(as.factor(meta3$`Column Groupings`))){
+    observeEvent(input[[paste0("all_",colgrp)]], {
+      if (all(meta3[meta3$`Column Groupings`==colgrp,]$`PRoXe Column Header` %in% input[[paste0("check2_",colgrp)]])) {
+        updateCheckboxGroupInput(
+          session = session, inputId = input[[paste0("check2_",colgrp)]], selected = ""
+        )
+      } else {
+        updateCheckboxGroupInput(
+          session = session, inputId = input[[paste0("check2_",colgrp)]], selected = names(df[1:(obInvisRet_ind-1)])
+        )
+      }
+    })
+  }
+  } # end of if(F)
+  
+  # if(F){ # purpose -- commenting out this section below.
   # Select all / Unselect all
   observeEvent(input$all_administrative, {
     if (all(meta3[meta3$`Column Groupings`=="administrative",]$`PRoXe Column Header` %in% input$check2_administrative)) {
@@ -735,6 +754,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       )
     }
   })
-  
+  # } # end of if(F)
 })
 
