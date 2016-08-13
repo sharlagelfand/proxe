@@ -8,14 +8,13 @@ library(xlsx)
 library(ggplot2)
 library(DT)
 library(beeswarm)
-# library(knitr)
 library(stringr)
 # library(rCharts)
 
 op <- par(no.readonly = TRUE)
 
 # warn if WHO_Classification is a factor -- this was a temporary fix in clean_data.R for production of a contingency table 2/2016.
-if(class(df$`WHO Classification`)=="factor") warning("Reminder: WHO Classification is a factor.")
+if(class(df$`WHO Classification`)=="factor") warning("Reminder: WHO Classification is a factor even though it is highly variable.")
 
 print("didcomehere4")
 # Define a server for the Shiny app
@@ -69,6 +68,11 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   rownames=FALSE,
   extensions = c('ColReorder'),#,'Buttons'), #'ColVis',,,'Responsive'
   options = list(
+    # set label for upper-right search box.
+    language = list(
+      search = 'Search table:',
+      info = 'Showing _START_ to _END_ of _TOTAL_ lines'
+    ), # Other ideas: "Filter:", "Filter entire table:", "Search entire table:"
 #     # options related to extensions:
     dom = 'Rlfrtip',
     colReorder = list(realtime = TRUE), 
