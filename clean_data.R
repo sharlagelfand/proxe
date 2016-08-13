@@ -66,7 +66,7 @@ meta$read_excel_type[meta$read_excel_type %in% c("logical","numeric")] <- "numer
 df <- read_excel(paste0("./data/",prima.filename),sheet="Injected",
   col_types =rep("text",nrow(meta))) # meta$read_excel_type)
 # })
-
+df <- as.data.frame(df) # added because the default class of read_excel output is ‘tbl_df’, ‘tbl’ and 'data.frame' which is incompatible with FUN of convert.magic() 8/2016
 
 # convert column names from PRIMAGRAFTS name to desired PRoXe name
   # order 'meta' by 'meta$Interal_Column_Header' matching names(df)
@@ -185,7 +185,6 @@ df$Distribution_Permissions <- factor(df$Distribution_Permissions,
 
 meta[meta$PRoXe_Column_Header == "Distribution_Permissions","Column_Description"] <- "Indicates to whom relevant materials transfer agreements permit distribution."
 warning("Note edited Distribution_Permissions description in app, not PRIMAGRAFTS. Temporary fix.")
-
 
 ###############################################################################
 ### --- convert all columns to meta$Data_Type --- ###
@@ -387,6 +386,7 @@ obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
 # > C2 = HLA-C allele 2
 
 hla <- read_excel("data/hla_results_010816.xlsx",sheet = 1,col_names = TRUE)
+hla <- as.data.frame(hla) # added because the default class of read_excel output is ‘tbl_df’, ‘tbl’ and 'data.frame, which is incompatible with FUN in convert.magic() 8/2016
 hla$A <- paste(hla$A1,hla$A2)
 hla$B <- paste(hla$B1,hla$B2)
 hla$C <- paste(hla$C1,hla$C2)
