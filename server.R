@@ -71,7 +71,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     # set label for upper-right search box.
     language = list(
       search = 'Search table:',
-      info = 'Showing _START_ to _END_ of _TOTAL_ lines'
+      info = 'Showing _START_ to _END_ of _TOTAL_ PDX lines'
     ), # Other ideas: "Filter:", "Filter entire table:", "Search entire table:"
 #     # options related to extensions:
     dom = 'Rlfrtip',
