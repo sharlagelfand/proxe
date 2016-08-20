@@ -31,8 +31,8 @@ shinyUI(
       style="float:left; padding-right:5px; display:inline; position:relative; top:-10px"),
     "Public Repository of Xenografts"),
     windowTitle="PRoXe: Public Repository of Xenografts",
-#     navbarMenu("Database Explorer",
-#     tabPanel("Hematological",
+    #  navbarMenu("Database Explorer",
+    #  tabPanel("Hematological",
     tabPanel("Database Explorer",
       # customHeaderPanel("Logo"),
       tags$div(
@@ -246,18 +246,16 @@ shinyUI(
               #                   } else 
               plotOutput("plot_various",height="600px") 
             })
-          )
-          
+          ) 
         )
-        
-        )
-      ),
-#       tabPanel("Solid",
-#         h1("Solid"),
-#         DT::dataTableOutput(outputId="solid_table")
-#       )
-#       ),
-      navbarMenu("PDX Molecular", #new
+      )
+    ),
+    #  tabPanel("Solid",
+    #    h1("Solid"),
+    #      DT::dataTableOutput(outputId="solid_table")
+    #    )
+    #  ),
+    navbarMenu("PDX Molecular", #new
       tabPanel("PDX Gene Expression",
         h1("PDX Gene Expression"),
         sidebarLayout(
@@ -574,8 +572,8 @@ shinyUI(
         )
       )
     )
-  # navbarPage options
-  ,position="fixed-top",collapsible=TRUE
+    # navbarPage options
+    ,position="fixed-top",collapsible=TRUE
   )
 )
 
