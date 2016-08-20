@@ -39,67 +39,66 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     cols_selected <- c(input$check2_administrative,input$check2_patient,input$check2_tumor,input$check2_pdx)
     if (is.null(cols_selected)){
       data.frame("no variables selected" = c("no variables selected"))
-    } else{
+    } else {
       data <- df[,cols_selected, drop=FALSE]
       # todo: perhaps work on column sorting here.
       data
-    # # note this code changes formatting of data table. Useful to play with later.
-    # # this is a substitute for 'data' above.
-    #   datatable(data) %>% formatStyle(
-    #     'PDX Name',
-    #     backgroundColor = styleInterval(3.4, c('gray', 'yellow'))
-    #   )
+      # # note this code changes formatting of data table. Useful to play with later.
+      # # this is a substitute for 'data' above.
+      #   datatable(data) %>% formatStyle(
+      #     'PDX Name',
+      #     backgroundColor = styleInterval(3.4, c('gray', 'yellow'))
+      #   )
     }
-
-  },
-  # class="cell-border stripe", # option to add thin vertical line between columns
-  # caption="Note: table filtering (below) resets upon new column selections (left).",
-  style="default", # alternative: "bootstrap"
-  escape= FALSE,
-    # From SPK: Consider escaping only 'PDF' and future columns that contain hyperlinks via this tip:
-    # Note: Besides TRUE and FALSE, you can also specify which columns you want to escape, e.g.
-      # datatable(m, escape = 1)  # escape the first column
-      # datatable(m, escape = 2)  # escape the second column
-      # datatable(m, escape = c(TRUE, FALSE))  # escape the first column
-      # colnames(m) = c('V1', 'V2')
-      # datatable(m, escape = 'V1')
-  filter="top",
-  server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
-  rownames=FALSE,
-  extensions = c('ColReorder'),#,'Buttons'), #'ColVis',,,'Responsive'
-  options = list(
-    # set label for upper-right search box.
-    language = list(
-      search = 'Search table:',
-      info = 'Showing _START_ to _END_ of _TOTAL_ PDX lines'
-    ), # Other ideas: "Filter:", "Filter entire table:", "Search entire table:"
-#     # options related to extensions:
-    dom = 'Rlfrtip',
-    colReorder = list(realtime = TRUE), 
-#     # dom = 'C<"clear">lfrtip', # testing colVis
-#     # colVis = list(activate="mouseover"),#"click"), # testing colVis
-#       # TODO: the major questions with ColVis are whether we can...
-#         #1) capture the hidden/not hidden column information
-#         #2) format the dropdown to be pretty and more intuitive
-#         #3) easily create a 'select all/none' -- old one might work too.
-#         #4) create some kind of 'reset' (browser refresh might be good enough)
-#     # Update: ColVis status is 'retired' in favor of less-clear 'Buttons' But I think it's not in `DT`.
-#       # Buttons was just added but the development version breaks my table -- waiting... 3/18/16 
-#       # dom = 'Bfrtip', 
-    # buttons = c('copy', 'excel', 'pdf', 'print', 'colvis'),
-#     
-#     # standard options:
-    orderClasses = TRUE,
-    searchHighlight = TRUE,
-    pageLength = 5, 
-    lengthMenu = list(c(5,10,25,50,100,-1),c(5,10,25,50,100,"All"))
+    },
+    # class="cell-border stripe", # option to add thin vertical line between columns
+    # caption="Note: table filtering (below) resets upon new column selections (left).",
+    style="default", # alternative: "bootstrap"
+    escape= FALSE,
+      # From SPK: Consider escaping only 'PDF' and future columns that contain hyperlinks via this tip:
+      # Note: Besides TRUE and FALSE, you can also specify which columns you want to escape, e.g.
+        # datatable(m, escape = 1)  # escape the first column
+        # datatable(m, escape = 2)  # escape the second column
+        # datatable(m, escape = c(TRUE, FALSE))  # escape the first column
+        # colnames(m) = c('V1', 'V2')
+        # datatable(m, escape = 'V1')
+    filter="top",
+    server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
+    rownames=FALSE,
+    extensions = c('ColReorder'),#,'Buttons'), #'ColVis',,,'Responsive'
+    options = list(
+      # set label for upper-right search box.
+      language = list(
+        search = 'Search table:',
+        info = 'Showing _START_ to _END_ of _TOTAL_ PDX lines'
+      ), # Other ideas: "Filter:", "Filter entire table:", "Search entire table:"
+      # options related to extensions:
+      dom = 'Rlfrtip',
+      colReorder = list(realtime = TRUE), 
+      # dom = 'C<"clear">lfrtip', # testing colVis
+      # colVis = list(activate="mouseover"),#"click"), # testing colVis
+        # TODO: the major questions with ColVis are whether we can...
+          #1) capture the hidden/not hidden column information
+          #2) format the dropdown to be pretty and more intuitive
+          #3) easily create a 'select all/none' -- old one might work too.
+          #4) create some kind of 'reset' (browser refresh might be good enough)
+      # Update: ColVis status is 'retired' in favor of less-clear 'Buttons' But I think it's not in `DT`.
+        # Buttons was just added but the development version breaks my table -- waiting... 3/18/16 
+        # dom = 'Bfrtip', 
+      # buttons = c('copy', 'excel', 'pdf', 'print', 'colvis'),
+          
+      # standard options:
+      orderClasses = TRUE,
+      searchHighlight = TRUE,
+      pageLength = 5, 
+      lengthMenu = list(c(5,10,25,50,100,-1),c(5,10,25,50,100,"All"))
     )
   )
   
-#   # create solid tumor data
-#   output$solid_table <- DT::renderDataTable({
-#     solid
-#   })
+  #   # create solid tumor data
+  #   output$solid_table <- DT::renderDataTable({
+  #     solid
+  #   })
   
   output$plot_various <- renderPlot({
     req(input$table_rows_all)
@@ -169,7 +168,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
               outline = FALSE, horizontal=TRUE, add=T, col="#00000000", las=2, xlab=input$scatbox_num)
       #reset settings
       par(op)
-      
     } else if (input$plotType == "ctable_plot") {
       #TODO: add to ui.R
       tablefunc_df <- df[filtered_row_inds,]
@@ -182,19 +180,15 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
             # stat="summary")  # doesn't work.
       # ggplot(as.data.frame(table(tablefunc_df)), aes_string(x=input$tablevar1, fill = input$tablevar2)) +
         # geom_bar(stat="identity")  # doesn't work.
-      
     } else input$plotType <- plot(0)
-    
-    
-    
     
     ### TODO: I would like to switch this to ggplot/qplot, but it doesn't take variables where 'input$hist_var' is.
       # aes_string is a hint.
       ### issue: 'count' scale is off compared to base::hist method above.
     # qplot(input$hist_var, data=df[filtered_row_inds,], geom="histogram",
           # main="histogram of selected variable: \n updates based on selections above")
-#     m <- ggplot(df[filtered_row_inds,], aes_string(x=input$hist_var))
-#     m + geom_histogram(fill="blue") #input$hist_binwidth)
+    #     m <- ggplot(df[filtered_row_inds,], aes_string(x=input$hist_var))
+    #     m + geom_histogram(fill="blue") #input$hist_binwidth)
   })
   
   # for plotting a contingency table in table format
@@ -295,7 +289,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
           xlab(paste("Gene panel:",input$bar_rna_panel)) + coord_flip() +
           ylab(NULL)
       }
-      
     }
   })
   
@@ -350,15 +343,14 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     oncoPrint(M3)
     par(op)
     
-    
   })
   
   # download the filtered data
   output$download_filtered = downloadHandler("PRoXe_filtered.xlsx", content = function(filename) {
     filtered_row_inds <- input$table_rows_all
     dfxl <- df[filtered_row_inds, 1:(obInvisRet_ind-1), drop = FALSE] 
-#     WriteXLS(dfxl, ExcelFileName=filename)
-#     write.table(dfxl, filename, quote=FALSE,sep="|",na="",row.names=FALSE)
+    #     WriteXLS(dfxl, ExcelFileName=filename)
+    #     write.table(dfxl, filename, quote=FALSE,sep="|",na="",row.names=FALSE)
     write.xlsx(x=dfxl,file=filename,row.names=FALSE,showNA=FALSE)
   })
   
@@ -377,9 +369,9 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
           Problem = "Please select only one row from Database Explorer",
           row.names = ""))
       } 
-#       else if (length(df_idx) == 1) {
-#         continue
-#       } 
+    #       else if (length(df_idx) == 1) {
+    #         continue
+    #       } 
     } else if (input$line_report_input_type == "dropdown"){
       df_idx <- which(df[,"PDX Name"] == input$line_report_name)
     }
@@ -550,45 +542,46 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     }
   })
   
-  # download the line report TODO: change filename to reflect line.
-    # TODO: consider pre-processing all these if slow.
-#   output$download_line_report = downloadHandler("PRoXe_line_report.pdf", content = function(filename) {
-#     df_idx <- input$table_rows_selected
-#     library(knitr)
-#     library(rmarkdown)
-#     if (length(df_idx) == 1) {
-#       temp_df <- t(df[df_idx,1:(obInvisRet_ind-1)])
-#       colnames(temp_df) <- "sample"
-#       knitr::knit2pdf()
-#       # rmarkdown::
-#     }
-#   })
+    # download the line report TODO: change filename to reflect line.
+      # TODO: consider pre-processing all these if slow.
+  #   output$download_line_report = downloadHandler("PRoXe_line_report.pdf", content = function(filename) {
+  #     df_idx <- input$table_rows_selected
+  #     library(knitr)
+  #     library(rmarkdown)
+  #     if (length(df_idx) == 1) {
+  #       temp_df <- t(df[df_idx,1:(obInvisRet_ind-1)])
+  #       colnames(temp_df) <- "sample"
+  #       knitr::knit2pdf()
+  #       # rmarkdown::
+  #     }
+  #   })
   
   # add glossary
   output$glossary <- DT::renderDataTable({
-#     # take visible columns' header and description
-#     meta3 <- meta2[meta2$Visible_Invisible != "ob_invis",c("PRoXe_Column_Header","Column_Description")]
-#     # reformat
-#     meta3 <- as.data.frame(lapply(meta3,gsub,pattern="_",replacement=" "),stringsAsFactors = F)
-#     names(meta3) <- gsub("_"," ",names(meta3))
-#     
-#     missing_names <- setdiff(names(df[1:(obInvisRet_ind-1)]), meta3$`PRoXe Column Header`)
-#     new_rows_df <- meta_gloss[meta_gloss$PRoXe_Column_Header %in% missing_names,
-#                               c("PRoXe_Column_Header","Column_Description")]
-#     names(new_rows_df) <- gsub("_"," ",names(new_rows_df))
-#     meta3 <- rbind(meta3,new_rows_df)
-#     # change order to same as Database Explorer
-#     meta3[match(meta3$`PRoXe Column Header`,names(df[1:(obInvisRet_ind-1)])),]
+    #     # take visible columns' header and description
+    #     meta3 <- meta2[meta2$Visible_Invisible != "ob_invis",c("PRoXe_Column_Header","Column_Description")]
+    #     # reformat
+    #     meta3 <- as.data.frame(lapply(meta3,gsub,pattern="_",replacement=" "),stringsAsFactors = F)
+    #     names(meta3) <- gsub("_"," ",names(meta3))
+    #     
+    #     missing_names <- setdiff(names(df[1:(obInvisRet_ind-1)]), meta3$`PRoXe Column Header`)
+    #     new_rows_df <- meta_gloss[meta_gloss$PRoXe_Column_Header %in% missing_names,
+    #                               c("PRoXe_Column_Header","Column_Description")]
+    #     names(new_rows_df) <- gsub("_"," ",names(new_rows_df))
+    #     meta3 <- rbind(meta3,new_rows_df)
+    #     # change order to same as Database Explorer
+    #     meta3[match(meta3$`PRoXe Column Header`,names(df[1:(obInvisRet_ind-1)])),]
     meta3[,c("PRoXe Column Header","Column Description")]
-  },
-  filter="top",
-  server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
-  rownames=FALSE,
-  options = list(
-    
-    searchHighlight = TRUE,
-    paging=FALSE
-  ))
+    },
+    filter="top",
+    server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
+    rownames=FALSE,
+    options = list(
+      
+      searchHighlight = TRUE,
+      paging=FALSE
+    )
+  )
   
   output$PDX_methods <- renderUI({
     # filename <- dir(path = "www/methods",pattern="_PDX_Methods_for_proxe.pdf",full.names=T)
@@ -626,14 +619,15 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     # change colnames to remove automatic periods instead of spaces.
     colnames(pricing) <- c("Service Name","DFCI Rate","Academic Rate","Corporate Rate")
     pricing
-  },
-  escape= FALSE,
-  rownames = FALSE,
-  selection = "none",
-  options = list(
-    dom = 't',
-    ordering = FALSE
-  ))
+    },
+    escape= FALSE,
+    rownames = FALSE,
+    selection = "none",
+    options = list(
+      dom = 't',
+      ordering = FALSE
+    )
+  )
   
   output$iLab_manual <- renderUI({
     filename <- "iLab_Customer_Manual_for_LLX.pdf"
@@ -694,19 +688,19 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   # TODO: functionalize call of observeEvent()s below via for loop or other mechanism
   if(F){ # Note this does not work. Determine why. # Test: does it work ok to access input as list like this?
-  for(colgrp in levels(as.factor(meta3$`Column Groupings`))){
-    observeEvent(input[[paste0("all_",colgrp)]], {
-      if (all(meta3[meta3$`Column Groupings`==colgrp,]$`PRoXe Column Header` %in% input[[paste0("check2_",colgrp)]])) {
-        updateCheckboxGroupInput(
-          session = session, inputId = input[[paste0("check2_",colgrp)]], selected = ""
-        )
-      } else {
-        updateCheckboxGroupInput(
-          session = session, inputId = input[[paste0("check2_",colgrp)]], selected = names(df[1:(obInvisRet_ind-1)])
-        )
-      }
-    })
-  }
+    for(colgrp in levels(as.factor(meta3$`Column Groupings`))){
+      observeEvent(input[[paste0("all_",colgrp)]], {
+        if (all(meta3[meta3$`Column Groupings`==colgrp,]$`PRoXe Column Header` %in% input[[paste0("check2_",colgrp)]])) {
+          updateCheckboxGroupInput(
+            session = session, inputId = input[[paste0("check2_",colgrp)]], selected = ""
+          )
+        } else {
+          updateCheckboxGroupInput(
+            session = session, inputId = input[[paste0("check2_",colgrp)]], selected = names(df[1:(obInvisRet_ind-1)])
+          )
+        }
+      })
+    }
   } # end of if(F)
   
   # if(F){ # purpose -- commenting out this section below.
