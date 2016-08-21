@@ -25,111 +25,53 @@ factor_cols_vis <- which(sapply(df[,1:obInvisRet_ind], is.factor))
 
 # Define the overall UI
 shinyUI(
-  navbarPage(#"Public Repository of Xenografts",
-    id="mainNavBar",
-    span(img(src="PRoXe-Blue-Small.png",width="90px",
+  navbarPage(#title="Public Repository of Xenografts",
+    title=span(img(src="PRoXe-Blue-Small.png",width="90px",
       style="float:left; padding-right:5px; display:inline; position:relative; top:-10px"),
-    "Public Repository of Xenografts"),
+      "Public Repository of Xenografts"),
+    id="mainNavBar",
     windowTitle="PRoXe: Public Repository of Xenografts",
+    
     #  navbarMenu("Database Explorer",
     #  tabPanel("Hematological",
     tabPanel("Database Explorer",
+      includeCSS("styles.css"),
+      tags$head(
+        # probably overkill code for favicon, as per http://www.favicon-generator.org/
+          # unimportant TODO: determine whether href to root ("/fav..." rather than "fav...") even works.
+          # relevant to this, `a("text",href="methods/file.txt",download="file")` works, while
+            # `a("text",href="/methods/file.txt",download="file")` doesn't work. This occurred in Methods page below.
+          # I thought of this because some of the tags$link below have root and some (perhaps the critical ones) don't.
+          # Could easy test on tiny_test_app
+        tags$link(rel="apple-touch-icon", sizes = "57x57", href = "/favicon_files/apple-icon-57x57.png"),
+        tags$link(rel="apple-touch-icon", sizes = "60x60", href = "/favicon_files/apple-icon-60x60.png"),
+        tags$link(rel="apple-touch-icon", sizes = "72x72", href = "/favicon_files/apple-icon-72x72.png"),
+        tags$link(rel="apple-touch-icon", sizes = "76x76", href = "/favicon_files/apple-icon-76x76.png"),
+        tags$link(rel="apple-touch-icon", sizes = "114x114", href = "/favicon_files/apple-icon-114x114.png"),
+        tags$link(rel="apple-touch-icon", sizes = "120x120", href = "/favicon_files/apple-icon-120x120.png"),
+        tags$link(rel="apple-touch-icon", sizes = "144x144", href = "/favicon_files/apple-icon-144x144.png"),
+        tags$link(rel="apple-touch-icon", sizes = "152x152", href = "/favicon_files/apple-icon-152x152.png"),
+        tags$link(rel="apple-touch-icon", sizes = "180x180", href="/favicon_files/apple-icon-180x180.png"),
+        tags$link(rel="icon", type="image/png", sizes = "192x192", href="/android-icon-192x192.png"),
+        tags$link(rel="icon", type="image/png", sizes = "32x32", href = "favicon_files/favicon-32x32.png"),
+        tags$link(rel="icon", type="image/png", sizes = "96x96", href = "favicon_files/favicon-96x96.png"),
+        tags$link(rel="icon", type="image/png", sizes = "16x16", href = "favicon_files/favicon-16x16.png"),
+        tags$link(rel="manifest", href="/favicon_files/manifest.json"),
+        tags$meta(name="msapplication-TileColor", content="#ffffff"),
+        tags$meta(name="msapplication-TileImage", content="/favicon_files/ms-icon-144x144.png"),
+        tags$meta(name="theme-color",content="#ffffff"),
+        
+        # Google Analytics
+        includeScript("google_analytics.js")
+        
+        # playing with jQuery code -- another way to roll up sidebar.
+        # ,includeScript("testing.js")
+        # this code has not yet and probably won't be added to the git repo
+      ),
+
       # customHeaderPanel("Logo"),
       tags$div(
         style="margin:15px;",
-        tags$head(
-          ## TODO: consider which of these should stay or go.
-          # tags$style(type='text/css', ".col-sm-8 { margin-left: 10px;}"),
-          # tags$style(type='text/css', ".col-sm-3 { margin-right: -20px;}"),
-          # tags$link(rel="shortcut icon", href="favicon.ico"),
-          # tags$style(type='text/css', ".well { max-width: 310px; }"),
-          # tags$style(type='text/css', ".span3 { max-width: 310px; }"),
-          
-          # probably overkill code for favicon, as per http://www.favicon-generator.org/
-            # unimportant TODO: determine whether href to root ("/fav..." rather than "fav...") even works.
-            # relevant to this, `a("text",href="methods/file.txt",download="file")` works, while
-              # `a("text",href="/methods/file.txt",download="file")` doesn't work. This occurred in Methods page below.
-            # I thought of this because some of the tags$link below have root and some (perhaps the critical ones) don't.
-            # Could easy test on tiny_test_app
-          tags$link(rel="apple-touch-icon", sizes = "57x57", href = "/favicon_files/apple-icon-57x57.png"),
-          tags$link(rel="apple-touch-icon", sizes = "60x60", href = "/favicon_files/apple-icon-60x60.png"),
-          tags$link(rel="apple-touch-icon", sizes = "72x72", href = "/favicon_files/apple-icon-72x72.png"),
-          tags$link(rel="apple-touch-icon", sizes = "76x76", href = "/favicon_files/apple-icon-76x76.png"),
-          tags$link(rel="apple-touch-icon", sizes = "114x114", href = "/favicon_files/apple-icon-114x114.png"),
-          tags$link(rel="apple-touch-icon", sizes = "120x120", href = "/favicon_files/apple-icon-120x120.png"),
-          tags$link(rel="apple-touch-icon", sizes = "144x144", href = "/favicon_files/apple-icon-144x144.png"),
-          tags$link(rel="apple-touch-icon", sizes = "152x152", href = "/favicon_files/apple-icon-152x152.png"),
-          tags$link(rel="apple-touch-icon", sizes = "180x180", href="/favicon_files/apple-icon-180x180.png"),
-          tags$link(rel="icon", type="image/png", sizes = "192x192", href="/android-icon-192x192.png"),
-          tags$link(rel="icon", type="image/png", sizes = "32x32", href = "favicon_files/favicon-32x32.png"),
-          tags$link(rel="icon", type="image/png", sizes = "96x96", href = "favicon_files/favicon-96x96.png"),
-          tags$link(rel="icon", type="image/png", sizes = "16x16", href = "favicon_files/favicon-16x16.png"),
-          tags$link(rel="manifest", href="/favicon_files/manifest.json"),
-          tags$meta(name="msapplication-TileColor", content="#ffffff"),
-          tags$meta(name="msapplication-TileImage", content="/favicon_files/ms-icon-144x144.png"),
-          tags$meta(name="theme-color",content="#ffffff"),
-          
-          # TODO: determine what this does and comment.
-          tags$style(type='text/css', ".radio, .checkbox { margin-bottom: 2px; }"),
-          tags$style(type='text/css', ".radio label, .checkbox label {
-            width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            }"),
-          tags$style(type='text/css', "
-            @media (min-width: 768px)
-            .col-sm-3 {
-            width: 25%;
-            max-width: 29em;
-            }"),
-          tags$style(type='text/css', "
-            .container-fluid {
-            padding-top:4em
-            }"),
-          # note below is a fix that only applies to situations with many items in navbar
-            # with navbar position='fixed-top',
-            # because navbar doubles in height at < 1201px screen width.
-            # remove middle section with 50px if number of items in navbar changes.
-          tags$style(type='text/css',"
-            /* fix padding under menu after resize */
-            @media screen and (max-width: 767px) {
-              body { padding-top: 0; }
-            }
-            @media screen and (min-width:768px) and (max-width: 1199px) {
-              body { padding-top: 50px; }
-            }
-            @media screen and (min-width: 1200px) {
-              body { padding-top: 0; }
-            }
-
-            /* -- Padding tweaks -- */
-
-            /* align top of Database Explorer left */
-            #dt-col-select {
-              padding-left: 0px;
-            }
-            /* align top of Database Explorer right */
-            #email-request {
-              padding-right:0px;
-            }
-            /* add padding between dropdown buttons */
-            #dt-col-select div div {
-              padding-left: 3px;
-            }
-
-            /* Show the dropdown menu on hover TODO: solve problem where this goes away because not contiguous with botton. A javascript solution might be better. */
-            /* .dropdown:hover .dropdown-menu {
-               display: block;
-            } */
-          "),
-          # Google Analytics
-          includeScript("google_analytics.js")
-          
-          # playing with jQuery code -- another way to roll up sidebar.
-          # ,includeScript("testing.js")
-          # this code has not yet and probably won't be added to the git repo
-        ),
         # top row of app
         fluidRow(
           column(6,

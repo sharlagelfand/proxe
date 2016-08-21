@@ -1,0 +1,64 @@
+/* shorten vertical whitespace in checkboxGroupInput */
+.radio, .checkbox { 
+  margin-bottom: 2px; 
+}
+
+/* control width-resizing effects of checkboxGroupInput text;
+  Not all of this may be necessary now. */
+.radio label, .checkbox label {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* when screen is wide, sets maximum width of sidebarPanel */
+@media (min-width: 768px) .col-sm-3 {
+  width: 25%;
+  max-width: 29em;
+}
+
+/* just adds padding to top of site */
+.container-fluid {
+  padding-top: 4em;
+}
+
+/* fix that only applies to situations with many items in navbar, with navbar position='fixed-top', because navbar doubles in height at < 1201px screen width. Remove middle section with 50px if number of items in navbar changes. */
+
+/* fix padding under menu after resize */
+@media screen and (max-width: 767px) {
+  body { padding-top: 0; }
+}
+
+@media screen and (min-width:768px) and (max-width: 1199px) {
+  body { padding-top: 50px; }
+}
+
+@media screen and (min-width: 1200px) {
+  body { padding-top: 0; }
+}
+
+/* -- Padding tweaks -- */
+
+/* align top of Database Explorer left */
+#dt-col-select {
+  padding-left: 0px;
+}
+/* align top of Database Explorer right */
+#email-request {
+  padding-right:0px;
+}
+/* add padding between dropdown buttons */
+#dt-col-select div div {
+  padding-left: 3px;
+}
+
+/* Show the dropdown menu on hover TODO: solve problem where this goes away because not contiguous with button. A javascript solution might be better. */
+/* .dropdown:hover .dropdown-menu {
+   display: block;
+} */
+
+/* Note there are several styles embedded in individual HTML objects in ui.R. TODO if desired: factor those out to here. */
+
+
+
