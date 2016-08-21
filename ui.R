@@ -15,6 +15,8 @@ print("didcomehere3")
 # # make lists of which variables to show as options
 numeric_cols_vis <- which(sapply(df[,1:obInvisRet_ind], is.numeric))
 factor_cols_vis <- which(sapply(df[,1:obInvisRet_ind], is.factor))
+solid_numeric_cols_vis <- which(sapply(solid,is.numeric))
+solid_factor_cols_vis <- which(sapply(solid,is.factor))
 
 # find indices of transitions from obligate visible to conditionally visible to obligate invisible columns
   # TODO: discuss with Mark that I think we should have a fourth section, thus:
@@ -32,172 +34,165 @@ shinyUI(
     id="mainNavBar",
     windowTitle="PRoXe: Public Repository of Xenografts",
     
-    #  navbarMenu("Database Explorer",
-    #  tabPanel("Hematological",
-    tabPanel("Database Explorer",
-      includeCSS("styles.css"),
-      tags$head(
-        # probably overkill code for favicon, as per http://www.favicon-generator.org/
-          # unimportant TODO: determine whether href to root ("/fav..." rather than "fav...") even works.
-          # relevant to this, `a("text",href="methods/file.txt",download="file")` works, while
-            # `a("text",href="/methods/file.txt",download="file")` doesn't work. This occurred in Methods page below.
-          # I thought of this because some of the tags$link below have root and some (perhaps the critical ones) don't.
-          # Could easy test on tiny_test_app
-        tags$link(rel="apple-touch-icon", sizes = "57x57", href = "/favicon_files/apple-icon-57x57.png"),
-        tags$link(rel="apple-touch-icon", sizes = "60x60", href = "/favicon_files/apple-icon-60x60.png"),
-        tags$link(rel="apple-touch-icon", sizes = "72x72", href = "/favicon_files/apple-icon-72x72.png"),
-        tags$link(rel="apple-touch-icon", sizes = "76x76", href = "/favicon_files/apple-icon-76x76.png"),
-        tags$link(rel="apple-touch-icon", sizes = "114x114", href = "/favicon_files/apple-icon-114x114.png"),
-        tags$link(rel="apple-touch-icon", sizes = "120x120", href = "/favicon_files/apple-icon-120x120.png"),
-        tags$link(rel="apple-touch-icon", sizes = "144x144", href = "/favicon_files/apple-icon-144x144.png"),
-        tags$link(rel="apple-touch-icon", sizes = "152x152", href = "/favicon_files/apple-icon-152x152.png"),
-        tags$link(rel="apple-touch-icon", sizes = "180x180", href="/favicon_files/apple-icon-180x180.png"),
-        tags$link(rel="icon", type="image/png", sizes = "192x192", href="/android-icon-192x192.png"),
-        tags$link(rel="icon", type="image/png", sizes = "32x32", href = "favicon_files/favicon-32x32.png"),
-        tags$link(rel="icon", type="image/png", sizes = "96x96", href = "favicon_files/favicon-96x96.png"),
-        tags$link(rel="icon", type="image/png", sizes = "16x16", href = "favicon_files/favicon-16x16.png"),
-        tags$link(rel="manifest", href="/favicon_files/manifest.json"),
-        tags$meta(name="msapplication-TileColor", content="#ffffff"),
-        tags$meta(name="msapplication-TileImage", content="/favicon_files/ms-icon-144x144.png"),
-        tags$meta(name="theme-color",content="#ffffff"),
-        
-        # Google Analytics
-        includeScript("google_analytics.js")
-        
-        # playing with jQuery code -- another way to roll up sidebar.
-        # ,includeScript("testing.js")
-        # this code has not yet and probably won't be added to the git repo
-      ),
+    navbarMenu("Liquid Tumors",
+      tabPanel("Database Explorer",
+        includeCSS("styles.css"),
+        tags$head(
+          # probably overkill code for favicon, as per http://www.favicon-generator.org/
+            # unimportant TODO: determine whether href to root ("/fav..." rather than "fav...") even works.
+            # relevant to this, `a("text",href="methods/file.txt",download="file")` works, while
+              # `a("text",href="/methods/file.txt",download="file")` doesn't work. This occurred in Methods page below.
+            # I thought of this because some of the tags$link below have root and some (perhaps the critical ones) don't.
+            # Could easy test on tiny_test_app
+          tags$link(rel="apple-touch-icon", sizes = "57x57", href = "/favicon_files/apple-icon-57x57.png"),
+          tags$link(rel="apple-touch-icon", sizes = "60x60", href = "/favicon_files/apple-icon-60x60.png"),
+          tags$link(rel="apple-touch-icon", sizes = "72x72", href = "/favicon_files/apple-icon-72x72.png"),
+          tags$link(rel="apple-touch-icon", sizes = "76x76", href = "/favicon_files/apple-icon-76x76.png"),
+          tags$link(rel="apple-touch-icon", sizes = "114x114", href = "/favicon_files/apple-icon-114x114.png"),
+          tags$link(rel="apple-touch-icon", sizes = "120x120", href = "/favicon_files/apple-icon-120x120.png"),
+          tags$link(rel="apple-touch-icon", sizes = "144x144", href = "/favicon_files/apple-icon-144x144.png"),
+          tags$link(rel="apple-touch-icon", sizes = "152x152", href = "/favicon_files/apple-icon-152x152.png"),
+          tags$link(rel="apple-touch-icon", sizes = "180x180", href="/favicon_files/apple-icon-180x180.png"),
+          tags$link(rel="icon", type="image/png", sizes = "192x192", href="/android-icon-192x192.png"),
+          tags$link(rel="icon", type="image/png", sizes = "32x32", href = "favicon_files/favicon-32x32.png"),
+          tags$link(rel="icon", type="image/png", sizes = "96x96", href = "favicon_files/favicon-96x96.png"),
+          tags$link(rel="icon", type="image/png", sizes = "16x16", href = "favicon_files/favicon-16x16.png"),
+          tags$link(rel="manifest", href="/favicon_files/manifest.json"),
+          tags$meta(name="msapplication-TileColor", content="#ffffff"),
+          tags$meta(name="msapplication-TileImage", content="/favicon_files/ms-icon-144x144.png"),
+          tags$meta(name="theme-color",content="#ffffff"),
+          
+          # Google Analytics
+          includeScript("google_analytics.js")
+          
+          # playing with jQuery code -- another way to roll up sidebar.
+          # ,includeScript("testing.js")
+          # this code has not yet and probably won't be added to the git repo
+        ),
 
-      # customHeaderPanel("Logo"),
-      tags$div(
-        style="margin:15px;",
-        # top row of app
-        fluidRow(
-          column(6,
-            # dropdown buttons - left side
-            id="dt-col-select",
-            tags$div(
-              style="display: flex;",
-              tags$h4("First, select columns to show:",style="margin-right: 15px; font-weight: bold;"),
-              mydropdownButton("administrative",meta3,condVis_ind),
-              mydropdownButton("patient",meta3,condVis_ind),
-              mydropdownButton("tumor",meta3,condVis_ind),
-              mydropdownButton("pdx",meta3,condVis_ind)
-            )
-          ),
-          column(6,
-            # links, buttons on right side
-            id="email-request",
-            p(
-              a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
-              " with questions.",
-              actionButton("Request_link","Request lines",icon("arrow-circle-o-right"),#icon("paper-plane"), 
-                class="btn btn-primary"), # style="background-color: #1486ba; color: #fff; border-color: #2e6da4"
-              align="right"
-            )
-          )
-        ),
-        # 1. data table. -- maybe add a histogram or something below if desired.
-        fluidRow(
-          DT::dataTableOutput(outputId="table")
-        ),
-        # 2. Create download button below table
-        fluidRow(h4(" ")), # just an empty space.
-        fluidRow(
-          p(class = 'text-center', downloadButton('download_filtered', 'Download Filtered Data'))
-        ),
-        # 2. TODO: take filtered data table and apply some kind of graphical analysis.
-        fluidRow(
-          sidebarPanel(width=4,
-            selectInput(
-              "plotType", "Plot Type",
-              c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
-                "2D Contingency Table" = "ctable_plot"),
-              selected = "scatbox"
-            ),
-            
-            # Option 1: show histogram.
-            conditionalPanel(
-              condition = "input.plotType == 'hist'",
-              selectInput("hist_var","Variable to plot",
-                sort(names(df)[numeric_cols_vis]),selected="Age"),
-              selectInput(
-                "hist_log","Scaling",
-                c(linear=FALSE,log10=TRUE)
-              ),
-              selectInput(
-                "breaks", "Breaks",
-                c("[Custom]" = "custom", "Sturges",
-                  "Scott","Freedman-Diaconis")
-              ),
-              # Only show this sub-panel if Custom is selected
-              conditionalPanel(
-                condition = "input.breaks == 'custom'",
-                sliderInput("breakCount", "Break Count", min=1, max=100, value=25)
-                
+        # customHeaderPanel("Logo"),
+        tags$div(
+          style="margin:15px;",
+          # top row of app
+          fluidRow(
+            column(6,
+              # dropdown buttons - left side
+              id="dt-col-select",
+              tags$div(
+                style="display: flex;",
+                tags$h4("First, select columns to show:",style="margin-right: 15px; font-weight: bold;"),
+                mydropdownButton("administrative",meta3,condVis_ind),
+                mydropdownButton("patient",meta3,condVis_ind),
+                mydropdownButton("tumor",meta3,condVis_ind),
+                mydropdownButton("pdx",meta3,condVis_ind)
               )
-              
             ),
-            
-            # Option 2: show scatterplot.
-            conditionalPanel(
-              condition = "input.plotType == 'scatter'",
-              selectInput("scat_var_x","X variable to plot",sort(names(df)[numeric_cols_vis]),
-                selected="Age"),
-              selectInput("scat_var_y","Y variable to plot",sort(names(df)[numeric_cols_vis]),
-                selected="Presenting WBC")
-            ),
-            
-            # Option 3: show barplot.
-            conditionalPanel(
-              condition = "input.plotType == 'bar'",
-              selectInput("bar_var","Category to plot",sort(names(df)[factor_cols_vis]),
-                selected="WHO Category")
-            ),
-            
-            # Option 4: show 1D-scatter+boxplot.
-            conditionalPanel(
-              condition = "input.plotType == 'scatbox'",
-              selectInput("scatbox_cat","Category to plot",sort(names(df)[factor_cols_vis]),
-                selected="WHO Category"),
-              selectInput("scatbox_num","Numeric to plot",sort(names(df)[numeric_cols_vis]),
-                selected="Days to Engraft P0")
-            ),
-            #                # Option 5: contingency table of categories
-            #                conditionalPanel(
-            #                  condition = "input.plotType == 'ctable'",
-            #                  selectInput("tablevarA","First category",sort(names(df)[factor_cols_vis]),
-            #                              selected = "WHO Category"),
-            #                  selectInput("tablevarB","Second category",sort(names(df)[factor_cols_vis]),
-            #                              selected = "Latest Passage Banked")
-            #                 ),
-            # Option 6: mosaic plot of contingency table.
-            conditionalPanel(
-              condition = "input.plotType == 'ctable_plot'",
-              selectInput("ctable_plot_var1","First category",sort(names(df)[factor_cols_vis]),
-                selected = "WHO Category"),
-              selectInput("ctable_plot_var2","Second category",sort(names(df)[factor_cols_vis]),
-                selected = "Latest Passage Banked")
+            column(6,
+              # links, buttons on right side
+              id="email-request",
+              p(
+                a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
+                " with questions.",
+                actionButton("Request_link","Request lines",icon("arrow-circle-o-right"),#icon("paper-plane"), 
+                  class="btn btn-primary"), # style="background-color: #1486ba; color: #fff; border-color: #2e6da4"
+                align="right"
+              )
             )
           ),
-          column(width=8,
-            ({ 
-              #                   if (input$plotType == 'ctable') {
-              #                      tableOutput("table_various")
-              #                   } else 
-              plotOutput("plot_various",height="600px") 
-            })
-          ) 
+          # 1. data table. -- maybe add a histogram or something below if desired.
+          fluidRow(
+            DT::dataTableOutput(outputId="table")
+          ),
+          # 2. Create download button below table
+          fluidRow(h4(" ")), # just an empty space.
+          fluidRow(
+            p(class = 'text-center', downloadButton('download_filtered', 'Download Filtered Data'))
+          ),
+          # 2. TODO: take filtered data table and apply some kind of graphical analysis.
+          fluidRow(
+            sidebarPanel(width=4,
+              selectInput(
+                "plotType", "Plot Type",
+                c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
+                  "2D Contingency Table" = "ctable_plot"),
+                selected = "scatbox"
+              ),
+              
+              # Option 1: show histogram.
+              conditionalPanel(
+                condition = "input.plotType == 'hist'",
+                selectInput("hist_var","Variable to plot",
+                  sort(names(df)[numeric_cols_vis]),selected="Age"),
+                selectInput(
+                  "hist_log","Scaling",
+                  c(linear=FALSE,log10=TRUE)
+                ),
+                selectInput(
+                  "breaks", "Breaks",
+                  c("[Custom]" = "custom", "Sturges",
+                    "Scott","Freedman-Diaconis")
+                ),
+                # Only show this sub-panel if Custom is selected
+                conditionalPanel(
+                  condition = "input.breaks == 'custom'",
+                  sliderInput("breakCount", "Break Count", min=1, max=100, value=25)
+                  
+                )
+                
+              ),
+              
+              # Option 2: show scatterplot.
+              conditionalPanel(
+                condition = "input.plotType == 'scatter'",
+                selectInput("scat_var_x","X variable to plot",sort(names(df)[numeric_cols_vis]),
+                  selected="Age"),
+                selectInput("scat_var_y","Y variable to plot",sort(names(df)[numeric_cols_vis]),
+                  selected="Presenting WBC")
+              ),
+              
+              # Option 3: show barplot.
+              conditionalPanel(
+                condition = "input.plotType == 'bar'",
+                selectInput("bar_var","Category to plot",sort(names(df)[factor_cols_vis]),
+                  selected="WHO Category")
+              ),
+              
+              # Option 4: show 1D-scatter+boxplot.
+              conditionalPanel(
+                condition = "input.plotType == 'scatbox'",
+                selectInput("scatbox_cat","Category to plot",sort(names(df)[factor_cols_vis]),
+                  selected="WHO Category"),
+                selectInput("scatbox_num","Numeric to plot",sort(names(df)[numeric_cols_vis]),
+                  selected="Days to Engraft P0")
+              ),
+              #                # Option 5: contingency table of categories
+              #                conditionalPanel(
+              #                  condition = "input.plotType == 'ctable'",
+              #                  selectInput("tablevarA","First category",sort(names(df)[factor_cols_vis]),
+              #                              selected = "WHO Category"),
+              #                  selectInput("tablevarB","Second category",sort(names(df)[factor_cols_vis]),
+              #                              selected = "Latest Passage Banked")
+              #                 ),
+              # Option 6: mosaic plot of contingency table.
+              conditionalPanel(
+                condition = "input.plotType == 'ctable_plot'",
+                selectInput("ctable_plot_var1","First category",sort(names(df)[factor_cols_vis]),
+                  selected = "WHO Category"),
+                selectInput("ctable_plot_var2","Second category",sort(names(df)[factor_cols_vis]),
+                  selected = "Latest Passage Banked")
+              )
+            ),
+            column(width=8,
+              ({ 
+                #                   if (input$plotType == 'ctable') {
+                #                      tableOutput("table_various")
+                #                   } else 
+                plotOutput("plot_various",height="600px") 
+              })
+            ) 
+          )
         )
-      )
-    ),
-    #  tabPanel("Solid",
-    #    h1("Solid"),
-    #      DT::dataTableOutput(outputId="solid_table")
-    #    )
-    #  ),
-    navbarMenu("PDX Molecular", #new
+      ),
       tabPanel("PDX Gene Expression",
         h1("PDX Gene Expression"),
         sidebarLayout(
@@ -313,59 +308,229 @@ shinyUI(
             plotOutput("plot_oncoprint",height = 800,width=1300)
           )
         )
-      )
-    ),
-    tabPanel("Contingency Table",
-      sidebarLayout(
-        sidebarPanel(
-          radioButtons("ctable_numcats","Number of contingency table categories",
-                       1:2,selected=2),
-          # selectInput("ctable_numcats","Number of contingency table categories",
-                      # 1:2,selected=2),
-          selectInput("tablevar1","First category",sort(names(df)[factor_cols_vis]),
-                      selected = "WHO Category"),
-          conditionalPanel(
-            condition = "input.ctable_numcats > 1",
-            selectInput("tablevar2","Second category",sort(names(df)[factor_cols_vis]),
-                        selected = "Latest Passage Banked")
+      ),
+      tabPanel("Contingency Table",
+        sidebarLayout(
+          sidebarPanel(
+            radioButtons("ctable_numcats","Number of contingency table categories",
+                         1:2,selected=2),
+            # selectInput("ctable_numcats","Number of contingency table categories",
+                        # 1:2,selected=2),
+            selectInput("tablevar1","First category",sort(names(df)[factor_cols_vis]),
+                        selected = "WHO Category"),
+            conditionalPanel(
+              condition = "input.ctable_numcats > 1",
+              selectInput("tablevar2","Second category",sort(names(df)[factor_cols_vis]),
+                          selected = "Latest Passage Banked")
+            )
+          ),
+          mainPanel(
+            h4("Contingency table. Updates based on filtering in Database Explorer."),
+            tableOutput("table_various")
           )
-        ),
-        mainPanel(
-          h4("Contingency table. Updates based on filtering in Database Explorer."),
-          tableOutput("table_various")
         )
-      )
-    ),  # works
-    tabPanel("Line Report",
-      h1("Line Report"),
-      basicPage(
-        # h4("Select a line in the Database Explorer to see a report here"),
-        radioButtons(
-          "line_report_input_type","Method for selecting line to show here:",
-          c("Choose from drop-down menu" = "dropdown","Click a row in Database Explorer" = "click"),
-          selected="dropdown"
-        ),
-        conditionalPanel(
-          condition = "input.line_report_input_type == 'dropdown'",
-          selectInput("line_report_name","Type or select a line name below to see a full report",
-            c(df[,"PDX Name"],NULL),selected = "DFTL-85005-R1")
-        ),
-        DT::dataTableOutput(outputId="line_report"),
-        h3("Flow Cytometry:"),
-        uiOutput("line_report_FC"),
-        h3("Immunohistochemistry:"),
-        uiOutput("line_report_IHC"),
-        h3("Pathology Report:"),
-        uiOutput("line_report_Path")
-      )
-    ),
-    navbarMenu("More",
+      ),  # works
+      tabPanel("Line Report",
+        h1("Line Report"),
+        basicPage(
+          # h4("Select a line in the Database Explorer to see a report here"),
+          radioButtons(
+            "line_report_input_type","Method for selecting line to show here:",
+            c("Choose from drop-down menu" = "dropdown","Click a row in Database Explorer" = "click"),
+            selected="dropdown"
+          ),
+          conditionalPanel(
+            condition = "input.line_report_input_type == 'dropdown'",
+            selectInput("line_report_name","Type or select a line name below to see a full report",
+              c(df[,"PDX Name"],NULL),selected = "DFTL-85005-R1")
+          ),
+          DT::dataTableOutput(outputId="line_report"),
+          h3("Flow Cytometry:"),
+          uiOutput("line_report_FC"),
+          h3("Immunohistochemistry:"),
+          uiOutput("line_report_IHC"),
+          h3("Pathology Report:"),
+          uiOutput("line_report_Path")
+        )
+      ),
       tabPanel("Glossary",
-      h1("Glossary"),
+        h1("Glossary"),
           column(width = 12,
             DT::dataTableOutput(outputId="glossary")
           )
-      ),
+      )
+    ), # end navbarMenu("Liquid Tumors")
+    
+    navbarMenu("Solid Tumors",
+      # tabPanel("Solid Tumors (beta)",
+      tabPanel("Database Explorer",
+        h1("Solid Tumor Data"),
+        checkboxInput("solid_hide_sidebar","Hide sidebar",FALSE),
+        # customHeaderPanel("Logo"),
+        # Left sidebar for selecting which columns to show
+        sidebarLayout(
+          conditionalPanel(condition = "input.solid_hide_sidebar == false",
+            sidebarPanel(
+              #'               # adjusting sidebar width and text manually with CSS
+              #'               tags$head(
+              #'                 # tags$style(type='text/css', ".col-sm-8 { margin-left: 10px;}"),
+              #'                 # tags$style(type='text/css', ".col-sm-3 { margin-right: -20px;}"),
+              #'                 # tags$link(rel="shortcut icon", href="favicon.ico"),
+              #'                 # tags$style(type='text/css', ".well { max-width: 310px; }"),
+              #'                 # tags$style(type='text/css', ".span3 { max-width: 310px; }"),
+              #'               tags$style(type='text/css', ".radio, .checkbox { margin-bottom: 2px; }"),
+              #'               tags$style(type='text/css', ".radio label, .checkbox label {
+              #'                 width: 100%;
+              #'                 overflow: hidden;
+              #'                 text-overflow: ellipsis;
+              #'                 white-space: nowrap;
+              #'                 }"),
+              #'               tags$style(type='text/css', "
+              #'                 @media (min-width: 768px)
+              #'                 .col-sm-3 {
+              #'                 width: 25%;
+              #'                 max-width: 29em;
+              #'                 }"),
+              #'               tags$style(type='text/css', "
+              #'                 .container-fluid {
+              #'                 padding-top:4em
+              #'                 }"),
+              #'               tags$style(type='text/css', "
+              #'                 #hidebox {
+              #'                 display:inline;
+              #'                 }")
+              #'                   #,
+              #'                   # for adding ellipsis to ColVis
+              #'                   #           tags$style(type='text/css', "
+              #'                   #             ul.ColVis_collection li span {
+              #'                   #               overflow: hidden;
+              #'                   #               text-overflow: ellipsis;
+              #'                   #               width: 90%;
+              #'                   #             }")
+              #'               ),
+              h4(strong("First, select columns to show:")),
+              actionButton("solid_selectall", label="(Un)select all"),
+              checkboxGroupInput("solid_show_vars",
+                NULL,
+                names(solid),#[1:(obInvisRet_ind-1)]),
+                selected=names(solid)[1:4] # note hardcoded. Could do something like: [1:(condVis_ind-1)]
+              )
+              ,width=3 # used to be width 4. 3 works better for full screenwidth. Would prefer fixed to longest name length. TODO.
+            )
+          ),
+          # Right panel for showing table with subsettable columns, alphabetized.
+          mainPanel(
+            # 0. Email us (temporary)
+            fluidRow(
+              # p(checkboxInput("hide_sidebar","Hide sidebar",FALSE),id="hidebox"),
+              p(
+                a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
+                " with questions.",
+                actionButton("Request_link_solid","Request lines"),
+                align="right"
+              )
+            ),
+            # 1. data table. -- maybe add a histogram or something below if desired.
+            fluidRow(
+              DT::dataTableOutput(outputId="solid_table")
+            ),
+            #             2. Create download button below table
+            fluidRow(h4(" ")), # just an empty space.
+            fluidRow(
+              p(class = 'text-center', downloadButton('solid_download_filtered', 'Download Filtered Data'))
+            ),
+            # 2. TODO: take filtered data table and apply some kind of graphical analysis.
+            fluidRow(
+              sidebarPanel(
+                selectInput(
+                  "solid_plotType", "Plot Type",
+                  c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
+                    "2D Contingency Table" = "ctable_plot"),
+                  selected = "scatbox"
+                ),
+                
+                # Option 1: show histogram.
+                conditionalPanel(
+                  condition = "input.solid_plotType == 'hist'",
+                  selectInput("solid_hist_var","Variable to plot",
+                    sort(names(solid)[solid_numeric_cols_vis]),selected=NULL), # TODO: change to default value when numeric columns are added to solid.
+                  selectInput(
+                    "solid_hist_log","Scaling",
+                    c(linear=FALSE,log10=TRUE)
+                  ),
+                  selectInput(
+                    "solid_breaks", "Breaks",
+                    c("[Custom]" = "custom", "Sturges",
+                      "Scott","Freedman-Diaconis")
+                  ),
+                  # Only show this sub-panel if Custom is selected
+                  conditionalPanel(
+                    condition = "input.solid_breaks == 'custom'",
+                    sliderInput("solid_breakCount", "Break Count", min=1, max=100, value=25)
+                    
+                  )
+                  
+                ),
+                
+                # Option 2: show scatterplot.
+                conditionalPanel(
+                  condition = "input.solid_plotType == 'scatter'",
+                  selectInput("solid_scat_var_x","X variable to plot",sort(names(solid)[solid_numeric_cols_vis]),
+                    selected=NULL),
+                  selectInput("solid_scat_var_y","Y variable to plot",sort(names(solid)[solid_numeric_cols_vis]),
+                    selected=NULL)
+                ),
+                
+                # Option 3: show barplot.
+                conditionalPanel(
+                  condition = "input.solid_plotType == 'bar'",
+                  selectInput("solid_bar_var","Category to plot",sort(names(solid)[solid_factor_cols_vis]),
+                    selected="Primary_site..COSMIC.")
+                ),
+                
+                # Option 4: show 1D-scatter+boxplot.
+                conditionalPanel(
+                  condition = "input.solid_plotType == 'scatbox'",
+                  selectInput("solid_scatbox_cat","Category to plot",sort(names(solid)[solid_factor_cols_vis]),
+                    selected="Primary_site..COSMIC."),
+                  selectInput("solid_scatbox_num","Numeric to plot",sort(names(solid)[solid_numeric_cols_vis]),
+                    selected="PDX_Mutations_Count"),
+                  selectInput("solid_scatbox_log","Numeric axis scaling",c("linear","log"),
+                    selected="log")
+                ),
+                #                # Option 5: contingency table of categories
+                #                conditionalPanel(
+                #                  condition = "input.plotType == 'ctable'",
+                #                  selectInput("tablevarA","First category",sort(names(solid)[solid_numeric_cols_vis]),
+                #                              selected = "WHO Category"),
+                #                  selectInput("tablevarB","Second category",sort(names(solid)[solid_numeric_cols_vis]),
+                #                              selected = "Latest Passage Banked")
+                #                 ),
+                # Option 6: mosaic plot of contingency table.
+                conditionalPanel(
+                  condition = "input.solid_plotType == 'ctable_plot'",
+                  selectInput("solid_ctable_plot_var1","First category",sort(names(solid)[solid_factor_cols_vis]),
+                    selected = "histologic_type..COSMIC."),
+                  selectInput("solid_ctable_plot_var2","Second category",sort(names(solid)[solid_factor_cols_vis]),
+                    selected = "Primary_site..COSMIC.")
+                )
+              ),
+              column(width=8,
+                ({ 
+                  #                   if (input$plotType == 'ctable') {
+                  #                      tableOutput("table_various")
+                  #                   } else 
+                  plotOutput("solid_plot_various") 
+                })
+              ) # end plot column
+            ) # end fluidRow for custom plotting
+          ) # end mainPanel
+          ,fluid=TRUE
+        ) # end sidebarLayout
+      ) # end solid_beta panel
+    ), # end navbarMenu - Solid Tumors
+    
+    navbarMenu("More",
       tabPanel("Methods",
         h1("Methods"),
         # TODO: ideally, eventually make a TOC to each item at the top, linking via anchors or shiny equivalent.
@@ -425,8 +590,7 @@ shinyUI(
           href="https://dfci.ilabsolutions.com/service_center/show_external/7625?name=leukemia-lymphoma-xenograft-core-llx",
           target="_blank"),"Billing Platform"),
         h2("Manual"),
-        uiOutput("iLab_manual")
-        
+        uiOutput("iLab_manual") 
       ),
       tabPanel("About",
         h1("About PRoXe"),

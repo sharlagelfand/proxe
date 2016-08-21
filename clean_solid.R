@@ -1,0 +1,106 @@
+library(readxl)
+
+# setwd("/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app")
+
+solid <- readxl::read_excel("../data_outside_app/NIBR_PDX_annotation_ProXe_23May2016.xlsx",sheet = 1)
+solid <- data.frame(lapply(solid,as.factor))
+solid$Sample <- as.character(solid$Sample)
+
+# RNA-seq data. 
+if(F){
+  # TODO: manipulate this, create a graph out of it, and also fold it in (link too?) with 'solid' df above through a merge.
+  gao_rna <- readxl::read_excel("../data_outside_app/Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx",sheet="RNAseq_fpkm")
+  rownames(gao_rna) <- gao_rna$Sample
+  gao_rna$Sample <- NULL
+  
+  # look at stats
+    # sums are different, thus these are probably FPKM/RPKM
+  # range(colSums(gao_rna)) # 260k - 905k
+    # compute a mean of all samples for comparison.
+  # min(gao_rna[gao_rna > 0]) # 0.01 across all samples
+  gao_rna_pc <- gao_rna + 10
+  gao_meds <- apply(gao_rna_pc,1,median)
+  gao_fc <- sweep(gao_rna_pc,MARGIN = 1,STATS = gao_meds, FUN = "/")
+  grp_lfc <- log2(gao_fc)
+    # determine number of genes >2^6-fold up
+  up <- apply(grp_lfc,2,function(col){
+    sum(col > 6)
+  })
+  grp <- data.frame( Sample = names(up), num_genes_64x_up = up, stringsAsFactors = F)
+    # which genes
+  grp$genes_64x_up = apply(grp_lfc,2,function(col){
+    paste0(names(col[col>6]),collapse=" | ")
+  })
+    # determine number of genes <2^5-fold down
+  grp$num_genes_16x_dn <- apply(grp_lfc,2,function(col){
+    sum(col < -4)
+  })
+  # which genes
+  grp$genes_16x_dn = apply(grp_lfc,2,function(col){
+    paste0(names(col[col < -4]),collapse=" | ")
+  })
+  
+  # Ideas for more columns
+  # 1. take top and bottom 10 genes, show
+  # 2. take genes above threshold that cross-reference with oncogene list (already in app)
+  # 3. Compute most commonly-changed genes
+  # 
+  
+  # Ideas for plots:
+  # 1. PCA
+  # 2. correlation heatmaps.
+  
+  if(F){
+    # try PCA
+    # ok to use raw rpkm values?
+    gpca <- t(gao_rna)
+    # remove constant cols
+    gpca <- gpca[,apply(gpca,2,var) != 0]
+    gpca_prcomp <- prcomp(gpca, scale = TRUE) # note sure whether I'm supposed to be transposing. Think this is right.
+    plot(gpca_prcomp)
+    summary(gpca_prcomp)
+    biplot(gpca_prcomp)
+  #   gpca_princomp <- princomp(t(gpca)) # just playing, could be wrong. failed.
+  #   biplot(gpca_princomp)
+  }
+  rm(list=c("gao_fc","gao_rna","gao_rna_pc","grp","grp_lfc","up","gao_meds"))
+  
+}
+
+## read in mutation data ##
+gao_mut <- readxl::read_excel("../data_outside_app/Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx",sheet="pdxe_mut_and_cn2")
+gao_mut <- gao_mut[grepl("Mut",x = gao_mut$Category),]
+gao_mut$Alteration <- gsub(",.*","",gao_mut$Details)
+gao_mut$Pct <- as.character(paste0(as.numeric(gsub(".*,","",gao_mut$Details))*100,"%"))
+gao_mut$Details2 <- paste(gao_mut$Gene,gao_mut$Alteration,"in",gao_mut$Pct,"of reads")
+
+# Separate Known/Likely vs VUS
+gao_pos <- gao_mut[gao_mut$Category %in% c("MutKnownFunctional","MutLikelyFunctional"),]
+gao_vus <- gao_mut[gao_mut$Category == "MutNovel",]
+
+# For each, create summary df
+unique_samples <- levels(as.factor(gao_pos$Sample))
+outdf <- data.frame(Sample = unique_samples,Genes = rep(NA,length(unique_samples)),Details = rep(NA,length(unique_samples)))
+for(sam in unique_samples){
+  gao_sam <- gao_pos[gao_pos$Sample == sam,]
+  outdf[outdf$Sample == sam,"Genes"] <- paste(gao_sam$Gene,collapse = " | ")
+  outdf[outdf$Sample == sam,"Details"] <- paste(gao_sam$Details2,collapse = " | ")
+  outdf[outdf$Sample == sam,"Number"] <- nrow(gao_sam)
+}
+names(outdf) <- c("Sample","PDX_Mutations_Positive","PDX_Mutations_Details","PDX_Mutations_Count")
+
+unique_samples <- levels(as.factor(gao_vus$Sample))
+outdf2 <- data.frame(Sample = unique_samples,Genes = rep(NA,length(unique_samples)),Details = rep(NA,length(unique_samples)))
+for(sam in unique_samples){
+  gao_sam <- gao_vus[gao_vus$Sample == sam,]
+  outdf2[outdf2$Sample == sam,"Genes"] <- paste(gao_sam$Gene,collapse = " | ")
+  outdf2[outdf2$Sample == sam,"Details"] <- paste(gao_sam$Details2,collapse = " | ")
+}
+names(outdf2) <- c("Sample","PDX_VUS","PDX_VUS_Details")
+gao_muts <- merge(outdf,outdf2,by="Sample")
+rm(list=c("gao_mut","gao_pos","gao_sam","gao_vus","outdf","outdf2"))
+
+# merge new columns back to 'solid' to show in app
+# solid <- merge(solid,grp,by="Sample")
+solid <- merge(solid,gao_muts,by="Sample")
+rm(gao_muts)
