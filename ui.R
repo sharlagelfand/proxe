@@ -71,6 +71,8 @@ shinyUI(
         ),
 
         # customHeaderPanel("Logo"),
+        h1("Liquid Tumor Database Explorer"),
+        br(),
         tags$div(
           style="margin:15px;",
           # top row of app
@@ -194,7 +196,7 @@ shinyUI(
         )
       ),
       tabPanel("PDX Gene Expression",
-        h1("PDX Gene Expression"),
+        h1("Liquid Tumor PDX Gene Expression"),
         sidebarLayout(
           sidebarPanel(width=3,
             radioButtons(
@@ -262,7 +264,7 @@ shinyUI(
         )
       ),
       tabPanel("PDX Mutations",
-        h1("PDX Mutations"),
+        h1("Liquid Tumor PDX Mutations"),
         sidebarLayout(
           sidebarPanel(width=3,
             radioButtons(
@@ -310,6 +312,7 @@ shinyUI(
         )
       ),
       tabPanel("Contingency Table",
+        h1("Liquid Tumor Contingency Table"),
         sidebarLayout(
           sidebarPanel(
             radioButtons("ctable_numcats","Number of contingency table categories",
@@ -331,7 +334,7 @@ shinyUI(
         )
       ),  # works
       tabPanel("Line Report",
-        h1("Line Report"),
+        h1("Liquid Tumor Line Report"),
         basicPage(
           # h4("Select a line in the Database Explorer to see a report here"),
           radioButtons(
@@ -354,17 +357,38 @@ shinyUI(
         )
       ),
       tabPanel("Glossary",
-        h1("Glossary"),
+        h1("Liquid Tumor Glossary"),
           column(width = 12,
             DT::dataTableOutput(outputId="glossary")
           )
+      ),
+      tabPanel("Methods",
+        h1("Liquid Tumor Methods"),
+        # TODO: ideally, eventually make a TOC to each item at the top, linking via anchors or shiny equivalent.
+        column(width = 10,
+          # note these (ABCD) are Mark's ideal ordering:
+          # helpText("A) Xenografting Techniques: with subheadings Tail Vein Injection, Subrenal Capsule Implantation, +/- Subcutaneous Implantation."),
+          # helpText("B) Xenografting Cell Doses: with subheadings For In Vivo Expansion, For In Vivo Treatment Studies"),
+          # helpText("C) Monitoring Xenografted Animals: with subheadings for Cell Banking, for Initiation of Treatment"),
+          # helpText("D) Banking Xenografted Cells: with subheadings Animal Euthanasia, Enriching Malignant Cells from Peripheral Blood, Enriching Malignant Cells from Bone Marrow, Enriching Malignant Cells from Spleen, and Enriching Malignant Cells from Lymph Nodes or Solid Tumors"),
+          tags$h2("PDX methods"),
+          uiOutput("PDX_methods"),
+          tags$h2("Renal capsule implantation method"),
+          uiOutput("Renal_methods")
+        ),
+        column(width=2,
+          tags$h2("Other files"),
+          tags$h4("HemoSeq 2.0 coordinates"),
+          a("HemoSeq 2.0 baits",href="methods/150127_Hemoseq_2.0_Baits.interval_list",download="150127_Hemoseq_2.0_Baits"),br(),
+          a("HemoSeq 2.0 targets",href="methods/150127_Hemoseq_2.0_Targets.interval_list",download="150127_Hemoseq_2.0_Targets"),br()
+        )
       )
     ), # end navbarMenu("Liquid Tumors")
     
     navbarMenu("Solid Tumors",
       # tabPanel("Solid Tumors (beta)",
       tabPanel("Database Explorer",
-        h1("Solid Tumor Data"),
+        h1("Solid Tumor Database Explorer"),
         checkboxInput("solid_hide_sidebar","Hide sidebar",FALSE),
         # customHeaderPanel("Logo"),
         # Left sidebar for selecting which columns to show
@@ -413,7 +437,7 @@ shinyUI(
               checkboxGroupInput("solid_show_vars",
                 NULL,
                 names(solid),#[1:(obInvisRet_ind-1)]),
-                selected=names(solid)[1:4] # note hardcoded. Could do something like: [1:(condVis_ind-1)]
+                selected=names(solid)[1:5] # note hardcoded. Could do something like: [1:(condVis_ind-1)]
               )
               ,width=3 # used to be width 4. 3 works better for full screenwidth. Would prefer fixed to longest name length. TODO.
             )
@@ -485,14 +509,14 @@ shinyUI(
                 conditionalPanel(
                   condition = "input.solid_plotType == 'bar'",
                   selectInput("solid_bar_var","Category to plot",sort(names(solid)[solid_factor_cols_vis]),
-                    selected="Primary_site..COSMIC.")
+                    selected="COSMIC Primary Site")
                 ),
                 
                 # Option 4: show 1D-scatter+boxplot.
                 conditionalPanel(
                   condition = "input.solid_plotType == 'scatbox'",
                   selectInput("solid_scatbox_cat","Category to plot",sort(names(solid)[solid_factor_cols_vis]),
-                    selected="Primary_site..COSMIC."),
+                    selected="COSMIC Primary Site"),
                   selectInput("solid_scatbox_num","Numeric to plot",sort(names(solid)[solid_numeric_cols_vis]),
                     selected="PDX_Mutations_Count"),
                   selectInput("solid_scatbox_log","Numeric axis scaling",c("linear","log"),
@@ -510,9 +534,9 @@ shinyUI(
                 conditionalPanel(
                   condition = "input.solid_plotType == 'ctable_plot'",
                   selectInput("solid_ctable_plot_var1","First category",sort(names(solid)[solid_factor_cols_vis]),
-                    selected = "histologic_type..COSMIC."),
+                    selected = "COSMIC Type"),
                   selectInput("solid_ctable_plot_var2","Second category",sort(names(solid)[solid_factor_cols_vis]),
-                    selected = "Primary_site..COSMIC.")
+                    selected = "COSMIC Primary Site")
                 )
               ),
               column(width=8,
@@ -527,31 +551,16 @@ shinyUI(
           ) # end mainPanel
           ,fluid=TRUE
         ) # end sidebarLayout
-      ) # end solid_beta panel
+      ),
+      tabPanel("Glossary",
+        h1("Solid Tumor Glossary"),
+          column(width = 12,
+            DT::dataTableOutput(outputId="solid_glossary")
+          )
+      )
     ), # end navbarMenu - Solid Tumors
     
     navbarMenu("More",
-      tabPanel("Methods",
-        h1("Methods"),
-        # TODO: ideally, eventually make a TOC to each item at the top, linking via anchors or shiny equivalent.
-        column(width = 10,
-          # note these (ABCD) are Mark's ideal ordering:
-          # helpText("A) Xenografting Techniques: with subheadings Tail Vein Injection, Subrenal Capsule Implantation, +/- Subcutaneous Implantation."),
-          # helpText("B) Xenografting Cell Doses: with subheadings For In Vivo Expansion, For In Vivo Treatment Studies"),
-          # helpText("C) Monitoring Xenografted Animals: with subheadings for Cell Banking, for Initiation of Treatment"),
-          # helpText("D) Banking Xenografted Cells: with subheadings Animal Euthanasia, Enriching Malignant Cells from Peripheral Blood, Enriching Malignant Cells from Bone Marrow, Enriching Malignant Cells from Spleen, and Enriching Malignant Cells from Lymph Nodes or Solid Tumors"),
-          tags$h2("PDX methods"),
-          uiOutput("PDX_methods"),
-          tags$h2("Renal capsule implantation method"),
-          uiOutput("Renal_methods")
-        ),
-        column(width=2,
-          tags$h2("Other files"),
-          tags$h4("HemoSeq 2.0 coordinates"),
-          a("HemoSeq 2.0 baits",href="methods/150127_Hemoseq_2.0_Baits.interval_list",download="150127_Hemoseq_2.0_Baits"),br(),
-          a("HemoSeq 2.0 targets",href="methods/150127_Hemoseq_2.0_Targets.interval_list",download="150127_Hemoseq_2.0_Targets"),br()
-        )
-      ),
       tabPanel("Line Request/Pricing",
         h1("Line Request / Pricing"),
         column(width = 8,

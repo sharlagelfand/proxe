@@ -1,10 +1,19 @@
 library(readxl)
 
+## read in solid metadata as solid_meta
+
+solid_meta <- readxl::read_excel("../data_outside_app/NIBR_PDX_annotation_ProXe_23May2016.xlsx",sheet = "Header_Data")
+
+
 # setwd("/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app")
 
 solid <- readxl::read_excel("../data_outside_app/NIBR_PDX_annotation_ProXe_23May2016.xlsx",sheet = 1)
 solid <- data.frame(lapply(solid,as.factor))
 solid$Sample <- as.character(solid$Sample)
+names(solid) <- c("PDX_Name","COSMIC_Primary_Site","COSMIC_Type","COSMIC_Subtype")
+
+# add availability column manually
+solid$Distribution_Permissions <- "none currently"
 
 # RNA-seq data. 
 if(F){
@@ -99,8 +108,10 @@ for(sam in unique_samples){
 names(outdf2) <- c("Sample","PDX_VUS","PDX_VUS_Details")
 gao_muts <- merge(outdf,outdf2,by="Sample")
 rm(list=c("gao_mut","gao_pos","gao_sam","gao_vus","outdf","outdf2"))
+names(gao_muts)[1] <- "PDX_Name"
 
 # merge new columns back to 'solid' to show in app
 # solid <- merge(solid,grp,by="Sample")
-solid <- merge(solid,gao_muts,by="Sample")
+solid <- merge(solid,gao_muts,by="PDX_Name")
 rm(gao_muts)
+names(solid) <- gsub(pattern = "_",replacement = " ",x = names(solid))

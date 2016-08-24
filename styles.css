@@ -26,6 +26,7 @@
 /* fix that only applies to situations with many items in navbar, with navbar position='fixed-top', because navbar doubles in height at < 1201px screen width. Remove middle section with 50px if number of items in navbar changes. */
 
 /* fix padding under menu after resize */
+/* 
 @media screen and (max-width: 767px) {
   body { padding-top: 0; }
 }
@@ -36,7 +37,8 @@
 
 @media screen and (min-width: 1200px) {
   body { padding-top: 0; }
-}
+} 
+*/
 
 /* -- Padding tweaks -- */
 
