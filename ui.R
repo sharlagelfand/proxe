@@ -95,7 +95,7 @@ shinyUI(
               p(
                 a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
                 " with questions.",
-                actionButton("Request_link","Request lines",icon("arrow-circle-o-right"),#icon("paper-plane"), 
+                actionButton("Request_link","Request lines",icon("arrow-circle-o-right"),
                   class="btn btn-primary"), # style="background-color: #1486ba; color: #fff; border-color: #2e6da4"
                 align="right"
               )
@@ -450,7 +450,8 @@ shinyUI(
               p(
                 a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
                 " with questions.",
-                actionButton("Request_link_solid","Request lines"),
+                actionButton("Request_link_solid","Request lines",icon("arrow-circle-o-right"),
+                  class="btn btn-primary"),
                 align="right"
               )
             ),
