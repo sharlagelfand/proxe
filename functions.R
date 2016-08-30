@@ -152,14 +152,26 @@ dropdownButton <- function(
 #   )
 # }
 
-mydropdownButton <- function(lab,meta3,condVis_ind) {
+mydropdownButton <- function(lab,column_metadata = meta3,condVis_ind,button_group = "",table_df=df) {
+
+  # abbreviate
+  cm = column_metadata
+  df = table_df
+  # remove underscores from cm if they exist
+  names(cm) <- gsub("_"," ",names(cm))
+
   # prep variables for checkboxGroupInput
   # 0. for testing: # lab = "administrative"
   # 1. choices
-  meta4 <- meta3[(meta3$`Column Groupings` == lab),];
-  my_choices <- meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`
+  cm <- cm[(cm$`Column Groupings` == lab),];
+  my_choices <- cm[order(cm$`Row Order`),]$`PRoXe Column Header`
   # 2. selected
-  my_selected <- intersect(names(df)[1:(condVis_ind-1)],my_choices)
+  my_selected <- intersect(names(df)[1:(condVis_ind-1)],my_choices) # TODO edit this line re: condVis_ind
+
+  # add group name to lab
+  lab <- paste0(ifelse(button_group!="",paste0(button_group,"_"),""),lab)
+  # lab <- paste0(button_group,lab)
+  
   dropdownButton(
     label = lab, status = "primary",
     # dynamic width based on content length:
@@ -175,6 +187,8 @@ mydropdownButton <- function(lab,meta3,condVis_ind) {
     )
   )
 }
+
+## LATER TODO: generalize myDropdownButton and myDropdownButton_solid
 
 # Module UI function
 # mydropdownButton3 <- function(id, label = "default label") {

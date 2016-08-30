@@ -34,11 +34,13 @@ source("functions.R")
 gloss.filename <- dir("./data/",pattern = glob2rx("Master_Glossary*xlsx"))
 if(length(gloss.filename) != 1) stop("too few or too many Master_Glossary sheets in dropbox")
 meta_gloss <- read_excel(paste0("./data/",gloss.filename),sheet=1)
+meta_gloss <- as.data.frame(meta_gloss)
 
 # read in metadata
 prima.filename <- dir("./data/",pattern = glob2rx("PRIMAGRAFTS*xlsx"))
 if(length(prima.filename) != 1) stop("too few or too many PRIMAGRAFTS sheets in dropbox")
 meta <- read_excel(paste0("./data/",prima.filename),sheet="Header_Data")
+meta <- as.data.frame(meta)
 
 # add meta into meta_gloss
 tmp <- meta

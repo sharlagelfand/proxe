@@ -115,3 +115,27 @@ names(gao_muts)[1] <- "PDX_Name"
 solid <- merge(solid,gao_muts,by="PDX_Name")
 rm(gao_muts)
 names(solid) <- gsub(pattern = "_",replacement = " ",x = names(solid))
+
+## -- choose which columns should be visible, invisible, etc. -- ##
+
+# levels(as.factor(meta$Visible_Invisible)) # [1] "cond_vis" "delete"   "ob_invis" "ob_vis"  
+# 1. get rid of 'delete'
+to_delete <- which(solid_meta$Visible_Invisible == "delete")
+if(length(to_delete) > 0) {
+  solid <- solid[,-to_delete]
+  solid_meta2 <- solid_meta[-to_delete,]
+} else solid_meta2 <- solid_meta
+# 2. sort all columns by categories
+solid_meta2$Visible_Invisible_int <- rep(NA_integer_,nrow(solid_meta2))
+solid_meta2[solid_meta2$Visible_Invisible == "ob_vis",]$Visible_Invisible_int <- 1
+solid_meta2[solid_meta2$Visible_Invisible == "cond_vis",]$Visible_Invisible_int <- 2
+if(nrow(solid_meta2[solid_meta2$Visible_Invisible == "ob_invis",])>0){
+  solid_meta2[solid_meta2$Visible_Invisible == "ob_invis",]$Visible_Invisible_int <- 3
+}
+library(plyr)
+solid_meta2 <- arrange(solid_meta2,Visible_Invisible_int)
+solid <- solid[,solid_meta2$PRoXe_Column_Header]
+# 3. store values for demarcation
+categ_count <- table(solid_meta2$Visible_Invisible)
+condVis_ind_solid <- unname(categ_count["ob_vis"] + 1) # marks beginning of cond vis
+obInvisRet_ind_solid <- unname(condVis_ind + categ_count["cond_vis"]) # marks beginning of invis but retained

@@ -389,6 +389,128 @@ shinyUI(
       # tabPanel("Solid Tumors (beta)",
       tabPanel("Database Explorer",
         h1("Solid Tumor Database Explorer"),
+        br(),
+        tags$div(
+          style="margin:15px;",
+          # top row of app
+          fluidRow(
+            column(6,
+              # dropdown buttons - left side
+              id="dt-col-select", ## NOTE this id copied from Liquid TODO consider changing
+              tags$div(
+                style="display: flex;",
+                tags$h4("First, select columns to show:",style="margin-right: 15px; font-weight: bold;"),
+                mydropdownButton("administrative",solid_meta2,condVis_ind_solid,"solid",solid),
+                mydropdownButton("tumor",solid_meta2,condVis_ind_solid,"solid",solid),
+                mydropdownButton("pdx",solid_meta2,condVis_ind_solid,"solid",solid)
+                # TODO: create appropriate observers for these?
+              )
+            ),
+            column(6,
+              # links, buttons on right side
+              id="email-request",
+              p(
+                a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
+                " with questions.",
+                actionButton("Request_link_solid","Request lines",icon("arrow-circle-o-right"),
+                  class="btn btn-primary"), # style="background-color: #1486ba; color: #fff; border-color: #2e6da4"
+                align="right"
+              )
+            )
+          ),
+          # 1. data table. -- maybe add a histogram or something below if desired.
+          fluidRow(
+            DT::dataTableOutput(outputId="table")
+          ),
+          # 2. Create download button below table
+          fluidRow(h4(" ")), # just an empty space.
+          fluidRow(
+            p(class = 'text-center', downloadButton('download_filtered', 'Download Filtered Data'))
+          ),
+          # 2. TODO: take filtered data table and apply some kind of graphical analysis.
+          fluidRow(
+            sidebarPanel(width=4,
+              selectInput(
+                "plotType", "Plot Type",
+                c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
+                  "2D Contingency Table" = "ctable_plot"),
+                selected = "scatbox"
+              ),
+              
+              # Option 1: show histogram.
+              conditionalPanel(
+                condition = "input.plotType == 'hist'",
+                selectInput("hist_var","Variable to plot",
+                  sort(names(df)[numeric_cols_vis]),selected="Age"),
+                selectInput(
+                  "hist_log","Scaling",
+                  c(linear=FALSE,log10=TRUE)
+                ),
+                selectInput(
+                  "breaks", "Breaks",
+                  c("[Custom]" = "custom", "Sturges",
+                    "Scott","Freedman-Diaconis")
+                ),
+                # Only show this sub-panel if Custom is selected
+                conditionalPanel(
+                  condition = "input.breaks == 'custom'",
+                  sliderInput("breakCount", "Break Count", min=1, max=100, value=25)
+                  
+                )
+                
+              ),
+              
+              # Option 2: show scatterplot.
+              conditionalPanel(
+                condition = "input.plotType == 'scatter'",
+                selectInput("scat_var_x","X variable to plot",sort(names(df)[numeric_cols_vis]),
+                  selected="Age"),
+                selectInput("scat_var_y","Y variable to plot",sort(names(df)[numeric_cols_vis]),
+                  selected="Presenting WBC")
+              ),
+              
+              # Option 3: show barplot.
+              conditionalPanel(
+                condition = "input.plotType == 'bar'",
+                selectInput("bar_var","Category to plot",sort(names(df)[factor_cols_vis]),
+                  selected="WHO Category")
+              ),
+              
+              # Option 4: show 1D-scatter+boxplot.
+              conditionalPanel(
+                condition = "input.plotType == 'scatbox'",
+                selectInput("scatbox_cat","Category to plot",sort(names(df)[factor_cols_vis]),
+                  selected="WHO Category"),
+                selectInput("scatbox_num","Numeric to plot",sort(names(df)[numeric_cols_vis]),
+                  selected="Days to Engraft P0")
+              ),
+              #                # Option 5: contingency table of categories
+              #                conditionalPanel(
+              #                  condition = "input.plotType == 'ctable'",
+              #                  selectInput("tablevarA","First category",sort(names(df)[factor_cols_vis]),
+              #                              selected = "WHO Category"),
+              #                  selectInput("tablevarB","Second category",sort(names(df)[factor_cols_vis]),
+              #                              selected = "Latest Passage Banked")
+              #                 ),
+              # Option 6: mosaic plot of contingency table.
+              conditionalPanel(
+                condition = "input.plotType == 'ctable_plot'",
+                selectInput("ctable_plot_var1","First category",sort(names(df)[factor_cols_vis]),
+                  selected = "WHO Category"),
+                selectInput("ctable_plot_var2","Second category",sort(names(df)[factor_cols_vis]),
+                  selected = "Latest Passage Banked")
+              )
+            ),
+            column(width=8,
+              ({ 
+                #                   if (input$plotType == 'ctable') {
+                #                      tableOutput("table_various")
+                #                   } else 
+                plotOutput("plot_various",height="600px") 
+              })
+            ) 
+          )
+        ),
         checkboxInput("solid_hide_sidebar","Hide sidebar",FALSE),
         # customHeaderPanel("Logo"),
         # Left sidebar for selecting which columns to show
