@@ -83,10 +83,10 @@ shinyUI(
               tags$div(
                 style="display: flex;",
                 tags$h4("First, select columns to show:",style="margin-right: 15px; font-weight: bold;"),
-                mydropdownButton("administrative",meta3,condVis_ind),
-                mydropdownButton("patient",meta3,condVis_ind),
-                mydropdownButton("tumor",meta3,condVis_ind),
-                mydropdownButton("pdx",meta3,condVis_ind)
+                mydropdownButton("administrative",meta3,condVis_ind,button_group="liquid"),
+                mydropdownButton("patient",meta3,condVis_ind,button_group="liquid"),
+                mydropdownButton("tumor",meta3,condVis_ind,button_group="liquid"),
+                mydropdownButton("pdx",meta3,condVis_ind,button_group="liquid")
               )
             ),
             column(6,
@@ -101,7 +101,7 @@ shinyUI(
               )
             )
           ),
-          # 1. data table. -- maybe add a histogram or something below if desired.
+          # 1. data table
           fluidRow(
             DT::dataTableOutput(outputId="table")
           ),
@@ -110,7 +110,7 @@ shinyUI(
           fluidRow(
             p(class = 'text-center', downloadButton('download_filtered', 'Download Filtered Data'))
           ),
-          # 2. TODO: take filtered data table and apply some kind of graphical analysis.
+          # 2. take filtered data table and apply various interactive graphical analysis.
           fluidRow(
             sidebarPanel(width=4,
               selectInput(
@@ -396,14 +396,13 @@ shinyUI(
           fluidRow(
             column(6,
               # dropdown buttons - left side
-              id="dt-col-select", ## NOTE this id copied from Liquid TODO consider changing
+              id="dt-col-select-solid",
               tags$div(
                 style="display: flex;",
                 tags$h4("First, select columns to show:",style="margin-right: 15px; font-weight: bold;"),
-                mydropdownButton("administrative",solid_meta2,condVis_ind_solid,"solid",solid),
-                mydropdownButton("tumor",solid_meta2,condVis_ind_solid,"solid",solid),
-                mydropdownButton("pdx",solid_meta2,condVis_ind_solid,"solid",solid)
-                # TODO: create appropriate observers for these?
+                mydropdownButton("administrative",solid_meta2,condVis_ind_solid,button_group="solid",solid),
+                mydropdownButton("tumor",solid_meta2,condVis_ind_solid,button_group="solid",solid),
+                mydropdownButton("pdx",solid_meta2,condVis_ind_solid,button_group="solid",solid)
               )
             ),
             column(6,
@@ -418,20 +417,20 @@ shinyUI(
               )
             )
           ),
-          # 1. data table. -- maybe add a histogram or something below if desired.
+          # 1. Display data table
           fluidRow(
-            DT::dataTableOutput(outputId="table")
+            DT::dataTableOutput(outputId="solid_table")
           ),
           # 2. Create download button below table
           fluidRow(h4(" ")), # just an empty space.
           fluidRow(
-            p(class = 'text-center', downloadButton('download_filtered', 'Download Filtered Data'))
+            p(class = 'text-center', downloadButton('solid_download_filtered', 'Download Filtered Data'))
           ),
-          # 2. TODO: take filtered data table and apply some kind of graphical analysis.
+          # 3. Allow user to choose from a number of visualizations and parameters.
           fluidRow(
-            sidebarPanel(width=4,
+            sidebarPanel(
               selectInput(
-                "plotType", "Plot Type",
+                "solid_plotType", "Plot Type",
                 c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
                   "2D Contingency Table" = "ctable_plot"),
                 selected = "scatbox"
@@ -439,22 +438,22 @@ shinyUI(
               
               # Option 1: show histogram.
               conditionalPanel(
-                condition = "input.plotType == 'hist'",
-                selectInput("hist_var","Variable to plot",
-                  sort(names(df)[numeric_cols_vis]),selected="Age"),
+                condition = "input.solid_plotType == 'hist'",
+                selectInput("solid_hist_var","Variable to plot",
+                  sort(names(solid)[solid_numeric_cols_vis]),selected=NULL), # TODO: change to default value when numeric columns are added to solid.
                 selectInput(
-                  "hist_log","Scaling",
+                  "solid_hist_log","Scaling",
                   c(linear=FALSE,log10=TRUE)
                 ),
                 selectInput(
-                  "breaks", "Breaks",
+                  "solid_breaks", "Breaks",
                   c("[Custom]" = "custom", "Sturges",
                     "Scott","Freedman-Diaconis")
                 ),
                 # Only show this sub-panel if Custom is selected
                 conditionalPanel(
-                  condition = "input.breaks == 'custom'",
-                  sliderInput("breakCount", "Break Count", min=1, max=100, value=25)
+                  condition = "input.solid_breaks == 'custom'",
+                  sliderInput("solid_breakCount", "Break Count", min=1, max=100, value=25)
                   
                 )
                 
@@ -462,43 +461,45 @@ shinyUI(
               
               # Option 2: show scatterplot.
               conditionalPanel(
-                condition = "input.plotType == 'scatter'",
-                selectInput("scat_var_x","X variable to plot",sort(names(df)[numeric_cols_vis]),
-                  selected="Age"),
-                selectInput("scat_var_y","Y variable to plot",sort(names(df)[numeric_cols_vis]),
-                  selected="Presenting WBC")
+                condition = "input.solid_plotType == 'scatter'",
+                selectInput("solid_scat_var_x","X variable to plot",sort(names(solid)[solid_numeric_cols_vis]),
+                  selected=NULL),
+                selectInput("solid_scat_var_y","Y variable to plot",sort(names(solid)[solid_numeric_cols_vis]),
+                  selected=NULL)
               ),
               
               # Option 3: show barplot.
               conditionalPanel(
-                condition = "input.plotType == 'bar'",
-                selectInput("bar_var","Category to plot",sort(names(df)[factor_cols_vis]),
-                  selected="WHO Category")
+                condition = "input.solid_plotType == 'bar'",
+                selectInput("solid_bar_var","Category to plot",sort(names(solid)[solid_factor_cols_vis]),
+                  selected="COSMIC Primary Site")
               ),
               
               # Option 4: show 1D-scatter+boxplot.
               conditionalPanel(
-                condition = "input.plotType == 'scatbox'",
-                selectInput("scatbox_cat","Category to plot",sort(names(df)[factor_cols_vis]),
-                  selected="WHO Category"),
-                selectInput("scatbox_num","Numeric to plot",sort(names(df)[numeric_cols_vis]),
-                  selected="Days to Engraft P0")
+                condition = "input.solid_plotType == 'scatbox'",
+                selectInput("solid_scatbox_cat","Category to plot",sort(names(solid)[solid_factor_cols_vis]),
+                  selected="COSMIC Primary Site"),
+                selectInput("solid_scatbox_num","Numeric to plot",sort(names(solid)[solid_numeric_cols_vis]),
+                  selected="PDX_Mutations_Count"),
+                selectInput("solid_scatbox_log","Numeric axis scaling",c("linear","log"),
+                  selected="log")
               ),
               #                # Option 5: contingency table of categories
               #                conditionalPanel(
               #                  condition = "input.plotType == 'ctable'",
-              #                  selectInput("tablevarA","First category",sort(names(df)[factor_cols_vis]),
+              #                  selectInput("tablevarA","First category",sort(names(solid)[solid_numeric_cols_vis]),
               #                              selected = "WHO Category"),
-              #                  selectInput("tablevarB","Second category",sort(names(df)[factor_cols_vis]),
+              #                  selectInput("tablevarB","Second category",sort(names(solid)[solid_numeric_cols_vis]),
               #                              selected = "Latest Passage Banked")
               #                 ),
               # Option 6: mosaic plot of contingency table.
               conditionalPanel(
-                condition = "input.plotType == 'ctable_plot'",
-                selectInput("ctable_plot_var1","First category",sort(names(df)[factor_cols_vis]),
-                  selected = "WHO Category"),
-                selectInput("ctable_plot_var2","Second category",sort(names(df)[factor_cols_vis]),
-                  selected = "Latest Passage Banked")
+                condition = "input.solid_plotType == 'ctable_plot'",
+                selectInput("solid_ctable_plot_var1","First category",sort(names(solid)[solid_factor_cols_vis]),
+                  selected = "COSMIC Type"),
+                selectInput("solid_ctable_plot_var2","Second category",sort(names(solid)[solid_factor_cols_vis]),
+                  selected = "COSMIC Primary Site")
               )
             ),
             column(width=8,
@@ -506,174 +507,11 @@ shinyUI(
                 #                   if (input$plotType == 'ctable') {
                 #                      tableOutput("table_various")
                 #                   } else 
-                plotOutput("plot_various",height="600px") 
+                plotOutput("solid_plot_various") 
               })
-            ) 
-          )
-        ),
-        checkboxInput("solid_hide_sidebar","Hide sidebar",FALSE),
-        # customHeaderPanel("Logo"),
-        # Left sidebar for selecting which columns to show
-        sidebarLayout(
-          conditionalPanel(condition = "input.solid_hide_sidebar == false",
-            sidebarPanel(
-              #'               # adjusting sidebar width and text manually with CSS
-              #'               tags$head(
-              #'                 # tags$style(type='text/css', ".col-sm-8 { margin-left: 10px;}"),
-              #'                 # tags$style(type='text/css', ".col-sm-3 { margin-right: -20px;}"),
-              #'                 # tags$link(rel="shortcut icon", href="favicon.ico"),
-              #'                 # tags$style(type='text/css', ".well { max-width: 310px; }"),
-              #'                 # tags$style(type='text/css', ".span3 { max-width: 310px; }"),
-              #'               tags$style(type='text/css', ".radio, .checkbox { margin-bottom: 2px; }"),
-              #'               tags$style(type='text/css', ".radio label, .checkbox label {
-              #'                 width: 100%;
-              #'                 overflow: hidden;
-              #'                 text-overflow: ellipsis;
-              #'                 white-space: nowrap;
-              #'                 }"),
-              #'               tags$style(type='text/css', "
-              #'                 @media (min-width: 768px)
-              #'                 .col-sm-3 {
-              #'                 width: 25%;
-              #'                 max-width: 29em;
-              #'                 }"),
-              #'               tags$style(type='text/css', "
-              #'                 .container-fluid {
-              #'                 padding-top:4em
-              #'                 }"),
-              #'               tags$style(type='text/css', "
-              #'                 #hidebox {
-              #'                 display:inline;
-              #'                 }")
-              #'                   #,
-              #'                   # for adding ellipsis to ColVis
-              #'                   #           tags$style(type='text/css', "
-              #'                   #             ul.ColVis_collection li span {
-              #'                   #               overflow: hidden;
-              #'                   #               text-overflow: ellipsis;
-              #'                   #               width: 90%;
-              #'                   #             }")
-              #'               ),
-              h4(strong("First, select columns to show:")),
-              actionButton("solid_selectall", label="(Un)select all"),
-              checkboxGroupInput("solid_show_vars",
-                NULL,
-                names(solid),#[1:(obInvisRet_ind-1)]),
-                selected=names(solid)[1:5] # note hardcoded. Could do something like: [1:(condVis_ind-1)]
-              )
-              ,width=3 # used to be width 4. 3 works better for full screenwidth. Would prefer fixed to longest name length. TODO.
-            )
-          ),
-          # Right panel for showing table with subsettable columns, alphabetized.
-          mainPanel(
-            # 0. Email us (temporary)
-            fluidRow(
-              # p(checkboxInput("hide_sidebar","Hide sidebar",FALSE),id="hidebox"),
-              p(
-                a("Email us",href="mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback",target="_top"),
-                " with questions.",
-                actionButton("Request_link_solid","Request lines",icon("arrow-circle-o-right"),
-                  class="btn btn-primary"),
-                align="right"
-              )
-            ),
-            # 1. data table. -- maybe add a histogram or something below if desired.
-            fluidRow(
-              DT::dataTableOutput(outputId="solid_table")
-            ),
-            #             2. Create download button below table
-            fluidRow(h4(" ")), # just an empty space.
-            fluidRow(
-              p(class = 'text-center', downloadButton('solid_download_filtered', 'Download Filtered Data'))
-            ),
-            # 2. TODO: take filtered data table and apply some kind of graphical analysis.
-            fluidRow(
-              sidebarPanel(
-                selectInput(
-                  "solid_plotType", "Plot Type",
-                  c(Histogram = "hist", Scatter = "scatter", Bar = "bar", "1D Scatter-Box" = "scatbox",
-                    "2D Contingency Table" = "ctable_plot"),
-                  selected = "scatbox"
-                ),
-                
-                # Option 1: show histogram.
-                conditionalPanel(
-                  condition = "input.solid_plotType == 'hist'",
-                  selectInput("solid_hist_var","Variable to plot",
-                    sort(names(solid)[solid_numeric_cols_vis]),selected=NULL), # TODO: change to default value when numeric columns are added to solid.
-                  selectInput(
-                    "solid_hist_log","Scaling",
-                    c(linear=FALSE,log10=TRUE)
-                  ),
-                  selectInput(
-                    "solid_breaks", "Breaks",
-                    c("[Custom]" = "custom", "Sturges",
-                      "Scott","Freedman-Diaconis")
-                  ),
-                  # Only show this sub-panel if Custom is selected
-                  conditionalPanel(
-                    condition = "input.solid_breaks == 'custom'",
-                    sliderInput("solid_breakCount", "Break Count", min=1, max=100, value=25)
-                    
-                  )
-                  
-                ),
-                
-                # Option 2: show scatterplot.
-                conditionalPanel(
-                  condition = "input.solid_plotType == 'scatter'",
-                  selectInput("solid_scat_var_x","X variable to plot",sort(names(solid)[solid_numeric_cols_vis]),
-                    selected=NULL),
-                  selectInput("solid_scat_var_y","Y variable to plot",sort(names(solid)[solid_numeric_cols_vis]),
-                    selected=NULL)
-                ),
-                
-                # Option 3: show barplot.
-                conditionalPanel(
-                  condition = "input.solid_plotType == 'bar'",
-                  selectInput("solid_bar_var","Category to plot",sort(names(solid)[solid_factor_cols_vis]),
-                    selected="COSMIC Primary Site")
-                ),
-                
-                # Option 4: show 1D-scatter+boxplot.
-                conditionalPanel(
-                  condition = "input.solid_plotType == 'scatbox'",
-                  selectInput("solid_scatbox_cat","Category to plot",sort(names(solid)[solid_factor_cols_vis]),
-                    selected="COSMIC Primary Site"),
-                  selectInput("solid_scatbox_num","Numeric to plot",sort(names(solid)[solid_numeric_cols_vis]),
-                    selected="PDX_Mutations_Count"),
-                  selectInput("solid_scatbox_log","Numeric axis scaling",c("linear","log"),
-                    selected="log")
-                ),
-                #                # Option 5: contingency table of categories
-                #                conditionalPanel(
-                #                  condition = "input.plotType == 'ctable'",
-                #                  selectInput("tablevarA","First category",sort(names(solid)[solid_numeric_cols_vis]),
-                #                              selected = "WHO Category"),
-                #                  selectInput("tablevarB","Second category",sort(names(solid)[solid_numeric_cols_vis]),
-                #                              selected = "Latest Passage Banked")
-                #                 ),
-                # Option 6: mosaic plot of contingency table.
-                conditionalPanel(
-                  condition = "input.solid_plotType == 'ctable_plot'",
-                  selectInput("solid_ctable_plot_var1","First category",sort(names(solid)[solid_factor_cols_vis]),
-                    selected = "COSMIC Type"),
-                  selectInput("solid_ctable_plot_var2","Second category",sort(names(solid)[solid_factor_cols_vis]),
-                    selected = "COSMIC Primary Site")
-                )
-              ),
-              column(width=8,
-                ({ 
-                  #                   if (input$plotType == 'ctable') {
-                  #                      tableOutput("table_various")
-                  #                   } else 
-                  plotOutput("solid_plot_various") 
-                })
-              ) # end plot column
-            ) # end fluidRow for custom plotting
-          ) # end mainPanel
-          ,fluid=TRUE
-        ) # end sidebarLayout
+            ) # end plot column
+          ) # end fluidRow for custom plotting
+        )
       ),
       tabPanel("Glossary",
         h1("Solid Tumor Glossary"),

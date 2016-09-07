@@ -19,7 +19,8 @@ if(class(df$`WHO Classification`)=="factor") warning("Reminder: WHO Classificati
 print("didcomehere4")
 # Define a server for the Shiny app
 shinyServer(function(input, output, session) {  #TODO: read on what 'session' means here.  
-  # select/deselect all using action button
+  
+  # for observer functions
   observe({
     updateSelectizeInput(session,inputId="rna_genes",
                    choices=sort(rownames(rnamat_sub)), server=TRUE,
@@ -30,32 +31,20 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     updateSelectizeInput(session,inputId="oncop_genes",
                           choices=sort(M2_genes), server=TRUE,
                           selected=c("TP53","KRAS","NRAS"))
+
+    # Shiny 'links' between tab panels
     if(input$Request_link != 0) updateTabsetPanel(session, inputId="mainNavBar", selected="Line Request/Pricing")
     if(input$Methods_link != 0) updateTabsetPanel(session, inputId="mainNavBar", selected="Methods")
-
-    ## solid tab
-    # select all
-    if (input$solid_selectall > 0) {
-      if (input$solid_selectall %% 2 == 1){
-        updateCheckboxGroupInput(session=session, 
-          inputId="solid_show_vars",
-          choices = names(solid),
-          selected = c(names(solid)))
-      } else {
-        updateCheckboxGroupInput(session=session, 
-          inputId="solid_show_vars",
-          choices = names(solid),
-          selected = c())
-      }
-    }
-    # Line Request link button
+    # Line Request link button for solid tab
     if(input$Request_link_solid != 0) updateTabsetPanel(session, inputId="mainNavBar", selected="Line Request/Pricing")
-
   })
   
-  # Filter data based on selections
+
+  ########### -- 'Liquid' menu objects -- #############
+
+  # liquid data table
   output$table <- DT::renderDataTable({
-    cols_selected <- c(input$check2_administrative,input$check2_patient,input$check2_tumor,input$check2_pdx)
+    cols_selected <- c(input$check2_liquid_administrative,input$check2_liquid_patient,input$check2_liquid_tumor,input$check2_liquid_pdx)
     if (is.null(cols_selected)){
       data.frame("no variables selected" = c("no variables selected"))
     } else {
@@ -114,11 +103,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     )
   )
   
-  #   # create solid tumor data
-  #   output$solid_table <- DT::renderDataTable({
-  #     solid
-  #   })
-  
+  # liquid plots based on filtering data table
   output$plot_various <- renderPlot({
     req(input$table_rows_all)
     filtered_row_inds <- input$table_rows_all
@@ -209,192 +194,17 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     #     m <- ggplot(df[filtered_row_inds,], aes_string(x=input$hist_var))
     #     m + geom_histogram(fill="blue") #input$hist_binwidth)
   })
-  
-  # Solid tumor PDX table
-  output$solid_table <- DT::renderDataTable({
-    if (is.null(input$solid_show_vars)){
-      data.frame("no variables selected" = c("no variables selected"))
-    } else{
-      data <- solid[,input$solid_show_vars, drop=FALSE]
-      data
-      # # note this code changes formatting of data table. Useful to play with later.
-      # # this is a substitute for 'data' above.
-      #   datatable(data) %>% formatStyle(
-      #     'PDX Name',
-      #     backgroundColor = styleInterval(3.4, c('gray', 'yellow'))
-      #   )
-    }
-    },
-    # class="cell-border stripe", # option to add thin vertical line between columns
-    # caption="Note: table filtering (below) resets upon new column selections (left).",
-    style="default", # alternative: "bootstrap"
-    escape= FALSE,
-    # From SPK: Consider escaping only 'PDF' and future columns that contain hyperlinks via this tip:
-    # Note: Besides TRUE and FALSE, you can also specify which columns you want to escape, e.g.
-    # datatable(m, escape = 1)  # escape the first column
-    # datatable(m, escape = 2)  # escape the second column
-    # datatable(m, escape = c(TRUE, FALSE))  # escape the first column
-    # colnames(m) = c('V1', 'V2')
-    # datatable(m, escape = 'V1')
-    filter="top",
-    server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
-    rownames=FALSE,
-    extensions = c('ColReorder'),#,'Buttons'), #'ColVis',,,'Responsive'
-    options = list(
-      #     # options related to extensions:
-      dom = 'Rlfrtip',
-      colReorder = list(realtime = TRUE), 
-      #     # dom = 'C<"clear">lfrtip', # testing colVis
-      #     # colVis = list(activate="mouseover"),#"click"), # testing colVis
-      #       # TODO: the major questions with ColVis are whether we can...
-      #         #1) capture the hidden/not hidden column information
-      #         #2) format the dropdown to be pretty and more intuitive
-      #         #3) easily create a 'select all/none' -- old one might work too.
-      #         #4) create some kind of 'reset' (browser refresh might be good enough)
-      #     # Update: ColVis status is 'retired' in favor of less-clear 'Buttons' But I think it's not in `DT`.
-      #       # Buttons was just added but the development version breaks my table -- waiting... 3/18/16 
-      #       # dom = 'Bfrtip', 
-      # buttons = c('copy', 'excel', 'pdf', 'print', 'colvis'),
-      #     
-      #     # standard options:
-      orderClasses = TRUE,
-      searchHighlight = TRUE,
-      pageLength = 5, 
-      lengthMenu = list(c(5,10,25,50,100,-1),c(5,10,25,50,100,"All"))
-    )
-  )
 
-  # download solid filtered data
-  output$solid_download_filtered = downloadHandler("PRoXe_solid_filtered.xlsx", content = function(filename) {
-    filtered_row_inds <- input$solid_table_rows_all
-    dfxl <- solid[filtered_row_inds, , drop = FALSE] 
+  # download the filtered liquid table
+  output$download_filtered = downloadHandler("PRoXe_filtered.xlsx", content = function(filename) {
+    filtered_row_inds <- input$table_rows_all
+    dfxl <- df[filtered_row_inds, 1:(obInvisRet_ind-1), drop = FALSE] 
     #     WriteXLS(dfxl, ExcelFileName=filename)
     #     write.table(dfxl, filename, quote=FALSE,sep="|",na="",row.names=FALSE)
     write.xlsx(x=dfxl,file=filename,row.names=FALSE,showNA=FALSE)
   })
   
-  # lower plot for solid tumor Database Explorer
-  output$solid_plot_various <- renderPlot({
-    filtered_row_inds <- input$solid_table_rows_all
-    
-    # choose type of plot
-    if(input$solid_plotType == "hist") {
-      hist_x <- solid[filtered_row_inds,input$solid_hist_var]
-      hist_xlab <- input$solid_hist_var
-      if(input$solid_hist_log==TRUE) {
-        hist_x <- log10(hist_x)
-        hist_xlab <- paste0(hist_xlab, " (log10)")
-      }
-      # find a way to use the table output by output$table above.
-      if(input$solid_breaks != "custom") hist_breaks = input$solid_breaks
-      else hist_breaks = input$solid_breakCount
-      # note hist() results in a transient error when app is first loaded bedcause input$table_rows_all is initially empty
-      # could fix if desired, but doesn't affect how the app works.
-      hist(hist_x,
-        breaks= hist_breaks,
-        main="Histogram of selected variable.\nUpdates based on filtering above.",
-        xlab=hist_xlab, 
-        col="skyblue",# rgb(66,139,202,maxColorValue = 255),
-        border = "white")
-    } else if (input$solid_plotType == "scatter") {
-      scat_x <- solid[filtered_row_inds,input$solid_scat_var_x]
-      scat_y <- solid[filtered_row_inds,input$solid_scat_var_y]
-      plot(x = scat_x, y = scat_y,
-        main="Scatterplot of selected variables.\nUpdates based on filtering above.",
-        xlab=input$solid_scat_var_x,ylab=input$solid_scat_var_y, col = "royalblue",pch=19)
-      # TODO goal: switch this with an interactive plot via rCharts or something else.
-      # this url might help: https://gallery.shinyapps.io/095-plot-interaction-advanced/
-    } else if (input$solid_plotType == "bar") {
-      bar_table <- table(solid[filtered_row_inds,input$solid_bar_var])
-      op <- par(no.readonly = TRUE)
-      #change settings
-      par(mar=c(5, 18, 2, 2) + 0.1)
-      num_vars = length(levels(solid[,input$solid_bar_var]))
-      par(cex=1+log(7/num_vars,base=100)) # simply scaling plot size to number of variables
-      barplot(bar_table,las=2,horiz=TRUE,col = rainbow(length(bar_table)), border = "white", xlab = input$solid_bar_var,
-        main="Barplot of counts in selected category.\nUpdates based on filtering above.")
-      #reset settings
-      par(op)
-    } else if (input$solid_plotType == "scatbox"){
-      scatbox_df <- solid[filtered_row_inds,]
-      # print(str(scatbox_df))
-      scatbox_formula <- get(input$solid_scatbox_num) ~ get(input$solid_scatbox_cat)
-      # print("here8")
-      #change settings
-      par(mar=c(5, 18, 3, 2) + 0.1)
-      num_vars = length(levels(solid[,input$solid_scatbox_cat]))
-      par(cex=1+log(7/num_vars,base=100)) # scales plot to number of variables
-      # Done: incorporate proportionality to number of variables into height of this (and barplot).
-      # Failed avenues: par(din), dev.size(), 'height' parameter in different parts of UI.,
-      # try: check other par() parameters
-      # try: ?png() or ?x11()
-      # best idea: TODO could perhaps still improve at the UI height specification.
-      
-      # TODO: adjust par(mar) according to length of variable names so they aren't cut off. (Also for barplot.)
-      # or adjust long variable names to a maximum length. 
-      # now may need to incorporate num_vars or par(cex) into this calculation
-      if(input$solid_scatbox_log == "log"){
-        scatbox_log = TRUE
-      } else {
-        scatbox_log = FALSE
-      }
-      
-      beeswarm(scatbox_formula, data = scatbox_df, 
-        log = scatbox_log, pch = 21, col = rainbow(5), bg = "gray", corral = "wrap", 
-        horizontal=TRUE, las=2, ylab="", xlab=input$solid_scatbox_num, 
-        main="1D-scatterplot + boxplot of counts in selected category.\nUpdates based on filtering above.",
-        add=F)
-      boxplot(scatbox_formula, data = scatbox_df,log=scatbox_log,
-        outline = FALSE, horizontal=TRUE, add=T, col="#00000000", las=2, xlab=input$solid_scatbox_num)
-      #reset settings
-      par(op)
-      
-    } else if (input$solid_plotType == "ctable_plot") {
-      #TODO: add to ui.R
-      tablefunc_df <- solid[filtered_row_inds,]
-      # plot(table(tablefunc_df[,input$tablevar1],tablefunc_df[,input$tablevar2]))  # works, but ugly.
-      mosaicplot(table(tablefunc_df[,input$solid_ctable_plot_var1],tablefunc_df[,input$solid_ctable_plot_var2]),
-        color=rainbow(8), main = "Congingency table plot.\nUpdates based on filtering above",
-        cex.axis=0.7) # same -- could optimize with color etc?
-      # TODO: fix main and axis labels, maybe margins.
-      # qplot(x=table(tablefunc_df[,input$tablevar1],tablefunc_df[,input$tablevar2]),
-      # stat="summary")  # doesn't work.
-      # ggplot(as.data.frame(table(tablefunc_df)), aes_string(x=input$tablevar1, fill = input$tablevar2)) +
-      # geom_bar(stat="identity")  # doesn't work.
-      
-    } else input$solid_plotType <- plot(0)
-    
-    
-    
-    
-    ### TODO: I would like to switch this to ggplot/qplot, but it doesn't take variables where 'input$hist_var' is.
-    # aes_string is a hint.
-    ### issue: 'count' scale is off compared to base::hist method above.
-    # qplot(input$hist_var, data=df[filtered_row_inds,], geom="histogram",
-    # main="histogram of selected variable: \n updates based on selections above")
-    #     m <- ggplot(df[filtered_row_inds,], aes_string(x=input$hist_var))
-    #     m + geom_histogram(fill="blue") #input$hist_binwidth)
-  })
-
-  # for plotting a contingency table in table format
-  output$table_various <- renderTable({
-    filtered_row_inds <- input$table_rows_all
-    ctable_df <- df[filtered_row_inds,]
-    
-    # remove mCLP and Luc lines
-    to_remove <- c(grep("Luc",ctable_df$`PDX Name`),
-                   grep("mCLP",ctable_df$`PDX Name`))
-    ctable_df <- ctable_df[-to_remove,]
-    
-    if (input$ctable_numcats == 1) {
-      tmp_table <- table(ctable_df[,input$tablevar1])
-      names(dimnames(tmp_table)) <- "category"
-      tmp_table
-    } else if (input$ctable_numcats == 2) {
-      as.data.frame.matrix(table(ctable_df[,input$tablevar1],ctable_df[,input$tablevar2]))
-    }
-  },striped=T,hover=T,bordered=T,rownames=T)
-  
+  # PDX gene expression
   output$plot_rna <- renderPlot({
     
     # see this for making heatmaps
@@ -477,6 +287,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     }
   })
   
+  # PDX mutations
   output$plot_oncoprint <- renderPlot({
     
     # if desired, subset for only samples selected in Database Explorer
@@ -527,17 +338,26 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     par(mar=rep(5,4),cex.axis=0.7) # Mark, cex.axis changes the x and y axis label font sizes.
     oncoPrint(M3)
     par(op)
-    
   })
-  
-  # download the filtered data
-  output$download_filtered = downloadHandler("PRoXe_filtered.xlsx", content = function(filename) {
+
+  # contingency table
+  output$table_various <- renderTable({
     filtered_row_inds <- input$table_rows_all
-    dfxl <- df[filtered_row_inds, 1:(obInvisRet_ind-1), drop = FALSE] 
-    #     WriteXLS(dfxl, ExcelFileName=filename)
-    #     write.table(dfxl, filename, quote=FALSE,sep="|",na="",row.names=FALSE)
-    write.xlsx(x=dfxl,file=filename,row.names=FALSE,showNA=FALSE)
-  })
+    ctable_df <- df[filtered_row_inds,]
+    
+    # remove mCLP and Luc lines
+    to_remove <- c(grep("Luc",ctable_df$`PDX Name`),
+                   grep("mCLP",ctable_df$`PDX Name`))
+    ctable_df <- ctable_df[-to_remove,]
+    
+    if (input$ctable_numcats == 1) {
+      tmp_table <- table(ctable_df[,input$tablevar1])
+      names(dimnames(tmp_table)) <- "category"
+      tmp_table
+    } else if (input$ctable_numcats == 2) {
+      as.data.frame.matrix(table(ctable_df[,input$tablevar1],ctable_df[,input$tablevar2]))
+    }
+  },striped=T,hover=T,bordered=T,rownames=T)
   
   # line report
   output$line_report <- DT::renderDataTable({
@@ -660,7 +480,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       paging = FALSE
     )
   )
-  
   output$line_report_FC <- renderUI({
     if(input$line_report_input_type == "click"){
       df_idx <- input$table_rows_selected
@@ -682,7 +501,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
         height="800px")
     }
   })
-  
   output$line_report_IHC <- renderUI({
     if(input$line_report_input_type == "click"){
       df_idx <- input$table_rows_selected
@@ -704,7 +522,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
         height="800px")
     }
   })
-  
   output$line_report_Path <- renderUI({
     if(input$line_report_input_type == "click"){
       df_idx <- input$table_rows_selected
@@ -729,6 +546,8 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
     # download the line report TODO: change filename to reflect line.
       # TODO: consider pre-processing all these if slow.
+
+  ## TODO, perhaps: finish at some point: concatenate/format all information to make an easily downloadable Line Report per line:
   #   output$download_line_report = downloadHandler("PRoXe_line_report.pdf", content = function(filename) {
   #     df_idx <- input$table_rows_selected
   #     library(knitr)
@@ -741,7 +560,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   #     }
   #   })
   
-  # add glossary
+  # liquid glossary
   output$glossary <- DT::renderDataTable({
     #     # take visible columns' header and description
     #     meta3 <- meta2[meta2$Visible_Invisible != "ob_invis",c("PRoXe_Column_Header","Column_Description")]
@@ -767,6 +586,207 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       paging=FALSE
     )
   )
+
+  # liquid methods
+  output$PDX_methods <- renderUI({
+    # filename <- dir(path = "www/methods",pattern="_PDX_Methods_for_proxe.pdf",full.names=T)
+    # TODO: later functionalize this
+    filename <- dir(path = "www/methods",pattern="_PDX_Methods_for_proxe.pdf",full.names=T)
+    if(length(filename) < 1) warning("Where is the methods pdf?")
+    if(length(filename) > 1) {
+      warning("> 1 methods PDFs in www/methods folder. Taking last saved.")
+      tmp <- sapply(filename,function(i) file.info(i)$mtime)
+      newest_file <- sort(tmp,decreasing=T)[1]
+      filename <- names(newest_file)
+    }
+    filename <- gsub("www/","",filename)
+    tags$iframe(
+      src=filename,
+      width="100%",
+      height="800px")
+  })
+  output$Renal_methods <- renderUI({
+    filename <- "methods/Renal_capsule_methods.pdf"
+    tags$iframe(
+      src=filename,
+      width="100%",
+      height="800px")
+  })
+
+  ########### -- 'Solid' menu objects --#############
+
+  # solid data table
+  output$solid_table <- DT::renderDataTable({
+    cols_selected <- c(input$check2_solid_administrative,input$check2_solid_tumor,input$check2_solid_pdx) # note took out patient because no data yet.
+    if (is.null(cols_selected)){
+      data.frame("no variables selected" = c("no variables selected"))
+    } else {
+      data <- solid[,cols_selected, drop=FALSE]
+      # todo: perhaps work on column sorting here.
+      data
+      # # note this code changes formatting of data table. Useful to play with later.
+      # # this is a substitute for 'data' above.
+      #   datatable(data) %>% formatStyle(
+      #     'PDX Name',
+      #     backgroundColor = styleInterval(3.4, c('gray', 'yellow'))
+      #   )
+    }
+    },
+    # class="cell-border stripe", # option to add thin vertical line between columns
+    # caption="Note: table filtering (below) resets upon new column selections (left).",
+    style="default", # alternative: "bootstrap"
+    escape= FALSE,
+      # From SPK: Consider escaping only 'PDF' and future columns that contain hyperlinks via this tip:
+      # Note: Besides TRUE and FALSE, you can also specify which columns you want to escape, e.g.
+        # datatable(m, escape = 1)  # escape the first column
+        # datatable(m, escape = 2)  # escape the second column
+        # datatable(m, escape = c(TRUE, FALSE))  # escape the first column
+        # colnames(m) = c('V1', 'V2')
+        # datatable(m, escape = 'V1')
+    filter="top",
+    server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
+    rownames=FALSE,
+    extensions = c('ColReorder'),#,'Buttons'), #'ColVis',,,'Responsive'
+    options = list(
+      # set label for upper-right search box.
+      language = list(
+        search = 'Search table:',
+        info = 'Showing _START_ to _END_ of _TOTAL_ PDX lines'
+      ), # Other ideas: "Filter:", "Filter entire table:", "Search entire table:"
+      # options related to extensions:
+      dom = 'Rlfrtip',
+      colReorder = list(realtime = TRUE), 
+      # dom = 'C<"clear">lfrtip', # testing colVis
+      # colVis = list(activate="mouseover"),#"click"), # testing colVis
+        # TODO: the major questions with ColVis are whether we can...
+          #1) capture the hidden/not hidden column information
+          #2) format the dropdown to be pretty and more intuitive
+          #3) easily create a 'select all/none' -- old one might work too.
+          #4) create some kind of 'reset' (browser refresh might be good enough)
+      # Update: ColVis status is 'retired' in favor of less-clear 'Buttons' But I think it's not in `DT`.
+        # Buttons was just added but the development version breaks my table -- waiting... 3/18/16 
+        # dom = 'Bfrtip', 
+      # buttons = c('copy', 'excel', 'pdf', 'print', 'colvis'),
+          
+      # standard options:
+      orderClasses = TRUE,
+      searchHighlight = TRUE,
+      pageLength = 5, 
+      lengthMenu = list(c(5,10,25,50,100,-1),c(5,10,25,50,100,"All"))
+    )
+  )
+
+  # download solid filtered data
+  output$solid_download_filtered = downloadHandler("PRoXe_solid_filtered.xlsx", content = function(filename) {
+    filtered_row_inds <- input$solid_table_rows_all
+    dfxl <- solid[filtered_row_inds, , drop = FALSE] 
+    #     WriteXLS(dfxl, ExcelFileName=filename)
+    #     write.table(dfxl, filename, quote=FALSE,sep="|",na="",row.names=FALSE)
+    write.xlsx(x=dfxl,file=filename,row.names=FALSE,showNA=FALSE)
+  })
+  
+  # lower plot for solid tumor Database Explorer
+  output$solid_plot_various <- renderPlot({
+    filtered_row_inds <- input$solid_table_rows_all
+    
+    # choose type of plot
+    if(input$solid_plotType == "hist") {
+      hist_x <- solid[filtered_row_inds,input$solid_hist_var]
+      hist_xlab <- input$solid_hist_var
+      if(input$solid_hist_log==TRUE) {
+        hist_x <- log10(hist_x)
+        hist_xlab <- paste0(hist_xlab, " (log10)")
+      }
+      # find a way to use the table output by output$table above.
+      if(input$solid_breaks != "custom") hist_breaks = input$solid_breaks
+      else hist_breaks = input$solid_breakCount
+      # note hist() results in a transient error when app is first loaded bedcause input$table_rows_all is initially empty
+      # could fix if desired, but doesn't affect how the app works.
+      hist(hist_x,
+        breaks= hist_breaks,
+        main="Histogram of selected variable.\nUpdates based on filtering above.",
+        xlab=hist_xlab, 
+        col="skyblue",# rgb(66,139,202,maxColorValue = 255),
+        border = "white")
+    } else if (input$solid_plotType == "scatter") {
+      scat_x <- solid[filtered_row_inds,input$solid_scat_var_x]
+      scat_y <- solid[filtered_row_inds,input$solid_scat_var_y]
+      plot(x = scat_x, y = scat_y,
+        main="Scatterplot of selected variables.\nUpdates based on filtering above.",
+        xlab=input$solid_scat_var_x,ylab=input$solid_scat_var_y, col = "royalblue",pch=19)
+      # TODO goal: switch this with an interactive plot via rCharts or something else.
+      # this url might help: https://gallery.shinyapps.io/095-plot-interaction-advanced/
+    } else if (input$solid_plotType == "bar") {
+      bar_table <- table(solid[filtered_row_inds,input$solid_bar_var])
+      op <- par(no.readonly = TRUE)
+      #change settings
+      par(mar=c(5, 18, 2, 2) + 0.1)
+      num_vars = length(levels(solid[,input$solid_bar_var]))
+      par(cex=1+log(7/num_vars,base=100)) # simply scaling plot size to number of variables
+      barplot(bar_table,las=2,horiz=TRUE,col = rainbow(length(bar_table)), border = "white", xlab = input$solid_bar_var,
+        main="Barplot of counts in selected category.\nUpdates based on filtering above.")
+      #reset settings
+      par(op)
+    } else if (input$solid_plotType == "scatbox"){
+      scatbox_df <- solid[filtered_row_inds,]
+      # print(str(scatbox_df))
+      scatbox_formula <- get(input$solid_scatbox_num) ~ get(input$solid_scatbox_cat)
+      # print("here8")
+      #change settings
+      par(mar=c(5, 18, 3, 2) + 0.1)
+      num_vars = length(levels(solid[,input$solid_scatbox_cat]))
+      par(cex=1+log(7/num_vars,base=100)) # scales plot to number of variables
+      # Done: incorporate proportionality to number of variables into height of this (and barplot).
+      # Failed avenues: par(din), dev.size(), 'height' parameter in different parts of UI.,
+      # try: check other par() parameters
+      # try: ?png() or ?x11()
+      # best idea: TODO could perhaps still improve at the UI height specification.
+      
+      # TODO: adjust par(mar) according to length of variable names so they aren't cut off. (Also for barplot.)
+      # or adjust long variable names to a maximum length. 
+      # now may need to incorporate num_vars or par(cex) into this calculation
+      if(input$solid_scatbox_log == "log"){
+        scatbox_log = TRUE
+      } else {
+        scatbox_log = FALSE
+      }
+      
+      beeswarm(scatbox_formula, data = scatbox_df, 
+        log = scatbox_log, pch = 21, col = rainbow(5), bg = "gray", corral = "wrap", 
+        horizontal=TRUE, las=2, ylab="", xlab=input$solid_scatbox_num, 
+        main="1D-scatterplot + boxplot of counts in selected category.\nUpdates based on filtering above.",
+        add=F)
+      boxplot(scatbox_formula, data = scatbox_df,log=scatbox_log,
+        outline = FALSE, horizontal=TRUE, add=T, col="#00000000", las=2, xlab=input$solid_scatbox_num)
+      #reset settings
+      par(op)
+      
+    } else if (input$solid_plotType == "ctable_plot") {
+      #TODO: add to ui.R
+      tablefunc_df <- solid[filtered_row_inds,]
+      # plot(table(tablefunc_df[,input$tablevar1],tablefunc_df[,input$tablevar2]))  # works, but ugly.
+      mosaicplot(table(tablefunc_df[,input$solid_ctable_plot_var1],tablefunc_df[,input$solid_ctable_plot_var2]),
+        color=rainbow(8), main = "Congingency table plot.\nUpdates based on filtering above",
+        cex.axis=0.7) # same -- could optimize with color etc?
+      # TODO: fix main and axis labels, maybe margins.
+      # qplot(x=table(tablefunc_df[,input$tablevar1],tablefunc_df[,input$tablevar2]),
+      # stat="summary")  # doesn't work.
+      # ggplot(as.data.frame(table(tablefunc_df)), aes_string(x=input$tablevar1, fill = input$tablevar2)) +
+      # geom_bar(stat="identity")  # doesn't work.
+      
+    } else input$solid_plotType <- plot(0)
+    
+    
+    
+    
+    ### TODO: I would like to switch this to ggplot/qplot, but it doesn't take variables where 'input$hist_var' is.
+    # aes_string is a hint.
+    ### issue: 'count' scale is off compared to base::hist method above.
+    # qplot(input$hist_var, data=df[filtered_row_inds,], geom="histogram",
+    # main="histogram of selected variable: \n updates based on selections above")
+    #     m <- ggplot(df[filtered_row_inds,], aes_string(x=input$hist_var))
+    #     m + geom_histogram(fill="blue") #input$hist_binwidth)
+  })
 
   output$solid_glossary <- DT::renderDataTable({
     #     # take visible columns' header and description
@@ -795,33 +815,10 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       paging=FALSE
     )
   )
+
   
-  output$PDX_methods <- renderUI({
-    # filename <- dir(path = "www/methods",pattern="_PDX_Methods_for_proxe.pdf",full.names=T)
-    # TODO: later functionalize this
-    filename <- dir(path = "www/methods",pattern="_PDX_Methods_for_proxe.pdf",full.names=T)
-    if(length(filename) < 1) warning("Where is the methods pdf?")
-    if(length(filename) > 1) {
-      warning("> 1 methods PDFs in www/methods folder. Taking last saved.")
-      tmp <- sapply(filename,function(i) file.info(i)$mtime)
-      newest_file <- sort(tmp,decreasing=T)[1]
-      filename <- names(newest_file)
-    }
-    filename <- gsub("www/","",filename)
-    tags$iframe(
-      src=filename,
-      width="100%",
-      height="800px")
-  })
-  
-  output$Renal_methods <- renderUI({
-    filename <- "methods/Renal_capsule_methods.pdf"
-    tags$iframe(
-      src=filename,
-      width="100%",
-      height="800px")
-  })
-  
+  ######### -- 'More' menu objects -- ############
+
   output$pricing <- DT::renderDataTable({
     pricing <- data.frame(
       "Service Name" = c("Per vial","Handling rate (per shipment)","Consulting (hourly)","Shipping (domestic)","Shipping (international)"),
@@ -850,54 +847,86 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       height="800px")
   })
   
-  ### testing dropdownMenu ###
-  # Sorting asc
+  ######### -- observing dropdownMenu objects -- ########
 
-  observeEvent(input[["a2z_administrative"]], {
+  #TODO, if possible: convert all of this into a Shiny module that is 1) purely dependent on column metadata, and 2) not hardcoded separately per button.
+    # Note I tried doing `2. selecting all` by loop, but it failed. Keep looking for solution.
+
+  ## 1. sorting a2z
+
+  # liquid
+
+  observeEvent(input[["a2z_liquid_administrative"]], {
     updateCheckboxGroupInput(
-      session = session, inputId = "check2_administrative",
+      session = session, inputId = "check2_liquid_administrative",
       choices = sort(meta3[(meta3$`Column Groupings` == "administrative"),]$`PRoXe Column Header`),
-      selected = input$check2_administrative
+      selected = input$check2_liquid_administrative
     )
   })
   
-  observeEvent(input[["a2z_tumor"]], {
+  observeEvent(input[["a2z_liquid_tumor"]], {
     updateCheckboxGroupInput(
-      session = session, inputId = "check2_tumor",
+      session = session, inputId = "check2_liquid_tumor",
       choices = sort(meta3[(meta3$`Column Groupings` == "tumor"),]$`PRoXe Column Header`),
-      selected = input$check2_tumor
+      selected = input$check2_liquid_tumor
     )
   })
   
-  observeEvent(input[["a2z_patient"]], {
+  observeEvent(input[["a2z_liquid_patient"]], {
     updateCheckboxGroupInput(
-      session = session, inputId = "check2_patient",
+      session = session, inputId = "check2_liquid_patient",
       choices = sort(meta3[(meta3$`Column Groupings` == "patient"),]$`PRoXe Column Header`),
-      selected = input$check2_patient
+      selected = input$check2_liquid_patient
     )
   })
   
-  observeEvent(input[["a2z_pdx"]], {
+  observeEvent(input[["a2z_liquid_pdx"]], {
     updateCheckboxGroupInput(
-      session = session, inputId = "check2_pdx",
+      session = session, inputId = "check2_liquid_pdx",
       choices = sort(meta3[(meta3$`Column Groupings` == "pdx"),]$`PRoXe Column Header`),
-      selected = input$check2_pdx
+      selected = input$check2_liquid_pdx
     )
   })
   
-#   observeEvent(input[[paste0("a2z_",lab)]], {
-#     updateCheckboxGroupInput(
-#       session = session, inputId = paste0("check2_",lab),
-#       choices = sort(meta3[(meta3$`Column Groupings` == lab),]$`PRoXe Column Header`),
-#       selected = input[["check2_",lab]]
-#     )
-#   })
+  # solid
   
-  # leaving in for testing:
-#   output$res2 <- renderPrint({
-#     c(input$check2_administrative,input$check2_tumor,input$check2_patient,input$check2_pdx)
-#   })
+  observeEvent(input[["a2z_solid_administrative"]], {
+    updateCheckboxGroupInput(
+      session = session, inputId = "check2_solid_administrative",
+      choices = sort(solid_meta2[(solid_meta2$`Column Groupings` == "administrative"),]$`PRoXe Column Header`),
+      selected = input$check2_solid_administrative
+    )
+  })
   
+  observeEvent(input[["a2z_solid_tumor"]], {
+    updateCheckboxGroupInput(
+      session = session, inputId = "check2_solid_tumor",
+      choices = sort(solid_meta2[(solid_meta2$`Column Groupings` == "tumor"),]$`PRoXe Column Header`),
+      selected = input$check2_solid_tumor
+    )
+  })
+  
+  observeEvent(input[["a2z_solid_pdx"]], {
+    updateCheckboxGroupInput(
+      session = session, inputId = "check2_solid_pdx",
+      choices = sort(solid_meta2[(solid_meta2$`Column Groupings` == "pdx"),]$`PRoXe Column Header`),
+      selected = input$check2_solid_pdx
+    )
+  })
+  
+  #NOTE: there is currently no _patient version for solid because we do not yet have patient data.
+    # Remove if(F) below manually when we get 'patient' data. (see solid_meta2$`Column Groupings`)
+  if(F){
+    observeEvent(input[["a2z_solid_patient"]], {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_solid_patient",
+        choices = sort(solid_meta2[(solid_meta2$`Column Groupings` == "patient"),]$`PRoXe Column Header`),
+        selected = input$check2_solid_patient
+      )
+    })
+  }
+
+  ## 2. selecting all
   
   # TODO: functionalize call of observeEvent()s below via for loop or other mechanism
   if(F){ # Note this does not work. Determine why. # Test: does it work ok to access input as list like this?
@@ -916,55 +945,96 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     }
   } # end of if(F)
   
-  # if(F){ # purpose -- commenting out this section below.
-  # Select all / Unselect all
-  observeEvent(input$all_administrative, {
-    if (all(meta3[meta3$`Column Groupings`=="administrative",]$`PRoXe Column Header` %in% input$check2_administrative)) {
+  # if(F){ # purpose -- commenting out this section below for testing.
+
+  # liquid
+
+  observeEvent(input$all_liquid_administrative, {
+    if (all(meta3[meta3$`Column Groupings`=="administrative",]$`PRoXe Column Header` %in% input$check2_liquid_administrative)) {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_administrative", selected = ""
+        session = session, inputId = "check2_liquid_administrative", selected = ""
       )
     } else {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_administrative", selected = names(df[1:(obInvisRet_ind-1)])
+        session = session, inputId = "check2_liquid_administrative", selected = names(df[1:(obInvisRet_ind-1)])
       )
     }
   })
   
-  observeEvent(input$all_tumor, {
-    if (all(meta3[meta3$`Column Groupings`=="tumor",]$`PRoXe Column Header` %in% input$check2_tumor)) {
+  observeEvent(input$all_liquid_tumor, {
+    if (all(meta3[meta3$`Column Groupings`=="tumor",]$`PRoXe Column Header` %in% input$check2_liquid_tumor)) {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_tumor", selected = ""
+        session = session, inputId = "check2_liquid_tumor", selected = ""
       )
     } else {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_tumor", selected = names(df[1:(obInvisRet_ind-1)])
+        session = session, inputId = "check2_liquid_tumor", selected = names(df[1:(obInvisRet_ind-1)])
       )
     }
   })
   
-  observeEvent(input$all_patient, {
-    if (all(meta3[meta3$`Column Groupings`=="patient",]$`PRoXe Column Header` %in% input$check2_patient)) {
+  observeEvent(input$all_liquid_patient, {
+    if (all(meta3[meta3$`Column Groupings`=="patient",]$`PRoXe Column Header` %in% input$check2_liquid_patient)) {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_patient", selected = ""
+        session = session, inputId = "check2_liquid_patient", selected = ""
       )
     } else {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_patient", selected = names(df[1:(obInvisRet_ind-1)])
+        session = session, inputId = "check2_liquid_patient", selected = names(df[1:(obInvisRet_ind-1)])
       )
     }
   })
   
-  observeEvent(input$all_pdx, {
-    if (all(meta3[meta3$`Column Groupings`=="pdx",]$`PRoXe Column Header` %in% input$check2_pdx)) {
+  observeEvent(input$all_liquid_pdx, {
+    if (all(meta3[meta3$`Column Groupings`=="pdx",]$`PRoXe Column Header` %in% input$check2_liquid_pdx)) {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_pdx", selected = ""
+        session = session, inputId = "check2_liquid_pdx", selected = ""
       )
     } else {
       updateCheckboxGroupInput(
-        session = session, inputId = "check2_pdx", selected = names(df[1:(obInvisRet_ind-1)])
+        session = session, inputId = "check2_liquid_pdx", selected = names(df[1:(obInvisRet_ind-1)])
       )
     }
   })
+  
+  # solid
+  
+  observeEvent(input$all_solid_pdx, {
+    if (all(solid_meta2[solid_meta2$`Column Groupings`=="pdx",]$`PRoXe Column Header` %in% input$check2_solid_pdx)) {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_solid_pdx", selected = ""
+      )
+    } else {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_solid_pdx", selected = names(solid[1:(obInvisRet_ind_solid-1)])
+      )
+    }
+  })
+  
+  observeEvent(input$all_solid_administrative, {
+    if (all(solid_meta2[solid_meta2$`Column Groupings`=="administrative",]$`PRoXe Column Header` %in% input$check2_solid_administrative)) {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_solid_administrative", selected = ""
+      )
+    } else {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_solid_administrative", selected = names(solid[1:(obInvisRet_ind_solid-1)])
+      )
+    }
+  })
+  
+  observeEvent(input$all_solid_tumor, {
+    if (all(solid_meta2[solid_meta2$`Column Groupings`=="tumor",]$`PRoXe Column Header` %in% input$check2_solid_tumor)) {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_solid_tumor", selected = ""
+      )
+    } else {
+      updateCheckboxGroupInput(
+        session = session, inputId = "check2_solid_tumor", selected = names(solid[1:(obInvisRet_ind_solid-1)])
+      )
+    }
+  })
+  
   # } # end of if(F)
 })
 

@@ -46,12 +46,20 @@
 #dt-col-select {
   padding-left: 0px;
 }
+/* align top of Database Explorer left for solid */
+#dt-col-select-solid {
+  padding-left: 0px;
+}
 /* align top of Database Explorer right */
 #email-request {
   padding-right:0px;
 }
 /* add padding between dropdown buttons */
 #dt-col-select div div {
+  padding-left: 3px;
+}
+/* add padding between dropdown buttons for solid */
+#dt-col-select-solid div div {
   padding-left: 3px;
 }
 

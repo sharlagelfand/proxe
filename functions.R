@@ -82,7 +82,6 @@ moveMe <- function(data, tomove, where = "last", ba = NULL) {
   x
 }
 
-
 # source: http://stackoverflow.com/questions/7680959/convert-type-of-multiple-columns-of-a-dataframe-at-once
 convert.magic <- function(obj,types){
   for (i in 1:length(obj)){
@@ -99,15 +98,19 @@ convert.magic <- function(obj,types){
   obj
 }
 
+
 # dropdownMenu button
+  # original version: http://stackoverflow.com/questions/34530142/drop-down-checkbox-input-in-shiny
 dropdownButton <- function(
-  label = "", # note label should be simple, perhaps A-z. Not sure what characters are allowed in CSS IDs.
+  label = "", 
+  # note label should be simple. Only A-Za-z0-9_ are allowed in CSS IDs. TODO later, perhaps: check this input.
   status = c("default", "primary", "success", "info", "warning", "danger"),
+  button_group = "liquid", # e.g. 'liquid' vs 'solid', or for use on some other tab.
   ...,
   width = NULL) {
   
   status <- match.arg(status)
-  css_id <- paste0("dropdownButton-",label)
+  css_id <- paste0("dropdownButton-",button_group,"-",label)
   # dropdown button content
   html_ul <- list(
     id = css_id,
@@ -140,21 +143,9 @@ dropdownButton <- function(
   )
 }
 
-# for ui.R
-# mydropdownButton <- function(label){
-#   dropdownButton(
-#     label = label, status = "primary", width = 10,
-#     actionButton(inputId = paste0("a2z_",label), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc_",label))),
-#     actionButton(inputId = paste0("all_",label), label = "(Un)select all"),
-#     checkboxGroupInput(inputId = paste0("check2_",label), label = "Choose",
-#       choices = {meta4 <- meta3[(meta3$`Column Groupings` == label),]; meta4[order(meta4$`Row Order`),]$`PRoXe Column Header`},
-#       selected = names(df)[1:(condVis_ind-1)])
-#   )
-# }
+mydropdownButton <- function(lab,column_metadata = meta3,condVis_ind,button_group = "liquid",table_df=df) {
 
-mydropdownButton <- function(lab,column_metadata = meta3,condVis_ind,button_group = "",table_df=df) {
-
-  # abbreviate
+  # abbreviate variables
   cm = column_metadata
   df = table_df
   # remove underscores from cm if they exist
@@ -166,21 +157,17 @@ mydropdownButton <- function(lab,column_metadata = meta3,condVis_ind,button_grou
   cm <- cm[(cm$`Column Groupings` == lab),];
   my_choices <- cm[order(cm$`Row Order`),]$`PRoXe Column Header`
   # 2. selected
-  my_selected <- intersect(names(df)[1:(condVis_ind-1)],my_choices) # TODO edit this line re: condVis_ind
-
-  # add group name to lab
-  lab <- paste0(ifelse(button_group!="",paste0(button_group,"_"),""),lab)
-  # lab <- paste0(button_group,lab)
+  my_selected <- intersect(names(df)[1:(condVis_ind-1)],my_choices)
   
   dropdownButton(
-    label = lab, status = "primary",
+    label = lab, status = "primary",button_group=button_group,
     # dynamic width based on content length:
     width = paste0(max(sapply(my_choices,nchar))/1.5,"em"),
     tags$div(
-      actionButton(inputId = paste0("all_",lab), label = "(Un)select all"),
-      actionButton(inputId = paste0("a2z_",lab), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc")))
+      actionButton(inputId = paste0("all_",button_group,"_",lab), label = "(Un)select all"),
+      actionButton(inputId = paste0("a2z_",button_group,"_",lab), label = "Sort A to Z", icon = icon(paste0("sort-alpha-asc")))
     ),
-    checkboxGroupInput(inputId = paste0("check2_",lab), label = NULL,
+    checkboxGroupInput(inputId = paste0("check2_",button_group,"_",lab), label = NULL,
       choices = my_choices,
       selected = my_selected,
       width="100%"
