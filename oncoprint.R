@@ -19,7 +19,7 @@
 # You can also disable the sorting
 # oncoPrint(M, sort=FALSE);
 
-# note prima.filename comes from clean_data.R
+# note prima.filename comes from clean_liquid.R
 mut_df <- read.xlsx2(paste0("data//",prima.filename),sheetName = "Mutation_Matrix",header = T,colClasses = "character")
 mut_df <- mut_df[mut_df$Include_in_Primary_Analysis==1,]
 

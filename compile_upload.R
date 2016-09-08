@@ -1,7 +1,7 @@
 # for pre-compiling data and running/uploading app
 rm(list=ls())
 setwd("/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app")
-source("clean_data.R")
+source("clean_liquid.R")
 source("rna_seq.R")
 source("oncoprint.R")
 source("clean_solid.R")
