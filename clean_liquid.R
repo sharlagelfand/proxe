@@ -16,8 +16,8 @@
 ###############################################################################
 ### --- Commented code for dev/debugging work --- ###
 
-# setwd("/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app")
-# deployApp(appDir = "/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app",
+# setwd("/Users/scott/Dropbox/PRoXe/PRoXe_app")
+# deployApp(appDir = "/Users/scott/Dropbox/PRoXe/PRoXe_app",
 #           appName = "PRoXe", account = "proxe")
 # capture.output(shinyapps::showLogs(appName="PRoXe_alpha",account="proxe",entries=5000),file="~/logs5000.txt")
 

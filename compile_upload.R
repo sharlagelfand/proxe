@@ -1,6 +1,6 @@
 # for pre-compiling data and running/uploading app
 rm(list=ls())
-setwd("/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app")
+setwd("/Users/scott/Dropbox/PRoXe/PRoXe_app")
 source("clean_liquid.R")
 source("rna_seq.R")
 source("oncoprint.R")
@@ -21,7 +21,7 @@ system("du -h -d 0 ../PRoXe_app")
 # -- comment or uncomment sections below as desired -- #
 
 ## 1 - deploy
-# deployApp(appDir = "/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app",
+# deployApp(appDir = "/Users/scott/Dropbox/PRoXe/PRoXe_app",
 #           appName = "PRoXe", account = "proxe")
 # capture.output(shinyapps::showLogs(appName="PRoXe_alpha",account="proxe",entries=5000),file="~/logs5000.txt")
 

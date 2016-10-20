@@ -5,7 +5,7 @@ library(readxl)
 solid_meta <- readxl::read_excel("../data_outside_app/NIBR_PDX_annotation_ProXe_23May2016.xlsx",sheet = "Header_Data")
 
 
-# setwd("/Users/scott/Dropbox/work/other/PRoXe/PRoXe_app")
+# setwd("/Users/scott/Dropbox/PRoXe/PRoXe_app")
 
 solid <- readxl::read_excel("../data_outside_app/NIBR_PDX_annotation_ProXe_23May2016.xlsx",sheet = 1)
 solid <- data.frame(lapply(solid,as.factor))
