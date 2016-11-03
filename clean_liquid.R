@@ -141,9 +141,19 @@ for (i in 1:nrow(df)){
   if(!(inst_ori %in% c("CB","DF","BW"))){  # note none currently (7-2016) are "BW", but that will change.
     # Permissions are as per BODFI spreadsheet -- which currently are none for any institution.
     warn_BODFI <- TRUE
+    
+    # sample code:
     # if(inst_ori %in% c("MD","WC","MU")) { # MD = MDACC, WC = MSK (Weill-Cornell), MU = Munich are all prohibited in BODFI spreadsheet.
-    df$Distribution_Permissions[i] <- 0
     # }
+    
+    # exception case: MD Anderson now allowed to be distributed to academic labs (code 3)
+    if(inst_ori %in% c("MD")){
+      df$Distribution_Permissions[i] <- 3
+    } else {
+      # no distribution for all the rest of the non-DFCI/BWH/CHB:
+      df$Distribution_Permissions[i] <- 0
+    }
+    
   } else {
     ## If institution of origin is DFCI/BWH/CHB, 
     
@@ -167,7 +177,7 @@ for (i in 1:nrow(df)){
     }
   }
 }
-if(warn_BODFI == TRUE) warning("BODFI 3-30-16 permissions are hardcoded. (No distribution at all of non-DF/CB/BW-origin samples.)")
+if(warn_BODFI == TRUE) warning("BODFI 3-30-16 distribution permissions are hardcoded. (No distribution at all of non-DF/CB/BW-origin samples.) Exception: hardcoded change Nov-16 that allows academic distribution of MDACC.")
 
 # testing results -- this shows which have changed from PRIMAGRAFTS Distribution_Permissions.
 tmp_oldnew <- as.data.frame(cbind(tmp_dist,df$Distribution_Permissions,df$PDX_Name))
