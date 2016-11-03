@@ -331,26 +331,38 @@ obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
 ### --- Include inventory information --- ###
 
 # confirm inventory files
-inv.filename.pdx <- dir("./data/Inventory_Tracking/",pattern = glob2rx("2*_PDX_Inventory.xlsx"))
+inv.filename.pdx <- dir("./data/Inventory_Tracking/",pattern = glob2rx("^PDX_Inventory_*.xlsx"))
 if(length(inv.filename.pdx) != 1) stop("too few or too many Inventory sheets in data/Inventory_Tracking/")
 
 #TODO: Ask Mark whether also to show BM and Tumor vials. -- no for now, later yes to Tumor for solid (-Amanda)
 # Read in and sum number of spleen vials left from both adult and pediatric PDXs.
 # inv <- read_excel("data/Inventory_Tracking/2015-9-2_Adult_Inventory.xlsx",1)
 inv <- read.xlsx2(file = file.path("data/Inventory_Tracking/",inv.filename.pdx),sheetName = "Banked",stringsAsFactors=FALSE)
-inv <- inv[,c("New.PDX.ID","Spleen....vials.")]
-names(inv) <- c("PDX_Name","Spleen_Vials")
 
-# Convert "/"-separated vials counts to total number. #TODO: vectorize, perhaps.
-for (i in 1:length(inv$Spleen_Vials)){
-  inv$Spleen_Vials_Left[i] <- sum(as.numeric(unlist(strsplit(inv$Spleen_Vials[i],"/"))))
+# subset columns, rename:
+# for future use if grouping by P,Route -- Amanda said grouping by route might be helpful
+if(F){
+  inv <- inv[,c("New.PDX.ID","P.","Route","Spleen....vials.")]
+  names(inv) <- c("PDX_Name","P","Route","Spleen_Vials_Left")
 }
+# current approach: sum all spleen vials per line, of any Route type
+if(T){
+  inv <- inv[,c("New.PDX.ID","Spleen....vials.")]
+  names(inv) <- c("PDX_Name","Spleen_Vials_Left")
+}
+
+# TODO: remove after fixing dependent code that uses inv$Spleen_Vials_Left below.
+# # Convert "/"-separated vials counts to total number. #TODO: vectorize, perhaps.
+# for (i in 1:length(inv$Spleen_Vials)){
+#   inv$Spleen_Vials_Left[i] <- sum(as.numeric(unlist(strsplit(inv$Spleen_Vials[i],"/"))))
+# }
 
 # remove columns missing name
 inv <- inv[!is.na(inv$PDX_Name),]
 inv <- inv[inv$PDX_Name != "",]
 
 # sum vials for samples with multiple rows
+inv$Spleen_Vials_Left <- as.integer(inv$Spleen_Vials_Left)
 inv <- aggregate(Spleen_Vials_Left~PDX_Name,data=inv,FUN=sum)
 
 # remove any duplicates still in inventory -- should never run now because of 'aggregage' above
@@ -369,11 +381,16 @@ levels(inv$At_Least_6_Spleen_Vials_Left) <- c("No","Yes")
 # drop unwanted columns
 inv <- inv[,c("PDX_Name","At_Least_6_Spleen_Vials_Left")]
 
+# add a temporary 'pdx_id' column to df for matching
+df$PDX_id = stringr::str_sub(df$PDX_Name,start = 1,end = 10)
+names(inv)[names(inv) == "PDX_Name"] <- "PDX_id"
+
 # merge with df
-df <- merge(df,inv,by = "PDX_Name",all.x = TRUE)
+df <- merge(df,inv,by = "PDX_id",all.x = TRUE)
+df$PDX_id <- NULL
 
 # move new columns to visible section, change indices of which columns to show
-new_col_names <- names(inv)[-which(names(inv) == "PDX_Name")]
+new_col_names <- names(inv)[names(inv) %in% names(df)]
 new_col_inds <- which(names(df) %in% new_col_names)
 new_col_order <- c(1:(obInvisRet_ind-1),
                    new_col_inds, 
