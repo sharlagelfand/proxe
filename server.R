@@ -429,8 +429,9 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
         # in format CD45(superscript + or -)CD33(etc. no spaces.
         # If PDX_Other_Immunophenotypes, add ", and" and append to end.
         # then remove combined rows.
-    to_combine <- c("PDX CD45","PDX CD33","PDX CD34","PDX CD19",
-      "PDX CD2","PDX CD3","PDX Other Immunophenotype") # note in correct order
+    to_combine <- c("PDX CD45","PDX CD34","PDX CD33","PDX CD19","PDX CD20",
+      "PDX CD2","PDX CD3","PDX Other Immunophenotype") # note in correct order 
+    # TODO: softcode (grep?) this based on something like "PDX CD*", accomodating for 'other'
     CDs <- to_combine[-length(to_combine)]
     temp <- as.character(td4[td4$PRoXe_Column_Header %in% to_combine,]$sample)
     temp <- gsub("Positive","<sup>+</sup> ",temp)
