@@ -11,6 +11,7 @@ host <- system("hostname",intern=TRUE)
 essential_dir = c("data","global.R","server.R","ui.R","www",read_in_scripts)
 if(basename(getwd()) == "PRoXe_app" & all(essential_dir %in% dir())){
   print("Seem to be in PRoXe_app directory. Continuing...")
+  wd_full = getwd()
 } else if (grepl("allgren",host)){ # not a typo
     wd_full = file.path("/","Users","scott","Dropbox","PRoXe","PRoXe_app")
     print(paste("User is Scott. Setting working directory to",wd_full))
@@ -42,8 +43,8 @@ system("du -h -d 0 ../PRoXe_app")
 # -- comment or uncomment sections below as desired -- #
 
 ## 1 - deploy
-# deployApp(appDir = "/Users/scott/Dropbox/PRoXe/PRoXe_app",
-#           appName = "PRoXe", account = "proxe")
+# deployApp(appDir = wd_full,
+#           appName = "PRoXe_alpha", account = "proxe")
 # capture.output(shinyapps::showLogs(appName="PRoXe_alpha",account="proxe",entries=5000),file="~/logs5000.txt")
 
 # interesting way to visualize dependencies: enable, then press cmd+fn+F3 while app is running.
