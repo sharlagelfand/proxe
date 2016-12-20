@@ -3,30 +3,30 @@
 # clean slate
 rm(list=ls())
 
+# set order of read-in scripts
+read_in_scripts = c("clean_liquid.R","rna_seq.R","oncoprint.R","clean_solid.R","finalize.R")
+
 # set working directory based on user -- hardcoded for Mark and Scott
 host <- system("hostname",intern=TRUE)
-essential_dir = c("data","global.R","server.R","ui.R","www")
+essential_dir = c("data","global.R","server.R","ui.R","www",read_in_scripts)
 if(basename(getwd()) == "PRoXe_app" & all(essential_dir %in% dir())){
   print("Seem to be in PRoXe_app directory. Continuing...")
-} else if (grepl("skallgren",host)){
-    wd_full = "/Users/scott/Dropbox/PRoXe/PRoXe_app"
+} else if (grepl("allgren",host)){ # not a typo
+    wd_full = file.path("/","Users","scott","Dropbox","PRoXe","PRoXe_app")
     print(paste("User is Scott. Setting working directory to",wd_full))
     setwd(wd_full)
-} else if (grepl("Mark",host)){
-    stop("Insert Mark's PRoXe_app path into compile_upload.R")
-    wd_full = "INSERT HERE"
+} else if (grepl("ArmaVirumque",host)){
+    wd_full = file.path("C:","Users","Mark","Dropbox (Partners HealthCare)","PRoXe","PRoXe_app")
     print(paste("User is Mark. Setting working directory to",wd_full))
     setwd(wd_full)
 } else {
     stop("User not recognized; manually navigate to PRoXe_app directory via setwd()")
 }
 
-# run read-in scripts
-source("clean_liquid.R")
-source("rna_seq.R")
-source("oncoprint.R")
-source("clean_solid.R")
-source("finalize.R")
+# run data read-in scripts
+for(script in read_in_scripts){
+  source(script)
+}
 
 # check on largest-memory items
 z <- sapply(ls(), function(x)
