@@ -52,7 +52,7 @@ system("du -h -d 0 ../PRoXe_app")
 
 ## 2 - run normally
 rm(list=ls()) # this cleans environment to mimic shinyapps.io
-runApp()
+runApp(launch.browser=TRUE)
 # 
 ## 3 - run for debugging
 # runApp(display.mode = "showcase") # for debugging
