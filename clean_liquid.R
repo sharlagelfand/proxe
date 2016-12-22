@@ -86,8 +86,10 @@ df[,which(meta$read_excel_type == "numeric")] <- as.data.frame(lapply(df[,which(
 # replace all NA with 'NSG' in Mouse_Strain
 df$Mouse_Strain[is.na(df$Mouse_Strain)] <- "NSG"
 
-# remove rows with blanks in Latest_Passage_Banked column, reset rownames index
+# remove PDXs that have not yet been banked, reset rownames index
 df <- df[!is.na(df$Latest_Passage_Banked),]
+df <- df[df$Latest_Passage_Banked!="PX",]
+df <- df[!grepl("VX$",df$PDX_Name),]
 rownames(df) <- NULL
 
 # encode a particular age instead of "pediatric"
