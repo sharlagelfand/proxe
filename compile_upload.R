@@ -8,13 +8,14 @@ read_in_scripts = c("clean_liquid.R","rna_seq.R","oncoprint.R","clean_solid.R","
 
 # set working directory based on user -- hardcoded for Mark and Scott
 host <- system("hostname",intern=TRUE)
+who <- system("whoami",intern=TRUE)
 essential_dir = c("data","global.R","server.R","ui.R","www",read_in_scripts)
 if(basename(getwd()) == "PRoXe_app" & all(essential_dir %in% dir())){
   print("Seem to be in PRoXe_app directory. Continuing...")
   wd_full = getwd()
-} else if (grepl("allgren",host)){ # not a typo
+} else if (who == "scott"){ # not a typo
     wd_full = file.path("/","Users","scott","Dropbox","PRoXe","PRoXe_app")
-    print(paste("User is Scott. Setting working directory to",wd_full))
+    print(paste("User is probably Scott K. Setting working directory to",wd_full))
     setwd(wd_full)
 } else if (grepl("ArmaVirumque",host)){
     wd_full = file.path("C:","Users","Mark","Dropbox (Partners HealthCare)","PRoXe","PRoXe_app")
