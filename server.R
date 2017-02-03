@@ -481,6 +481,42 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       paging = FALSE
     )
   )
+  
+  output$line_report_inventory <- DT::renderDataTable({
+    # copy-pasted input code from above #TODO factor out.
+    if(input$line_report_input_type == "click"){
+      df_idx <- input$table_rows_selected
+      if (length(df_idx) == 0) {
+        return(data.frame(
+          Instructions = "Select a line in the Database Explorer to see a report here.",
+          row.names = ""))
+      } else if (length(df_idx) > 1) {
+        return(data.frame(
+          Problem = "Please select only one row from Database Explorer",
+          row.names = ""))
+      } 
+    } else if (input$line_report_input_type == "dropdown"){
+      df_idx <- which(df[,"PDX Name"] == input$line_report_name)
+    }
+    
+    loi <- df[df_idx,"PDX Name"] # line of interest
+    idoi <- stringr::str_sub(loi,1,10) # id of interest
+    tmp_df <- inv_lr[inv_lr$PDX_id == idoi,]
+
+    tmp_df$PDX_id <- NULL
+    tmp_df
+    
+  },
+  escape= FALSE,
+  server=FALSE, # note this means the entire dataframe is sent to user. Should be fine.
+  rownames=FALSE,
+  options = list(
+      dom = 't',
+      searchHighlight = TRUE,
+      paging = FALSE
+    )
+  )
+  
   output$line_report_FC <- renderUI({
     if(input$line_report_input_type == "click"){
       df_idx <- input$table_rows_selected

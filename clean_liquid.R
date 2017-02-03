@@ -341,6 +341,14 @@ if(length(inv.filename.pdx) != 1) stop("too few or too many Inventory sheets in 
 # inv <- read_excel("data/Inventory_Tracking/2015-9-2_Adult_Inventory.xlsx",1)
 inv <- read.xlsx2(file = file.path("data/Inventory_Tracking/",inv.filename.pdx),sheetName = "Banked",stringsAsFactors=FALSE)
 
+# save inventory-last-updated date from inventory
+inv$Date <- as.Date('1900-01-01')+as.numeric(inv$Date)-2
+stopifnot(length(which(inv$Date > Sys.Date())) == 0) # stops if dates are in the future
+inv_upDate <- max(inv$Date,na.rm=T)
+
+# convert all Modification columns that are " " to ""
+inv$Modification <- gsub(" ","",inv$Modification)
+
 # subset columns, rename:
 # for future use if grouping by P,Route -- Amanda said grouping by route might be helpful
 if(F){
@@ -349,8 +357,9 @@ if(F){
 }
 # current approach: sum all spleen vials per line, of any Route type
 if(T){
-  inv <- inv[,c("New.PDX.ID","Spleen....vials.")]
-  names(inv) <- c("PDX_Name","Spleen_Vials_Left")
+  inv <- inv[,c("New.PDX.ID","P.","Route","Modification","Strain","Spleen....vials.", "BM....vials.","Tumor.cells....vials.","Tumor.seeds....vials.")]
+  names(inv) <- c("PDX_Name","P","Route","Mod","Strain","Spleen_Vials_Left","BM_Vials_Left","DTC_Vials_Left","Seed_Vials_Left")
+  
 }
 
 # TODO: remove after fixing dependent code that uses inv$Spleen_Vials_Left below.
@@ -359,13 +368,43 @@ if(T){
 #   inv$Spleen_Vials_Left[i] <- sum(as.numeric(unlist(strsplit(inv$Spleen_Vials[i],"/"))))
 # }
 
-# remove columns missing name
+# remove rows missing name
 inv <- inv[!is.na(inv$PDX_Name),]
 inv <- inv[inv$PDX_Name != "",]
 
+# create primary key
+if(F){
+  inv$pdx_full <- paste0(inv$PDX_Name,"-",inv$Route,inv$P,ifelse(inv$Mod=="","",paste0("-",inv$Mod)))
+  inv$pdx_pkey <- paste0(inv$pdx_full,"_",inv$Strain)
+}
+
+# convert all cols-to-sum to numeric
+cols_ind <- grepl("Left",names(inv))
+inv[,cols_ind] <- as.data.frame(
+  lapply(inv[,cols_ind],
+    function(col) as.integer(round(as.numeric(col),0))
+  )
+)
+
+# sum vials by many features for line report (_lr)
+inv_lr <- aggregate(cbind(Spleen_Vials_Left,BM_Vials_Left,DTC_Vials_Left,Seed_Vials_Left)~ PDX_Name + P + Route + Mod + Strain,data=inv,FUN=sum)
+# sort, rearrange
+inv_lr <- arrange(inv_lr,Route,P,Mod,Strain)
+names(inv_lr) = c("PDX_id","Passage","Route","Modification","Strain","Spleen_Vials","BM_Vials","DTC_Vials","Seed_Vials")
+inv_lr = inv_lr[c("PDX_id","Route","Passage","Modification","Strain","Spleen_Vials","BM_Vials","DTC_Vials","Seed_Vials")]
+names(inv_lr) = c("PDX_id","Engraftment Route","Passage Number","Modification","Host Strain","Splenocyte Vials","Bone Marrow Vials","Dissociated Tumor Cell Vials","Tumor Seed Vials")
+row.names(inv_lr) <- NULL
+# for later use if want to concatenate, also need to edit:
+if(F){
+  inv_lr2 <- inv_lr
+  inv_lr2$RoutePModStrain <- paste0(inv_lr2$Route,inv_lr2$P,ifelse(inv_lr2$Mod=="","",paste0("-",inv_lr2$Mod)),ifelse(inv_lr2$Strain=="","",paste0("_",inv_lr2$Strain)))
+  names(inv_lr2) = c("PDX_Name","P","Route","Mod","Strain","Spleen","BM","DTC","Seed","RoutePModStrain")
+  inv_lr2 <- arrange(inv_lr2,RoutePModStrain)
+  inv_lr3 <- inv_lr2[c("PDX_Name","Spleen","BM","DTC","Seed","RoutePModStrain")]
+}
+
 # sum vials for samples with multiple rows
-inv$Spleen_Vials_Left <- as.integer(inv$Spleen_Vials_Left)
-inv <- aggregate(Spleen_Vials_Left~PDX_Name,data=inv,FUN=sum)
+inv <- aggregate(cbind(Spleen_Vials_Left,BM_Vials_Left,DTC_Vials_Left,Seed_Vials_Left)~PDX_Name,data=inv,FUN=sum)
 
 # remove any duplicates still in inventory -- should never run now because of 'aggregage' above
 if(anyDuplicated(inv$PDX_Name)){
