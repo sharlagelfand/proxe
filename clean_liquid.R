@@ -94,7 +94,7 @@ rownames(df) <- NULL
 
 # encode a particular age instead of "pediatric"
 df$Age <- gsub(pattern = "pediatric", replacement = 9.111, x = df$Age)
-df$Age <- gsub(pattern = "10.01-17.99", replacement = 15.555, x = df$Age)
+df$Age <- gsub(pattern = "10.00-17.99", replacement = 15.555, x = df$Age)
 df$Age <- round(as.numeric(df$Age),3)
 
 # remove 80+ ages because they are PHI. Changing all to 81.
