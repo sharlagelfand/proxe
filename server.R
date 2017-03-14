@@ -649,6 +649,13 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       width="100%",
       height="800px")
   })
+  output$Lucifer_methods <- renderUI({
+    filename <- "methods/2017-3-13_luciferization_PDX_models.pdf"
+    tags$iframe(
+      src=filename,
+      width="100%",
+      height="800px")
+  })
 
   ########### -- 'Solid' menu objects --#############
 

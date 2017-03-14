@@ -375,10 +375,19 @@ shinyUI(
           # helpText("B) Xenografting Cell Doses: with subheadings For In Vivo Expansion, For In Vivo Treatment Studies"),
           # helpText("C) Monitoring Xenografted Animals: with subheadings for Cell Banking, for Initiation of Treatment"),
           # helpText("D) Banking Xenografted Cells: with subheadings Animal Euthanasia, Enriching Malignant Cells from Peripheral Blood, Enriching Malignant Cells from Bone Marrow, Enriching Malignant Cells from Spleen, and Enriching Malignant Cells from Lymph Nodes or Solid Tumors"),
-          tags$h2("PDX methods"),
+          tags$h2("Table of contents"),
+          tags$h4(a("I. General PDX methods",href="#general")),
+          tags$h4(a("II. Renal method",href="#renal")),
+          tags$h4(a("III. Luciferization method",href="#luciferization")),
+          a(name="general"),  # anchor
+          tags$h2("General PDX methods"),
           uiOutput("PDX_methods"),
+          a(name="renal"),  # anchor
           tags$h2("Renal capsule implantation method"),
-          uiOutput("Renal_methods")
+          uiOutput("Renal_methods"),
+          a(name="luciferization"),
+          tags$h2("Luciferization method"),
+          uiOutput("Lucifer_methods")
         ),
         column(width=2,
           tags$h2("Other files"),
