@@ -30,6 +30,44 @@ source("functions.R")
 ###############################################################################
 ### --- Import data and metadata --- ###
 
+# connect to SQL database
+library(RMySQL)
+mydb <- dbConnect(RMySQL::MySQL(), user="scott",password = "proxe123",dbname = "proxe_test",host="127.0.0.1")
+
+# read in 'columns' metadata
+q1 <- dbSendQuery(mydb, "SELECT * FROM columns")
+columns <- dbFetch(q1, n = -1)
+dbClearResult(q1)
+
+# read in all tables.
+
+# dbListTables(mydb)
+# q2 <- dbSendQuery(mydb, 
+#   "SELECT * FROM admin
+#   JOIN clinical ON admin.pdx_id=clinical.pdx_id"
+# )
+# adminical <- dbFetch(q2, n = -1)
+# dbClearResult(q2)
+
+# join all tables for primagrafts.
+q3 <- dbSendQuery(mydb, 
+  "SELECT admin.*, clinical.*, tumor.*, pdx.*
+  FROM admin
+      JOIN clinical
+          ON clinical.pdx_id = admin.pdx_id
+      JOIN tumor
+          ON tumor.pdx_id = clinical.pdx_id
+      JOIN pdx
+          ON pdx.pdx_id = admin.pdx_id"
+)
+four <- dbFetch(q3, n=-1)
+### seems to work but dates don't look good.
+## TODO next: subset by 'columns' dataframe and/or read in other tables.
+
+
+# join tables here? or in SQL
+
+
 # read in master (backup) glossary
 gloss.filename <- dir("./data/",pattern = glob2rx("Master_Glossary*xlsx"))
 if(length(gloss.filename) != 1) stop("too few or too many Master_Glossary sheets in dropbox")
