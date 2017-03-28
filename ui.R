@@ -259,7 +259,7 @@ shinyUI(
             )
           ),
           mainPanel(
-            plotOutput("plot_rna",height = 1500,width=1300)
+            plotOutput("plot_rna",height = 1300,width=1300)
           )
         )
       ),
