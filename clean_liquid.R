@@ -209,7 +209,9 @@ for (i in 1:nrow(df)){
       # default will be "not available"
     
     # calculate Consent-logic permission
-    if (narmEqual(df$`01-206_Consent`[i],"1") | narmEqual(df$`11-104_Consent`[i],"1") | 
+    if (stringr::str_sub(df$PDX_Name[i],1,10) == "DFBL-39435"){
+      df$Distribution_Permissions[i] <- 4
+    } else if (narmEqual(df$`01-206_Consent`[i],"1") | narmEqual(df$`11-104_Consent`[i],"1") | 
         narmEqual(df$`06-078_Consent`[i],"1") | narmEqual(df$`13-563_Consent`[i],"1") ){
       df$Distribution_Permissions[i] <- 1
     } else if ((narmEqual(df$`05-001_Consent`[i],"1") | narmEqual(df$`11-001_Consent`[i],"1"))){
@@ -231,11 +233,12 @@ print(tmp_oldnew[complete.cases(tmp_oldnew) & tmp_oldnew$prima != tmp_oldnew$new
 # change Distribution_Permissions to text from 0/1/2/3
   # NOTE 2 does not apply to any lines right now (7/21/16)
 df$Distribution_Permissions <- factor(df$Distribution_Permissions,
-  levels=0:3,
+  levels=0:4,
   labels=c("none currently",
     "academic, industry-sponsored academic, and industry",
     "academic, industry-sponsored academic",
-    "academic only"))
+    "academic only",
+    "Dana-Farber only"))
 
 meta[meta$PRoXe_Column_Header == "Distribution_Permissions","Column_Description"] <- "Indicates to whom relevant materials transfer agreements permit distribution."
 warning("Note edited Distribution_Permissions description in app, not PRIMAGRAFTS. Temporary fix.")
