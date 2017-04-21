@@ -400,7 +400,7 @@ if(F){
 }
 # current approach: sum all spleen vials per line, of any Route type
 if(T){
-  inv <- inv[,c("New.PDX.ID","P.","Route","Modification","Strain","Spleen....vials.", "BM....vials.","Tumor.cells....vials.","Tumor.seeds....vials.")]
+  inv <- inv[,c("New.PDX.ID","Passage","Route","Modification","Strain","Spleen....vials.", "BM....vials.","Tumor.cells....vials.","Tumor.seeds....vials.")]
   names(inv) <- c("PDX_Name","P","Route","Mod","Strain","Spleen_Vials_Left","BM_Vials_Left","DTC_Vials_Left","Seed_Vials_Left")
   
 }
