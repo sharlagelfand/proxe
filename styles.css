@@ -19,7 +19,10 @@
 }
 
 /* just adds padding to top of site */
-.container-fluid {
+/* .container-fluid {
+  padding-top: 4em;
+} */
+body {
   padding-top: 4em;
 }
 
