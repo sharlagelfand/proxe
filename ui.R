@@ -345,7 +345,7 @@ shinyUI(
           conditionalPanel(
             condition = "input.line_report_input_type == 'dropdown'",
             selectInput("line_report_name","Type or select a line name below to see a full report",
-              c(df[,"PDX Name"],NULL),selected = "DFTL-85005-V3") # TODO: softcode this so it doesn't break upon further passage.
+              c(df[,"PDX Name"],NULL),selected = "DFTL-85005-V4") # TODO: softcode this so it doesn't break upon further passage.
           ),
           DT::dataTableOutput(outputId="line_report"),
           br(),

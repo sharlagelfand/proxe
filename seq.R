@@ -20,6 +20,10 @@ seq <- read_excel(paste0("../data_outside_app/",seq.filename),sheet="sequencing"
 # })
 seq <- as.data.frame(seq) # added because the default class of read_excel output is ‘tbl_df’, ‘tbl’ and 'data.frame' which is incompatible with FUN of convert.magic() 8/2016
 
+# remove flagged rows
+seq <- seq[seq$Qualitative_Flag==0,]
+if(anyNA(seq$Qualitative_Flag)) warning("Sequencing_checklist qualitative flag contains NAs.")
+
 # convert column names from SEQUENCING name to desired PRoXe name
 # order 'seq_meta' by 'seq_meta$Interal_Column_Header' matching names(df)
 seq_meta <- seq_meta[match(names(seq),seq_meta$Internal_Column_Header),]
