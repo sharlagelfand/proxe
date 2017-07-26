@@ -286,10 +286,16 @@ fc$short <- gsub("_\\d+_fc.pdf$","",fc$filenames, perl=TRUE)
 fc$date <- gsub("_fc.pdf$","",fc$filenames,perl=TRUE)
 fc$date <- gsub("^.+_","",fc$date,perl=TRUE)
 fc$date <- as.Date(fc$date,"%Y%m%d")
+
+# create column for merging on pdx_id
+fc$namenum <- stringr::str_sub(fc$short,1,10)
+# create column in df same as fc$namenum
+df$namenum <- stringr::str_sub(df$PDX_Name,1,10)
+
 # leave only newest of duplicated samples
-dups <- fc$short[duplicated(fc$short)]
+dups <- fc$namenum[duplicated(fc$namenum)]
 for (dup in dups){
-  tempfc <- fc[fc$short == dup,]
+  tempfc <- fc[fc$namenum == dup,]
   tempfc <- tempfc[order(tempfc$date,decreasing=T),]
   filenames_to_remove <- tempfc[2:nrow(tempfc),]$filenames
   fc <- fc[!(fc$filenames %in% filenames_to_remove),]
@@ -302,19 +308,21 @@ createLinks <- function(filename_vector,column_heading) {
 } 
 fc$filenames <- createLinks(fc$filenames,"Flow_Cytometry")
 
-# merge with dataframe, probably using PDX Name 
-names(fc)[names(fc) == "short"] <- "PDX_Name"
-names(fc)[names(fc) == "date"] <- "Flow_Cytometry_Date"
+# drop columns, merge with dataframe using namenum/pdx_id
+fc$short <- NULL
+fc$date <- NULL
 names(fc)[names(fc) == "filenames"] <- "Flow_Cytometry_PDF"
-fc$Flow_Cytometry_Date <- NULL # dropping this column
-df <- merge(df,fc,by="PDX_Name",all.x=T)
-#TODO determine why some of the PDX_Name that we have FC data for do not exist in df. Emailed Mark.
+df <- merge(df,fc,by="namenum",all.x=T)
+
+# move namenum to end of df
+df <- df[,c(2:ncol(df),1)]
 
 # move inserted columns around, change indices of which columns to show
-new_col_inds <- (ncol(df)-(ncol(fc)-2)):ncol(df)
+new_col_inds <- (ncol(df)-(ncol(fc)-1)):(ncol(df)-1)
 new_col_order <- c(1:(obInvisRet_ind-1),
                    new_col_inds, 
-                   (obInvisRet_ind):(ncol(df)-length(new_col_inds))
+                   (obInvisRet_ind):(ncol(df)-2),
+                   ncol(df)
 )
 df <- df[,new_col_order]
 obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
@@ -326,8 +334,7 @@ ihc <- data.frame(filenames = dir("www/IHC/",pattern="_IHC.pdf$"),stringsAsFacto
 # parse filename into parts
 ihc$namenum <- gsub("-[RV][0-4].*_IHC.pdf","",ihc$filenames, perl=TRUE) # TODO: doesn't quite work because of typos, I think.
 # TODO: continue here, perhaps after fixing IHC filenames manually (Alex?)
-# create column in df same as ihc$namenum
-df$namenum <- gsub("-[RV][0-4X].*$","",df$PDX_Name, perl=TRUE) ## todo: does this work?
+
 ihc$filenames <- createLinks(ihc$filenames,"IHC")
 
 # merge with dataframe, probably using PDX Name #TODO: confirm this worked ok.
