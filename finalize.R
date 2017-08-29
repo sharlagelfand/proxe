@@ -21,4 +21,26 @@ if(T) {
   meta3 <- rbind(meta3,new_rows_df)
   # change order to same as Database Explorer
   meta3 <- meta3[match(meta3$`PRoXe Column Header`,names(df[1:(obInvisRet_ind-1)])),]
+  
+  # change order of both df and meta3 so ob_vis rows are at top
+  ob_vis_inds <- which(meta3$`Visible Invisible` == "ob_vis")
+  ob_vis_ind_diff <- diff(ob_vis_inds)
+  if(any(ob_vis_ind_diff != 1)) {
+    out_of_order_inds <- ob_vis_inds[which(ob_vis_ind_diff != 1)+1]
+
+    ooo_names <- meta3$`PRoXe Column Header`[out_of_order_inds]
+    #1. move ooos to top
+    meta3 <- rbind(meta3[1:(condVis_ind-1),],meta3[out_of_order_inds,],meta3[-out_of_order_inds,][condVis_ind:nrow(meta3[-out_of_order_inds,]),])
+    #2. change df column order to be same as meta
+    df <- moveMe(
+      data=df,
+      tomove=ooo_names,
+      where="before",
+      names(df)[condVis_ind]
+    )
+    #3. increase condVis_ind. 
+    condVis_ind = condVis_ind + length(ooo_names)
+    # note obInvisRet_ind shouldn't need to change because these new columns will have been visible before.
+  }
 }
+
