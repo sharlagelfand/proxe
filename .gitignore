@@ -13,6 +13,7 @@ draft_*
 *.xlk
 *.txt
 *password*
+*login_credentials*
 
 
 #######################################
