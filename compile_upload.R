@@ -14,19 +14,24 @@ if(basename(getwd()) == "PRoXe_app" & all(essential_dir %in% dir())){
   print("Seem to be in PRoXe_app directory. Continuing...")
   wd_full = getwd()
 } else if (who == "scott"){ # not a typo
-    wd_full = file.path("/","Users","scott","Dropbox","PRoXe","PRoXe_app")
-    print(paste("User is probably Scott K. Setting working directory to",wd_full))
-    setwd(wd_full)
+  wd_full = file.path("/","Users","scott","Dropbox","PRoXe","PRoXe_app")
+  print(paste("User is probably Scott K. Setting working directory to",wd_full))
+  setwd(wd_full)
 } else if (grepl("ArmaVirumque",host)){
-    wd_full = file.path("C:","Users","Mark","Dropbox (Partners HealthCare)","PRoXe","PRoXe_app")
-    print(paste("User is Mark. Setting working directory to",wd_full))
-    setwd(wd_full)
+  wd_full = file.path("C:","Users","Mark","Dropbox (Partners HealthCare)","PRoXe","PRoXe_app")
+  print(paste("User is Mark. Setting working directory to",wd_full))
+  setwd(wd_full)
+} else if (grepl("proxe.dfci.harvard.edu",host)){
+  wd_full = file.path("~","Dropbox","PRoXe","PRoXe_app")
+  print(paste("On proxe.dfci.harvard.edu VM, Setting dir to",wd_full))
+  setwd(wd_full)
 } else {
-    stop("User not recognized; manually navigate to PRoXe_app directory via setwd()")
+  stop("User not recognized; manually navigate to PRoXe_app directory via setwd()")
 }
 
 # run data read-in scripts
 for(script in read_in_scripts){
+  cat(paste("--- Running:",script,"---\n"))
   source(script)
 }
 
@@ -44,8 +49,14 @@ system("du -h -d 0 ../PRoXe_app")
 # -- comment or uncomment sections below as desired -- #
 
 ## 1 - deploy
-# deployApp(appDir = wd_full,
-#           appName = "PRoXe_alpha", account = "proxe")
+if(F){
+  library(rsconnect)
+  # alpha app
+  deployApp(appDir = wd_full,appName = "PRoXe_alpha", account = "proxe")
+  # main app
+  deployApp(appDir = wd_full,appName = "PRoXe", account = "proxe")
+}
+
 # capture.output(shinyapps::showLogs(appName="PRoXe_alpha",account="proxe",entries=5000),file="~/logs5000.txt")
 
 # interesting way to visualize dependencies: enable, then press cmd+fn+F3 while app is running.
