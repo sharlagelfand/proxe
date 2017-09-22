@@ -52,12 +52,12 @@ system("du -h -d 0 ../PRoXe_app")
 if(F){
   library(rsconnect)
   # alpha app
-  deployApp(appDir = wd_full,appName = "PRoXe_alpha", account = "proxe")
+  deployApp(appDir = getwd(), appName = "PRoXe_alpha", account = "proxe")
   # main app
-  deployApp(appDir = wd_full,appName = "PRoXe", account = "proxe")
+  deployApp(appDir = getwd(), appName = "PRoXe", account = "proxe")
 }
 
-# capture.output(shinyapps::showLogs(appName="PRoXe_alpha",account="proxe",entries=5000),file="~/logs5000.txt")
+# capture.output(rsconnect::showLogs(appName="PRoXe_alpha",account="proxe",entries=5000),file="~/logs5000.txt")
 
 # interesting way to visualize dependencies: enable, then press cmd+fn+F3 while app is running.
 # options(shiny.reactlog = TRUE)
