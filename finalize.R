@@ -20,6 +20,7 @@ if(T) {
   names(new_rows_df) <- gsub("_"," ",names(new_rows_df))
   meta3 <- rbind(meta3,new_rows_df)
   # change order to same as Database Explorer
+  stopifnot(all(meta3$`PRoXe Column Header` %in% names(df[1:(obInvisRet_ind-1)])))
   meta3 <- meta3[match(meta3$`PRoXe Column Header`,names(df[1:(obInvisRet_ind-1)])),]
   
   # change order of both df and meta3 so ob_vis rows are at top
