@@ -52,9 +52,9 @@ system("du -h -d 0 ../PRoXe_app")
 if(F){
   library(rsconnect)
   # alpha app
-  deployApp(appDir = getwd(), appName = "PRoXe_alpha", account = "proxe")
+  rsconnect::deployApp(appDir = getwd(), appName = "PRoXe_alpha", account = "proxe")
   # main app
-  deployApp(appDir = getwd(), appName = "PRoXe", account = "proxe")
+  rsconnect::deployApp(appDir = getwd(), appName = "PRoXe", account = "proxe")
 }
 
 # capture.output(rsconnect::showLogs(appName="PRoXe_alpha",account="proxe",entries=5000),file="~/logs5000.txt")
