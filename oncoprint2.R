@@ -5,6 +5,7 @@ library(readxl)
 # read in spreadsheet
 variants.filename <- dir("../data_outside_app/",pattern = glob2rx("20*_pdx_dna_variants.xlsx"))
 if(length(variants.filename) != 1) stop("too few or too many _pdx_dna_variants.xlsx files in dropbox")
+# var_native <- read_excel(paste0("../data_outside_app/",variants.filename),sheet=1)
 variants <- read_excel(paste0("../data_outside_app/",variants.filename),sheet=1,col_types = "text")
 variants <- as.data.frame(variants)
 vs = variants
@@ -26,29 +27,105 @@ cols_keep = c("tumor_sample_name_new",
 
 v = vs[cols_keep]
 v = v[v$True_Mutation != 0 & !is.na(v$True_Mutation),]
+# v = v[v$True_Mutation == 1 & !is.na(v$True_Mutation),]
 
 v1 = v[c(1:3,6:8)]
 v2 = v[c(1,4:8)]
 
-# recode *_Variant_Classification
-table(v1$Canonical_Variant_Classification)
+#### --- recode *_Variant_Classification -- ####
+
+# set up constants
 snv=c("Missense_Mutation","Nonsense_Mutation","Nonstop_Mutation","Translation_Start_Site","Missense")
 indel=c("Frame_Shift_Del","Frame_Shift_Ins","In_Frame_Del","In_Frame_Ins")
 splice=c("Splice_Region","Splice_Site")
+mut_types_keep = c(snv,indel,splice)
 
-#TODO: continue here, creating new columns that map these classifications to the above terms: snv, indel, splice
-# TODO: also make sure to filter out terms that don't exist, like "0", "intron","intergenic_variant".
+# - for v1 - #
+# filter out terms that don't exist, like "0", "intron","intergenic_variant".
+v1 <- v1[v1$Canonical_Variant_Classification %in% mut_types_keep,]
+# Create new columns that map these classifications to the above terms: snv, indel, splice
+v1$class2 <- NA_character_
+for(i in 1:nrow(v1)){
+  class1 <- v1$Canonical_Variant_Classification[i]
+  if (class1 %in% snv){
+    v1$class2[i] <- "snv"
+  } else if (class1 %in% indel){
+    v1$class2[i] <- "indel"
+  } else if (class1 %in% splice){
+    v1$class2[i] <- "splice"
+  } else {
+    stop("Encountered unexpected value.")
+  }
+}
+v1$class2 <- as.factor(v1$class2)
+table(v1$Canonical_Variant_Classification,v1$class2)
+
+# - for v2 - #
+# filter out terms that don't exist, like "0", "intron","intergenic_variant".
+v2 <- v2[v2$BestEffect_Variant_Classification %in% mut_types_keep,]
+# Create new columns that map these classifications to the above terms: snv, indel, splice
+v2$class2 <- NA_character_
+for(i in 1:nrow(v2)){
+  class1 <- v2$BestEffect_Variant_Classification[i]
+  if (class1 %in% snv){
+    v2$class2[i] <- "snv"
+  } else if (class1 %in% indel){
+    v2$class2[i] <- "indel"
+  } else if (class1 %in% splice){
+    v2$class2[i] <- "splice"
+  } else {
+    stop("Encountered unexpected value.")
+  }
+}
+v2$class2 <- as.factor(v2$class2)
+table(v2$BestEffect_Variant_Classification,v2$class2)
 
 
 
-table(v2$BestEffect_Variant_Classification)
+##### --- pivot into genes x samples --- ####
 
+# - v1 - #
 
+library(dplyr)
+v1a <- v1 %>%
+  group_by(tumor_sample_name_new,Canonical_Hugo_Symbol) %>%
+  summarise(id = paste(class2, collapse = ";"))
 
-# pivot into genes x samples
+# note this looks like: (TODO: is snv;snv;snv a problem?)
+# A tibble: 858 x 3
+# Groups:   tumor_sample_name_new [?]
+# tumor_sample_name_new Canonical_Hugo_Symbol          id
+# <chr>                 <chr>       <chr>
+#   1         CBAB-10855-V2                 EPHA6         snv
+# 2         CBAB-10855-V2                 GATA2         snv
+# 3         CBAB-10855-V2                  MLL3 snv;snv;snv
+# 4         CBAB-10855-V2                  PAX5         snv
+v1a <- as.data.frame(lapply(v1a,as.factor))
+v1a$id <- as.character(v1a$id)
 
+library(reshape2)
+v1mat <- acast(v1a,Canonical_Hugo_Symbol~tumor_sample_name_new, value.var="id")
 
 # produce ComplexHeatmap
+
+col = c(snv = "red", indel = "blue", splice = "yellow")
+png(filename = "~/tmp/test_oncoprint.png",width = 25, height= 20,units = "in",res=250)
+oncoPrint(v1mat, get_type = function(x) strsplit(x, ";")[[1]],
+  alter_fun = list(
+    snv = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.9, gp = gpar(fill = col["snv"], col = NA)),
+    indel = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.4, gp = gpar(fill = col["indel"], col = NA)),
+    splice = function(x, y, w, h) grid.rect(x, y, w*0.5, h*0.5, gp = gpar(fill = col["splice"], col = NA))
+  ), col = col,
+  show_column_names = TRUE)
+dev.off()
+
+
+
+# - v2 - #
+
+##TODO
+
+
 
 
 
@@ -68,6 +145,7 @@ if(F){
     alter_fun = list(
       snv = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.9, gp = gpar(fill = col["snv"], col = NA)),
       indel = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.4, gp = gpar(fill = col["indel"], col = NA))
-    ), col = col)
+    ), col = col,
+    show_column_names = TRUE)
   
 }
