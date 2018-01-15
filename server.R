@@ -286,61 +286,56 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       }
     }
   })
-  
-  # PDX mutations
-  output$plot_oncoprint <- renderPlot({
-    
-    # if desired, subset for only samples selected in Database Explorer
-    if(input$oncop_sample_input == "click"){
-      df_idx <- input$table_rows_selected
-      samp_names <- df$`PDX RNA-Seq Name`[df_idx]
-      samp_names <- samp_names[complete.cases(samp_names)]
-      M2 <- M2[M2$PDX.RNA.Seq_Name %in% samp_names,]
-    }
-    
-    # Subset for sample subtypes
-    if (input$oncop_sample_type == "AML") {
-      M2 <- M2[M2$type %in% c("AML","BP"),]
-    } else if (input$oncop_sample_type == "BA") {
-      M2 <- M2[M2$type %in% c("BA"),]
-    } else if (input$oncop_sample_type == "TA") {
-      M2 <- M2[M2$type %in% c("TA"),]
-    }
-    
-    # "1" is somewhat validated mutations
-    M3 <- cbind(M2[,1:3],
-                as.data.frame(lapply(M2[4:ncol(M2)],grepl,pattern="1")))
-    rownames(M3) <- M3$Line.Name.for.Figure
-    #remove first three sorting columns from M3
-    M3 <- M3[4:ncol(M3)]
-    M3 <- t(M3)
-    
-    # subsetting genes by those relevant to cancer type
-    GOIdf <- list(AML = c("CEBPA","DNMT3A","FLT3","IDH1","IDH2","KIT","KRAS","NPM1","NRAS",
-                          "PTPN11","RUNX1","TET2","TP53","WT1"),
-                  BA = c("ABL1","CDKN2A","CDKN2B","FLT3","IKZF1","IL7R","JAK1","JAK2","NRAS",
-                         "PAX5","RB1","SH2B3","TP53"))
-    # Note T-ALL not implemented yet.
-    if(input$oncop_gene_input == "gene_sets"){
-      if(input$oncop_gene_set != "all") {
-        M3 <- M3[rownames(M3) %in% GOIdf[[input$oncop_gene_set]],]
-      }
-    }
 
-    # subsetting genes individually
-    if(input$oncop_gene_input == "indiv"){
-      if(length(input$oncop_genes) >= 2){
-        M3 <- M3[rownames(M3) %in% input$oncop_genes,]
-      } else return(plot(0,main="Please select at least two genes"))
-    }
+  ########### -- PDX mutations 2 oncoprint -- ###############
+  
+  onco2_input <- eventReactive(input$onco2_go, {
+    # filter v1mat by selected features:
+    # Filter on WHO Category
+    v1_colnms <- stringr::str_sub(colnames(v1mat),1,10)
+    df_whocatnms <- df[df$`WHO Category` %in% input$onco2_whocat,]$namenum
+    v1mat <- v1mat[,v1_colnms %in% df_whocatnms]
+    # Filter on WHO classifcation
+    v1_colnms <- stringr::str_sub(colnames(v1mat),1,10)
+    df_whoclassnms <- df[df$`WHO Classification` %in% input$onco2_whoclass,]$namenum
+    v1mat <- v1mat[,v1_colnms %in% df_whoclassnms]
+    v1mat
+  },ignoreNULL = FALSE)
+  
+  output$plot_oncoprint2 <- renderPlot({
     
-    op <- par(no.readonly = T)
-    par(mar=rep(5,4),cex.axis=0.7) # Mark, cex.axis changes the x and y axis label font sizes.
-    oncoPrint(M3)
-    par(op)
+    # accept filtered input
+    v1mat <- onco2_input()
+    
+    # remove NA rows
+    v1mat <- v1mat[rowSums(!is.na(v1mat)) != 0,]
+    
+    # printing plot
+    col = c(snv = "red", indel = "blue", splice = "yellow")
+    library(ComplexHeatmap)
+    ComplexHeatmap::oncoPrint(v1mat, get_type = function(x) strsplit(x, ";")[[1]],
+      alter_fun = list(
+        background = function(x, y, w, h) {
+          grid.rect(x, y, w-unit(0.5, "mm"), h-unit(0.5, "mm"), gp = gpar(fill = "#CCCCCC", col = NA))
+        },
+        snv = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.9, gp = gpar(fill = col["snv"], col = NA)),
+        indel = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.4, gp = gpar(fill = col["indel"], col = NA)),
+        splice = function(x, y, w, h) grid.rect(x, y, w*0.5, h*0.5, gp = gpar(fill = col["splice"], col = NA))
+      ), col = col,
+      show_column_names = TRUE,
+      row_names_gp = gpar(fontsize = 10),
+      row_title_gp = gpar(fontsize = 10),
+      column_title_gp = gpar(fontsize = 10),
+      column_names_gp = gpar(fontsize = 10))
+
+  })
+  
+  output$onco2.ui <- renderUI({
+    plotOutput("plot_oncoprint2",height=input$onco2_plotheight,width="100%")
   })
 
-  # contingency table
+  
+  ############ -- contingency table -- ###############
   output$table_various <- renderTable({
     filtered_row_inds <- input$table_rows_all
     ctable_df <- df[filtered_row_inds,]

@@ -4,7 +4,7 @@
 rm(list=ls())
 
 # set order of read-in scripts
-read_in_scripts = c("clean_liquid.R","seq.R","rna_seq.R","oncoprint.R",
+read_in_scripts = c("clean_liquid.R","seq.R","rna_seq.R","oncoprint.R","oncoprint2.R",
   "clean_solid.R","jax.R","finalize.R")
 
 # set working directory based on user -- hardcoded for Mark and Scott

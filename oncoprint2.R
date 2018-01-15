@@ -88,8 +88,8 @@ table(v2$BestEffect_Variant_Classification,v2$class2)
 
 library(dplyr)
 v1a <- v1 %>%
-  group_by(tumor_sample_name_new,Canonical_Hugo_Symbol) %>%
-  summarise(id = paste(class2, collapse = ";"))
+  dplyr::group_by(tumor_sample_name_new,Canonical_Hugo_Symbol) %>%
+  dplyr::summarise(id = paste(class2, collapse = ";"))
 
 # note this looks like: (TODO: is snv;snv;snv a problem?)
 # A tibble: 858 x 3
@@ -108,16 +108,20 @@ v1mat <- acast(v1a,Canonical_Hugo_Symbol~tumor_sample_name_new, value.var="id")
 
 # produce ComplexHeatmap
 
-col = c(snv = "red", indel = "blue", splice = "yellow")
-png(filename = "~/tmp/test_oncoprint.png",width = 25, height= 20,units = "in",res=250)
-oncoPrint(v1mat, get_type = function(x) strsplit(x, ";")[[1]],
-  alter_fun = list(
-    snv = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.9, gp = gpar(fill = col["snv"], col = NA)),
-    indel = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.4, gp = gpar(fill = col["indel"], col = NA)),
-    splice = function(x, y, w, h) grid.rect(x, y, w*0.5, h*0.5, gp = gpar(fill = col["splice"], col = NA))
-  ), col = col,
-  show_column_names = TRUE)
-dev.off()
+if(F){
+  col = c(snv = "red", indel = "blue", splice = "yellow")
+  png(filename = "~/tmp/test_oncoprint.png",width = 25, height= 20,units = "in",res=250)
+  library(ComplexHeatmap)
+  ComplexHeatmap::oncoPrint(v1mat, get_type = function(x) strsplit(x, ";")[[1]],
+    alter_fun = list(
+      snv = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.9, gp = gpar(fill = col["snv"], col = NA)),
+      indel = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.4, gp = gpar(fill = col["indel"], col = NA)),
+      splice = function(x, y, w, h) grid.rect(x, y, w*0.5, h*0.5, gp = gpar(fill = col["splice"], col = NA))
+    ), col = col,
+    show_column_names = TRUE)
+  dev.off()
+}
+
 
 
 
@@ -141,7 +145,7 @@ if(F){
   
   library(ComplexHeatmap)
   col = c(snv = "red", indel = "blue")
-  oncoPrint(mat, get_type = function(x) strsplit(x, ";")[[1]],
+  ComplexHeatmap::oncoPrint(mat, get_type = function(x) strsplit(x, ";")[[1]],
     alter_fun = list(
       snv = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.9, gp = gpar(fill = col["snv"], col = NA)),
       indel = function(x, y, w, h) grid.rect(x, y, w*0.9, h*0.4, gp = gpar(fill = col["indel"], col = NA))
