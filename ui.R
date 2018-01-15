@@ -595,6 +595,41 @@ shinyUI(
               " to discuss any ideas or possible sharing models.")
           ),
           p("Once the MTA is approved by both institutions and billing information is confirmed (see Billing through iLab below), plans for shipping will be finalized by email between the requesting Investigator and LLX Core personnel.  Tracking information will be provided and billing will not occur until shipping.  We will arrange for shipping through FedEx or DHL."),
+          p(tags$b("JAX distribution."),"A subset of AML models are now distributed through the Jackson Laboratory (JAX), where you can purchase vials of splenocytes (academic customers) or engrafted NSG-SGM3 mice (industry customers). These models are clearly marked under the ‘Distribution Permissions’ column in Database Explorer. For more information please go to this page where you can request a quote and see additional model information. We can no longer distribute these 7 AML models directly and customers must contact JAX for further information."),
+          p("The JAX model names from our collection are as follows:"),
+          HTML("<table class=\"table\"><tr>
+                  <th>JAX Tumor #</th>
+                  <th>DFCI Tumor #</th>
+                </tr>
+                <tr>
+                  <th>J000106566</th>
+                  <th>DFAM-32000-V1</th>
+                </tr>
+                <tr>
+                  <th>J000106569</th>
+                  <th>DFAM-61345-V1</th>
+                </tr>
+                <tr>
+                  <th>J000106132</th>
+                  <th>DFAM-22359-V1</th>
+                </tr>
+                <tr>
+                  <th>J000106134</th>
+                  <th>DFAM-61786-V2</th>
+                </tr>
+                <tr>
+                  <th>J000106124</th>
+                  <th>DFAM-15354-V2</th>
+                </tr>
+                <tr>
+                  <th>J000106565</th>
+                  <th>DFAM-16835-V1</th>
+                </tr>
+                <tr>
+                  <th>J000106143</th>
+                  <th>DFAM-84910-V1</th>
+                </tr>
+                </table>"),
           p(tags$b("Billing through iLab."),
             "Upon your first PRoXe request you will receive an introductory “Welcome to Leukemia/Lymphoma Xenograft Core” email, which provides basic information about registering for our Core in iLab. The LLX Core’s purpose is to expand and distribute our PDX models. Internal DFCI customers may already have an iLab account, in which case you don’t need to register. Internal and external investigators without an iLab account will need to register, which only takes a few minutes. After registration you will receive a cost projection from the Core covering fees for PDX vials, shipping costs, and consulting costs (if applicable). At that time you will need to both confirm that you accept the projected cost and provide payment information. For internal customers please provide a DFCI-approved project cost center #. For external customers a PO # is preferred; if you must use a credit card please contact ",
             tags$a("Amanda Christie",href="mailto:amandal_christie@dfci.harvard.edu?Subject=PRoXe%20credit%20card%20use"),
@@ -606,9 +641,9 @@ shinyUI(
             ,tags$i("Billing through iLab"),
             ")."
           ),
-          p(tags$b("App web development."),"PRoXe is written mainly in the R programming language. As an open-source project, 
+          p(tags$b("App web development."),"PRoXe is written mainly in the R programming language by Scott Kallgren (Twitter: @scottkall). As an open-source project, 
             its code and latest updates can be viewed",
-            a("in this GitHub repository.",href="https://github.com/scottkall/proxe",target="_blank")),
+            a("in Scott's GitHub repository.",href="https://github.com/scottkall/proxe",target="_blank")),
           HTML("<p>If you have ideas for ways to improve PRoXe, please 
                 <a href=\"mailto:proxe.feedback@gmail.com?Subject=PRoXe%20feedback\" target=\"_top\">tell us</a> 
             .</p>"),
@@ -640,7 +675,15 @@ shinyUI(
             a("http://belfercenter.dfci.harvard.edu",href="http://belfercenter.dfci.harvard.edu",target="_blank")
           ),br(),br()
         )
+      ),
+      tabPanel("FAQ",
+        h1("Frequently Asked Questions"),
+        # TODO: ideally, eventually make a TOC to each item at the top, linking via anchors or shiny equivalent.
+        column(width = 10,
+          uiOutput("FAQ")
+        )
       )
+      
     )
     # navbarPage options
     ,position="fixed-top",collapsible=TRUE

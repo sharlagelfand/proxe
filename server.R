@@ -1076,5 +1076,23 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   })
   
   # } # end of if(F)
+
+  # Frequently asked questions
+  output$FAQ <- renderUI({
+    # TODO: later functionalize this
+    filename <- dir(path = "www",pattern="_PROXE_FAQ.pdf",full.names=T)
+    if(length(filename) < 1) warning("Where is the FAQ pdf?")
+    if(length(filename) > 1) {
+      warning("> 1 FAQ PDFs in www folder. Taking last saved.")
+      tmp <- sapply(filename,function(i) file.info(i)$mtime)
+      newest_file <- sort(tmp,decreasing=T)[1]
+      filename <- names(newest_file)
+    }
+    filename <- gsub("www/","",filename)
+    tags$iframe(
+      src=filename,
+      width="100%",
+      height="800px")
+  })
 })
 
