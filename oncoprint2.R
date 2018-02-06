@@ -130,8 +130,57 @@ if(F){
 ##TODO
 
 
+# - add to dataframe - #
 
+# Template: WT1 Missense NM_024426 c.679A>G p.S227G of 0.481013 in 158 reads
+# <gene> <type> <transcriptid> <nt change> <AA change> of <A.F.> in <read support> reads.
+# only keep True Mutation == 1
 
+# remove NAs
+vdf <- vs[!is.na(vs$True_Mutation),]
+# filter for true mutations, desired columns
+annot_cols = c("tumor_sample_name_new","Canonical_Hugo_Symbol","Canonical_Variant_Classification",
+  "Canonical_Refseq_mRNA_Id","Canonical_cDNA_Change","Canonical_Protein_Change","allele_fraction","Coverage")
+vdf <- vdf[vdf$True_Mutation==1,annot_cols]
+# filter out intergenic
+vdf <- vdf[vdf$Canonical_Variant_Classification!="intergenic_variant",]
+
+# clean up data
+vdf$Canonical_Variant_Classification <- gsub("_"," ",vdf$Canonical_Variant_Classification)
+vdf$Canonical_Variant_Classification <- gsub(" Mutation","",vdf$Canonical_Variant_Classification)
+vdf$Canonical_Variant_Classification <- gsub("Del","Deletion",vdf$Canonical_Variant_Classification)
+vdf$Canonical_Variant_Classification <- gsub("Ins","Insertion",vdf$Canonical_Variant_Classification)
+vdf$Canonical_Variant_Classification <- gsub("Frame Shift","Frameshift",vdf$Canonical_Variant_Classification)
+vdf$Canonical_Variant_Classification <- gsub("In Frame","In-Frame",vdf$Canonical_Variant_Classification)
+
+# filter out nonsensical allele_fractions
+vdf$allele_fraction <- as.numeric(vdf$allele_fraction)
+vdf <- vdf[between(vdf$allele_fraction,0,1),]
+
+# filter out rows that are completely NA
+vdf <- vdf[apply(vdf,1,function(row)sum(is.na(row)))!=ncol(vdf),]
+
+attach(vdf)
+tmp <- paste(Canonical_Hugo_Symbol,Canonical_Variant_Classification,Canonical_Refseq_mRNA_Id,Canonical_cDNA_Change,Canonical_Protein_Change,"of",round(allele_fraction,2),"in",Coverage,"reads.")
+detach(vdf)
+vdf2 <- vdf
+vdf2$PDX_Molecular_Details <- tmp
+
+# replace " NA " with " __ "
+vdf2$PDX_Molecular_Details <- gsub(" NA "," __ ",vdf2$PDX_Molecular_Details)
+
+vdf2$pdx_id <- substring(vdf2$tumor_sample_name_new,1,10)
+vdf2 <- vdf2[vdf2$pdx_id %in% df$namenum,]
+
+stop("TODO: collapse vdf2 into one-row-per-pdf_id, then...")
+#TODO: collapse vdf2 into one-row-per-pdx-id, 
+# pipe-separating the Canonical Hugo Symbol as PDX Molecular Alterations Positive, and
+                # the PDX Molecular Details as PDX_Molecular Details
+
+# TODO: go back and delete the old source of PDX Molecular Alterations Positive and PDX Molecular Details
+
+# TODO: complete this merge code
+tmp <- merge(df,vdf2[,"PDX "])
 
 # example
 if(F){
