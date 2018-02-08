@@ -161,7 +161,8 @@ vdf <- vdf[between(vdf$allele_fraction,0,1),]
 vdf <- vdf[apply(vdf,1,function(row)sum(is.na(row)))!=ncol(vdf),]
 
 attach(vdf)
-tmp <- paste(Canonical_Hugo_Symbol,Canonical_Variant_Classification,Canonical_Refseq_mRNA_Id,Canonical_cDNA_Change,Canonical_Protein_Change,"of",round(allele_fraction,2),"in",Coverage,"reads.")
+library(scales)
+tmp <- paste(Canonical_Hugo_Symbol,Canonical_Variant_Classification,Canonical_Refseq_mRNA_Id,Canonical_cDNA_Change,Canonical_Protein_Change,"in",scales::percent(allele_fraction),"of",Coverage,"reads")
 detach(vdf)
 vdf2 <- vdf
 vdf2$PDX_Molecular_Details <- tmp
