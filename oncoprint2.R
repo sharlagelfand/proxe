@@ -172,17 +172,38 @@ vdf2$PDX_Molecular_Details <- gsub(" NA "," __ ",vdf2$PDX_Molecular_Details)
 vdf2$pdx_id <- substring(vdf2$tumor_sample_name_new,1,10)
 vdf2 <- vdf2[vdf2$pdx_id %in% df$namenum,]
 
-stop("TODO: collapse vdf2 into one-row-per-pdf_id, then...")
-#TODO: collapse vdf2 into one-row-per-pdx-id, 
-# pipe-separating the Canonical Hugo Symbol as PDX Molecular Alterations Positive, and
-                # the PDX Molecular Details as PDX_Molecular Details
 
-# TODO: go back and delete the old source of PDX Molecular Alterations Positive and PDX Molecular Details
+# group vdf2 by pdx_id and concatenate the following, pipe-separating:
+  # 1. the Canonical Hugo Symbol as PDX Molecular Alterations Positive, and
+  # 2. the PDX Molecular Details as PDX_Molecular Details
+vdf_summ <- vdf2 %>% 
+  group_by(pdx_id) %>% 
+  summarise("PDX Molecular Alterations Positive" = paste0(Canonical_Hugo_Symbol, collapse = " | "),
+            "PDX Molecular Details" = paste0(PDX_Molecular_Details,collapse = " | "))
 
-# TODO: complete this merge code
-tmp <- merge(df,vdf2[,"PDX "])
+# note: this code supersedes oncoprint.R, so I'm removing the need for that now in compile_upload.R
+  # TODO later: git rm oncoprint.R, etc.
 
-# example
+# complete the merge, moving columns and visibility indexes accordingly
+
+  # merge
+df <- merge(df,vdf_summ,by.x = "namenum",by.y = "pdx_id",all.x=T)
+obInvisRet_ind = obInvisRet_ind + 1  # accounts for new 'namenum' at column 1 (was near end)
+
+  # move 'name' columns from #1,2 out of visible range
+cols_to_move = c( "PDX RNA-Seq Name","namenum")
+df <- moveMe(df, cols_to_move, "after", names(df)[obInvisRet_ind])
+obInvisRet_ind <- obInvisRet_ind - length(cols_to_move)
+
+  # move new mutation columns into visible range in intuitive context
+cols_to_move = c("PDX Molecular Alterations Positive","PDX Molecular Details")
+df <- moveMe(df, cols_to_move ,"after", "PDX HemoSeq")
+obInvisRet_ind <- obInvisRet_ind + length(cols_to_move)
+
+
+
+# Appendix: template example used to build this document
+
 if(F){
   mat = read.table(textConnection(
     ",s1,s2,s3

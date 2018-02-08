@@ -28,9 +28,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     updateSelectizeInput(session,inputId="bar_gene",
                          choices=sort(rownames(rnamat_sub)), server=TRUE,
                          selected=c("BCL2"))
-    updateSelectizeInput(session,inputId="oncop_genes",
-                          choices=sort(M2_genes), server=TRUE,
-                          selected=c("TP53","KRAS","NRAS"))
 
     # Shiny 'links' between tab panels
     if(input$Request_link != 0) updateTabsetPanel(session, inputId="mainNavBar", selected="Line Request/Pricing")
