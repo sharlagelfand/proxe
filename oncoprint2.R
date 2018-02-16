@@ -29,8 +29,7 @@ v = vs[cols_keep]
 # v = v[v$True_Mutation != 0 & !is.na(v$True_Mutation),]
 v = v[v$True_Mutation == 1 & !is.na(v$True_Mutation),]
 
-v1 = v[c(1:3,6:8)]
-v2 = v[c(1,4:8)]
+v1 = v[c(1,4:8)]
 
 #### --- recode *_Variant_Classification -- ####
 
@@ -42,11 +41,11 @@ mut_types_keep = c(snv,indel,splice)
 
 # - for v1 - #
 # filter out terms that don't exist, like "0", "intron","intergenic_variant".
-v1 <- v1[v1$Canonical_Variant_Classification %in% mut_types_keep,]
+v1 <- v1[v1$BestEffect_Variant_Classification %in% mut_types_keep,]
 # Create new columns that map these classifications to the above terms: snv, indel, splice
 v1$class2 <- NA_character_
 for(i in 1:nrow(v1)){
-  class1 <- v1$Canonical_Variant_Classification[i]
+  class1 <- v1$BestEffect_Variant_Classification[i]
   if (class1 %in% snv){
     v1$class2[i] <- "snv"
   } else if (class1 %in% indel){
@@ -58,27 +57,27 @@ for(i in 1:nrow(v1)){
   }
 }
 v1$class2 <- as.factor(v1$class2)
-table(v1$Canonical_Variant_Classification,v1$class2)
+table(v1$BestEffect_Variant_Classification,v1$class2)
 
-# - for v2 - #
-# filter out terms that don't exist, like "0", "intron","intergenic_variant".
-v2 <- v2[v2$BestEffect_Variant_Classification %in% mut_types_keep,]
-# Create new columns that map these classifications to the above terms: snv, indel, splice
-v2$class2 <- NA_character_
-for(i in 1:nrow(v2)){
-  class1 <- v2$BestEffect_Variant_Classification[i]
-  if (class1 %in% snv){
-    v2$class2[i] <- "snv"
-  } else if (class1 %in% indel){
-    v2$class2[i] <- "indel"
-  } else if (class1 %in% splice){
-    v2$class2[i] <- "splice"
-  } else {
-    stop("Encountered unexpected value.")
-  }
-}
-v2$class2 <- as.factor(v2$class2)
-table(v2$BestEffect_Variant_Classification,v2$class2)
+# # - for v2 - #
+# # filter out terms that don't exist, like "0", "intron","intergenic_variant".
+# v2 <- v2[v2$BestEffect_Variant_Classification %in% mut_types_keep,]
+# # Create new columns that map these classifications to the above terms: snv, indel, splice
+# v2$class2 <- NA_character_
+# for(i in 1:nrow(v2)){
+#   class1 <- v2$BestEffect_Variant_Classification[i]
+#   if (class1 %in% snv){
+#     v2$class2[i] <- "snv"
+#   } else if (class1 %in% indel){
+#     v2$class2[i] <- "indel"
+#   } else if (class1 %in% splice){
+#     v2$class2[i] <- "splice"
+#   } else {
+#     stop("Encountered unexpected value.")
+#   }
+# }
+# v2$class2 <- as.factor(v2$class2)
+# table(v2$BestEffect_Variant_Classification,v2$class2)
 
 
 
@@ -88,13 +87,13 @@ table(v2$BestEffect_Variant_Classification,v2$class2)
 
 library(dplyr)
 v1a <- v1 %>%
-  dplyr::group_by(tumor_sample_name_new,Canonical_Hugo_Symbol) %>%
+  dplyr::group_by(tumor_sample_name_new,BestEffect_Hugo_Symbol) %>%
   dplyr::summarise(id = paste(class2, collapse = ";"))
 
 # note this looks like: (TODO: is snv;snv;snv a problem?)
 # A tibble: 858 x 3
 # Groups:   tumor_sample_name_new [?]
-# tumor_sample_name_new Canonical_Hugo_Symbol          id
+# tumor_sample_name_new BestEffect_Hugo_Symbol          id
 # <chr>                 <chr>       <chr>
 #   1         CBAB-10855-V2                 EPHA6         snv
 # 2         CBAB-10855-V2                 GATA2         snv
@@ -104,7 +103,7 @@ v1a <- as.data.frame(lapply(v1a,as.factor))
 v1a$id <- as.character(v1a$id)
 
 library(reshape2)
-v1mat <- acast(v1a,Canonical_Hugo_Symbol~tumor_sample_name_new, value.var="id")
+v1mat <- acast(v1a,BestEffect_Hugo_Symbol~tumor_sample_name_new, value.var="id")
 
 # produce ComplexHeatmap
 
@@ -139,19 +138,19 @@ if(F){
 # remove NAs
 vdf <- vs[!is.na(vs$True_Mutation),]
 # filter for true mutations, desired columns
-annot_cols = c("tumor_sample_name_new","Canonical_Hugo_Symbol","Canonical_Variant_Classification",
-  "Canonical_Refseq_mRNA_Id","Canonical_cDNA_Change","Canonical_Protein_Change","allele_fraction","Coverage")
+annot_cols = c("tumor_sample_name_new","BestEffect_Hugo_Symbol","BestEffect_Variant_Classification",
+  "BestEffect_Refseq_mRNA_Id","BestEffect_cDNA_Change","BestEffect_Protein_Change","allele_fraction","Coverage")
 vdf <- vdf[vdf$True_Mutation==1,annot_cols]
 # filter out intergenic
-vdf <- vdf[vdf$Canonical_Variant_Classification!="intergenic_variant",]
+vdf <- vdf[vdf$BestEffect_Variant_Classification!="intergenic_variant",]
 
 # clean up data
-vdf$Canonical_Variant_Classification <- gsub("_"," ",vdf$Canonical_Variant_Classification)
-vdf$Canonical_Variant_Classification <- gsub(" Mutation","",vdf$Canonical_Variant_Classification)
-vdf$Canonical_Variant_Classification <- gsub("Del","Deletion",vdf$Canonical_Variant_Classification)
-vdf$Canonical_Variant_Classification <- gsub("Ins","Insertion",vdf$Canonical_Variant_Classification)
-vdf$Canonical_Variant_Classification <- gsub("Frame Shift","Frameshift",vdf$Canonical_Variant_Classification)
-vdf$Canonical_Variant_Classification <- gsub("In Frame","In-Frame",vdf$Canonical_Variant_Classification)
+vdf$BestEffect_Variant_Classification <- gsub("_"," ",vdf$BestEffect_Variant_Classification)
+vdf$BestEffect_Variant_Classification <- gsub(" Mutation","",vdf$BestEffect_Variant_Classification)
+vdf$BestEffect_Variant_Classification <- gsub("Del","Deletion",vdf$BestEffect_Variant_Classification)
+vdf$BestEffect_Variant_Classification <- gsub("Ins","Insertion",vdf$BestEffect_Variant_Classification)
+vdf$BestEffect_Variant_Classification <- gsub("Frame Shift","Frameshift",vdf$BestEffect_Variant_Classification)
+vdf$BestEffect_Variant_Classification <- gsub("In Frame","In-Frame",vdf$BestEffect_Variant_Classification)
 
 # filter out nonsensical allele_fractions
 vdf$allele_fraction <- as.numeric(vdf$allele_fraction)
@@ -162,7 +161,7 @@ vdf <- vdf[apply(vdf,1,function(row)sum(is.na(row)))!=ncol(vdf),]
 
 attach(vdf)
 library(scales)
-tmp <- paste(Canonical_Hugo_Symbol,Canonical_Variant_Classification,Canonical_Refseq_mRNA_Id,Canonical_cDNA_Change,Canonical_Protein_Change,"in",scales::percent(allele_fraction),"of",Coverage,"reads")
+tmp <- paste(BestEffect_Hugo_Symbol,BestEffect_Variant_Classification,BestEffect_Refseq_mRNA_Id,BestEffect_cDNA_Change,BestEffect_Protein_Change,"in",scales::percent(allele_fraction),"of",Coverage,"reads")
 detach(vdf)
 vdf2 <- vdf
 vdf2$PDX_Molecular_Details <- tmp
@@ -175,11 +174,11 @@ vdf2 <- vdf2[vdf2$pdx_id %in% df$namenum,]
 
 
 # group vdf2 by pdx_id and concatenate the following, pipe-separating:
-  # 1. the Canonical Hugo Symbol as PDX Molecular Alterations Positive, and
+  # 1. the BestEffect Hugo Symbol as PDX Molecular Alterations Positive, and
   # 2. the PDX Molecular Details as PDX_Molecular Details
 vdf_summ <- vdf2 %>% 
   group_by(pdx_id) %>% 
-  summarise("PDX Molecular Alterations Positive" = paste0(Canonical_Hugo_Symbol, collapse = " | "),
+  summarise("PDX Molecular Alterations Positive" = paste0(BestEffect_Hugo_Symbol, collapse = " | "),
             "PDX Molecular Details" = paste0(PDX_Molecular_Details,collapse = " | "))
 
 # note: this code supersedes oncoprint.R, so I'm removing the need for that now in compile_upload.R
