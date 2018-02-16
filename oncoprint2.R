@@ -26,8 +26,8 @@ cols_keep = c("tumor_sample_name_new",
   "Coverage")
 
 v = vs[cols_keep]
-v = v[v$True_Mutation != 0 & !is.na(v$True_Mutation),]
-# v = v[v$True_Mutation == 1 & !is.na(v$True_Mutation),]
+# v = v[v$True_Mutation != 0 & !is.na(v$True_Mutation),]
+v = v[v$True_Mutation == 1 & !is.na(v$True_Mutation),]
 
 v1 = v[c(1:3,6:8)]
 v2 = v[c(1,4:8)]
