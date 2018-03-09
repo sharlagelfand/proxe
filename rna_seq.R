@@ -20,15 +20,16 @@ library(plyr)
 print("didcomehere00")
 # read in RPKM data
 # rnadf <- read.table("../data_outside_app/PDX.rpkm.txt",header=T,sep="\t")
-rnadf <- read.table("../data_outside_app/PDX.rpkm.201703.txt",header=T,sep="\t")
+# rnadf <- read.table("../data_outside_app/PDX.rpkm.201703.txt",header=T,sep="\t")
+rnadf <- read.csv("../data_outside_app/Cuff_Gene_Counts.csv",header=T)
 
 # old version, transposed:
   # rnadf <- read.table(file = "data/wl_tidy_rnaseq_transposed.txt",
   #                    header = T,sep = "\t",stringsAsFactors = F)
 
 # turn gene names into rownames
-rownames(rnadf) <- rnadf$gene
-rnadf$gene <- NULL
+rownames(rnadf) <- rnadf$Gene_ID
+rnadf$Gene_ID <- NULL
 
 # old cleaning code -- delete later
 if(F){
@@ -60,17 +61,18 @@ dups <- dfr[duplicated(dfr$`PDX RNA-Seq Name`),]$`PDX RNA-Seq Name`
 
 # debugging line of code
 # pair[,c("PDX RNA-Seq Name","PDX Name","full","date")]
-
-# selects between duplicates of type 1 above
-for(dup in dups) {
-  pair <- dfr[dfr$`PDX RNA-Seq Name` == dup,]
-  if(identical(
-    stringr::str_sub(pair[1,"PDX Name"],1,10),
-    stringr::str_sub(pair[2,"PDX Name"],1,10))) next # skips type (2) dups
-  # order to keep paired-end, then recent date.
-  stop(paste("RNA-seq sample",dup,"is associated with unrelated PDXs"))
-  # full_to_drop <- pair[-1,]$full
-  # dfr <- dfr[!(dfr$full %in% full_to_drop),]
+if(T){
+  # selects between duplicates of type 1 above
+  for(dup in dups) {
+    pair <- dfr[dfr$`PDX RNA-Seq Name` == dup,]
+    if(identical(
+      stringr::str_sub(pair[1,"PDX Name"],1,10),
+      stringr::str_sub(pair[2,"PDX Name"],1,10))) next # skips type (2) dups
+    # order to keep paired-end, then recent date.
+    warning(paste("RNA-seq sample",dup,"is associated with unrelated PDXs"))
+    full_to_drop <- pair[-1,]$`PDX Name`
+    dfr <- dfr[!(dfr$`PDX Name` %in% full_to_drop),]
+  }
 }
 if (any(duplicated(dfr$`PDX Name`))) warning("there are duplicates in the loaded-in RNA-seq")
 
