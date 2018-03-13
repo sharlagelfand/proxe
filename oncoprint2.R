@@ -109,7 +109,7 @@ v1mat <- acast(v1a,BestEffect_Hugo_Symbol~tumor_sample_name_new, value.var="id")
 
 if(F){
   col = c(snv = "red", indel = "blue", splice = "yellow")
-  png(filename = "~/tmp/test_oncoprint.png",width = 25, height= 20,units = "in",res=250)
+  png(filename = "tmp/test_oncoprint.png",width = 25, height= 20,units = "in",res=250)
   library(ComplexHeatmap)
   ComplexHeatmap::oncoPrint(v1mat, get_type = function(x) strsplit(x, ";")[[1]],
     alter_fun = list(
