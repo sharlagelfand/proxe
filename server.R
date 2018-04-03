@@ -307,9 +307,31 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     # remove NA rows
     v1mat <- v1mat[rowSums(!is.na(v1mat)) != 0,]
     
+    # match to df for column metadata plotting as bottom annotation (ba)
+    vcols <- data.frame(
+      pdx_name = colnames(v1mat),
+      pdx_id = substring(colnames(v1mat),1,10)
+    )
+    df_abrv <- df[!duplicated(df$namenum),]
+    vmeta <- merge(vcols,df_abrv,by.x="pdx_id",by.y="namenum",all.x = T)
+    vmeta$Treated <- vmeta$`Treatment Phase at Time of Sample` != "Untreated"
+    # rownames(vmeta) <- vmeta$pdx_name
+    
+    
     # printing plot
-    col = c(snv = "red", indel = "blue", splice = "yellow")
     library(ComplexHeatmap)
+    cols_to_show = c("Sex","WHO Category","Treatment Phase at Time of Sample",
+      "Treated","Cytogenetic Risk Category","Age")
+    ba = HeatmapAnnotation(
+      df = vmeta[
+        cols_to_show
+      ],
+      col=list(
+        Sex = c("M"="lightblue","F"="khaki1","NA"="gray")
+        
+      )
+    )
+    col = c(snv = "red", indel = "blue", splice = "yellow")
     ComplexHeatmap::oncoPrint(v1mat, get_type = function(x) strsplit(x, ";")[[1]],
       alter_fun = list(
         background = function(x, y, w, h) {
@@ -323,7 +345,10 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       row_names_gp = gpar(fontsize = 10),
       row_title_gp = gpar(fontsize = 10),
       column_title_gp = gpar(fontsize = 10),
-      column_names_gp = gpar(fontsize = 10))
+      column_names_gp = gpar(fontsize = 10),
+      bottom_annotation = ba,
+      bottom_annotation_height = unit(length(cols_to_show)*4, "mm")
+    )
 
   })
   
