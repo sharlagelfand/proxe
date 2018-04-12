@@ -140,6 +140,10 @@ df$Age <- round(as.numeric(df$Age),3)
 # remove 80+ ages because they are PHI. Changing all to 81.
 df$Age[which(df$Age >= 80)] <- 81
 
+# bin and scramble young ages
+df$Age[which(between(df$Age,0,9))] <- runif(sum(between(df$Age,0,9),na.rm=T),0,9)
+df$Age[which(between(df$Age,9,18))] <- runif(sum(between(df$Age,9,18),na.rm=T),9,18)
+
 # remove ">95" and ">90" -- simply convert to integer.
 df$Percent_Tissue_Involvement <- gsub(">","",df$Percent_Tissue_Involvement)
 # explicitly convert "Unclear" to NA

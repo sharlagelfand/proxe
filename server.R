@@ -322,6 +322,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     library(ComplexHeatmap)
     cols_to_show = c("Sex","WHO Category","Treatment Phase at Time of Sample",
       "Treated","Cytogenetic Risk Category","Age")
+    print(str(vmeta));print(vmeta[1:4,1:4])
     ba = HeatmapAnnotation(
       df = vmeta[
         cols_to_show
@@ -329,7 +330,10 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       col=list(
         Sex = c("M"="lightblue","F"="khaki1","NA"="gray")
         
-      )
+      ),
+      show_annotation_name = TRUE
+      # ,colname = anno_text(vmeta$pdx_name, rot = 90, just = "right", offset = unit(1, "npc") - unit(2, "mm")),
+      # annotation_height = unit.c(unit(5, "mm"), max_text_width(vmeta$pdx_name) + unit(2, "mm"))
     )
     col = c(snv = "red", indel = "blue", splice = "yellow")
     ComplexHeatmap::oncoPrint(v1mat, get_type = function(x) strsplit(x, ";")[[1]],
