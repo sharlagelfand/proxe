@@ -13,7 +13,7 @@ solid$Sample <- as.character(solid$Sample)
 names(solid) <- c("PDX_Name","COSMIC_Primary_Site","COSMIC_Type","COSMIC_Subtype")
 
 # add availability column manually
-solid$Distribution_Permissions <- "none currently"
+solid$Distribution_Permissions <- "academic, industry-sponsored academic, and industry"
 
 # RNA-seq data. 
 if(F){

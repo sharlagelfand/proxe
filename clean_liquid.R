@@ -26,6 +26,7 @@ library(readxl)
 library(xlsx)
 library(stringr) # for parsing PDX_Name below.
 source("functions.R")
+library(plyr);library(dplyr)
 
 ###############################################################################
 ### --- Import data and metadata --- ###
@@ -269,7 +270,7 @@ meta2$Visible_Invisible_int <- rep(NA_integer_,nrow(meta2))
 meta2[meta2$Visible_Invisible == "ob_vis",]$Visible_Invisible_int <- 1
 meta2[meta2$Visible_Invisible == "cond_vis",]$Visible_Invisible_int <- 2
 meta2[meta2$Visible_Invisible == "ob_invis",]$Visible_Invisible_int <- 3
-library(plyr)
+
 meta2 <- arrange(meta2,Visible_Invisible_int)
 df <- df[,meta2$PRoXe_Column_Header]
 # 3. store values for demarcation
