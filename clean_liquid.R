@@ -142,8 +142,8 @@ df$Age <- round(as.numeric(df$Age),3)
 df$Age[which(df$Age >= 80)] <- 81
 
 # bin and scramble young ages
-df$Age[which(between(df$Age,0,9))] <- runif(sum(between(df$Age,0,9),na.rm=T),0,9)
-df$Age[which(between(df$Age,9,18))] <- runif(sum(between(df$Age,9,18),na.rm=T),9,18)
+df$Age[which(between(df$Age,0,9))] <- round(runif(sum(between(df$Age,0,9),na.rm=T),0,9),2)
+df$Age[which(between(df$Age,9.0000001,18))] <- round(runif(sum(between(df$Age,9,18),na.rm=T),9,18),2)
 
 # remove ">95" and ">90" -- simply convert to integer.
 df$Percent_Tissue_Involvement <- gsub(">","",df$Percent_Tissue_Involvement)
