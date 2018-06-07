@@ -317,11 +317,21 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     vmeta$Treated <- vmeta$`Treatment Phase at Time of Sample` != "Untreated"
     # rownames(vmeta) <- vmeta$pdx_name
     
-    
     # printing plot
     library(ComplexHeatmap)
     cols_to_show = c("Sex","WHO Category","Treatment Phase at Time of Sample",
       "Treated","Cytogenetic Risk Category","Age")
+    
+    
+    # check if vmeta has any values for each in cols_to_show, removes if not.
+    cols_na <- apply(
+      X=vmeta[cols_to_show],
+      MARGIN=2,
+      FUN=function(colmn){
+        all(is.na(colmn))
+      })
+    cols_to_show <- cols_to_show[!cols_na]
+    
     ba = HeatmapAnnotation(
       df = vmeta[
         cols_to_show
@@ -334,7 +344,9 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       # ,colname = anno_text(vmeta$pdx_name, rot = 90, just = "right", offset = unit(1, "npc") - unit(2, "mm")),
       # annotation_height = unit.c(unit(5, "mm"), max_text_width(vmeta$pdx_name) + unit(2, "mm"))
     )
+    
     col = c(snv = "red", indel = "blue", splice = "yellow")
+    
     ComplexHeatmap::oncoPrint(v1mat, get_type = function(x) strsplit(x, ";")[[1]],
       alter_fun = list(
         background = function(x, y, w, h) {
