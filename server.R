@@ -22,12 +22,22 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
   
   # for observer functions
   observe({
+    
+    # liquid RNA-seq plots
     updateSelectizeInput(session,inputId="rna_genes",
                    choices=sort(rownames(rnamat_sub)), server=TRUE,
                    selected=c("BCL2","TP53","FLT3","MYC","JAK2"))
     updateSelectizeInput(session,inputId="bar_gene",
                          choices=sort(rownames(rnamat_sub)), server=TRUE,
                          selected=c("BCL2"))
+    
+    # solid RNA-seq plots
+    updateSelectizeInput(session,inputId="rna_genes_solid",
+      choices=sort(rownames(rnamat_sub)), server=TRUE,
+      selected=c("BCL2","TP53","KRAS","MYC","PTEN","PIK3CA"))
+    updateSelectizeInput(session,inputId="bar_gene_solid",
+      choices=sort(rownames(rnamat_sub)), server=TRUE,
+      selected=c("TP53"))
 
     # Shiny 'links' between tab panels
     if(input$Request_link != 0) updateTabsetPanel(session, inputId="mainNavBar", selected="Line Request/Pricing")
@@ -863,6 +873,91 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     #     m <- ggplot(df[filtered_row_inds,], aes_string(x=input$hist_var))
     #     m + geom_histogram(fill="blue") #input$hist_binwidth)
   })
+
+
+# PDX gene expression
+  output$plot_rna_solid <- renderPlot({
+    
+    # see this for making heatmaps
+    # http://sebastianraschka.com/Articles/heatmaps_in_r.html
+    
+    gao_rna <- as.matrix(gao_rna)
+    
+    if(input$z_log_solid == "z"){
+      gao_rna <- t(scale(t(gao_rna)))
+    } else if(input$z_log_solid == "log"){
+      gao_rna <- log2(gao_rna + 0.01)
+    } else if(input$z_log_solid == "lin"){
+      # continue
+    }
+
+    if(input$expType_solid == "heat"){
+      
+      # subset for only genes desired
+      if(input$geneInput_solid == "panels") {
+        # use user-selected list from lists of genes to subset in RNA-seq clustering in app
+        gao_rna2 <- gao_rna[rownames(gao_rna) %in% genesets_list[[input$rna_panel_solid]] ,]
+      } else if(input$geneInput_solid == "indiv") {
+        gao_rna2 <- gao_rna[rownames(gao_rna) %in% input$rna_genes_solid,]
+      }
+      
+      # subset for only samples desired
+      rnamat_names <- solid[input$solid_table_rows_selected,]$`PDX Name`
+      if(input$sampleInput_solid == "all"){
+        gao_rna3 <- gao_rna2
+      } else if(input$sampleInput_solid == "click"){
+        gao_rna3 <- gao_rna2[,colnames(gao_rna2) %in% rnamat_names]
+      }
+      
+      print("didcomehere6_solid")
+      
+      # plot
+      # op <- par(no.readonly = T)
+      # par(mar=c(50,5,5,6))
+      heatmap.2(gao_rna3,
+                # cellnote = toy2,  # same data set for cell labels
+                main = switch(input$z_log_solid,z="Z-score",log="Log2( RPKM + 0.01 )",lin="RPKM"), # heat map title
+                notecol="black",      # change font color of cell labels to black
+                density.info="none",  # turns off density plot inside color legend
+                trace="none",         # turns off trace lines inside the heat map
+                margins =c(19,16),     # widens margins around plot
+                col=my_palette,       # use on color palette defined earlier 
+                # breaks=col_breaks,    # enable color transition at specified limits
+                keysize = 0.75,
+                dendrogram="both")#,     # only draw a row dendrogram
+      # Colv="NA")            # turn off column clustering
+      # par(op)
+    } else if (input$expType_solid == "bar"){
+      # subset gao_rna2 by gene, then transpose
+      if(input$across_bar_solid == "samples"){
+        rnamat_onegene <- gao_rna[rownames(gao_rna) == input$bar_gene_solid,]
+        rnadf_onegene <- as.data.frame(rnamat_onegene)
+        names(rnadf_onegene) <- "gene"
+        rnadf_onegene$name <- rownames(rnadf_onegene)
+        rnadf_onegene <- transform(rnadf_onegene, 
+                                   name = reorder(name, gene))
+        ggplot(rnadf_onegene,aes(x=name,y=gene)) + 
+          geom_bar(stat='identity',fill="blue") + 
+          ggtitle(paste(input$bar_gene,switch(input$z_log_solid,z="Z-score",log="Log2( RPKM + 0.01 )",lin="RPKM"))) + 
+          xlab("sample") + coord_flip() + ylab(NULL)
+      } else if (input$across_bar_solid == "gene_set") {
+        # for plotting one sample and a gene set on a barplot
+        rnamat_geneset <- gao_rna[rownames(gao_rna) %in% genesets_list[[input$bar_rna_panel_solid]] ,]
+        rnamat_geneset <- rnamat_geneset[,colnames(rnamat_geneset) == input$bar_rna_sample_solid]
+        rnadf_geneset <- as.data.frame(rnamat_geneset)
+        names(rnadf_geneset) <- "expr"
+        rnadf_geneset$genename <- rownames(rnadf_geneset)
+        rnadf_geneset <- transform(rnadf_geneset, 
+                                   name = reorder(genename, expr))
+        ggplot(rnadf_geneset,aes(x=name,y=expr)) + 
+          geom_bar(stat='identity',fill="blue") + 
+          ggtitle(paste(switch(input$z_log_solid,z="Z-score",log="Log2( RPKM + 0.01 )",lin="RPKM"),"in",input$bar_rna_sample_solid)) + 
+          xlab(paste("Gene panel:",input$bar_rna_panel_solid)) + coord_flip() +
+          ylab(NULL)
+      }
+    }
+  })
+
 
   output$solid_glossary <- DT::renderDataTable({
     #     # take visible columns' header and description

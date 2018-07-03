@@ -15,66 +15,124 @@ names(solid) <- c("PDX_Name","COSMIC_Primary_Site","COSMIC_Type","COSMIC_Subtype
 # add availability column manually
 solid$Distribution_Permissions <- "academic, industry-sponsored academic, and industry"
 
-# RNA-seq data. 
+
+##### ---- RNA-seq data manipulation for plotting  ------ #####
+
+
+# TODO: manipulate this, create a graph out of it, 
+  # and also fold it in (link too?) with 'solid' df above through a merge.
+gao_rna <- readxl::read_excel("../data_outside_app/Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx",sheet="RNAseq_fpkm")
+gao_rna <- as.data.frame(gao_rna)
+rownames(gao_rna) <- gao_rna$Sample
+gao_rna$Sample <- NULL
+library(pheatmap)
+
+# remove genes that are all zero
+rows_to_keep <- apply(gao_rna,1,function(row){
+  sum(row) > 0
+})
+gao_rna <- gao_rna[rows_to_keep,]
+
+# # keep only genes with rpkm > 5 in > 20 samples
+# rows_to_keep <- apply(gao_rna,1,function(row){
+#   sum(row > 5) > 20
+# })
+# gr_filt <- gao_rna[rows_to_keep,]
+# 
+# # calculate variance/mean ratio
+# if(anyNA(gr_filt)) stop("NAs in gao_rna filtered")
+# var_mean_ratio_sort <- sort(
+#   apply(gr_filt,1,function(row){
+#     var(row) / mean(row)
+#   })
+# , decreasing = FALSE)
+
+# create a log2-scaled gr
+# grfl <- log2(gr_filt + 0.01)
+
+# create z-scores = (value - mean) / sqrt(variance)
+# grfz <- t(scale(t(gr_filt)))
+
+# take top X by var/mean ratio
+# X = 500
+# grfz_topX <- grfz[names(var_mean_ratio_sort)[1:X],]
+
+# # filter for one type
+# grfz_topX_type = grfz_topX[,
+#   solid[na.omit(solid$COSMIC_Primary_Site=="pancreas" & solid$COSMIC_Type=="carcinoma"),]$PDX_Name
+# ]
+
+# plot
+# breaksList = seq(floor(min(grfz)), -floor(min(grfz)),length.out=length(my_palette))
+# pheatmap::pheatmap(grfz_topX_type,
+#   color = my_palette,
+#   breaks = breaksList
+# )
+
+## TODO: 
+  # add heatmap plot to app.
+  # plot metadata on the side.
+  # maybe make interactive
+
+
+
+# look at stats
+  # sums are different, thus these are probably FPKM/RPKM
+# range(colSums(gao_rna)) # 260k - 905k
+  # compute a mean of all samples for comparison.
+# min(gao_rna[gao_rna > 0]) # 0.01 across all samples
+# gao_rna_pc <- gao_rna + 1
+# gao_meds <- apply(gao_rna_pc,1,median)
+# gao_fc <- sweep(gao_rna_pc,MARGIN = 1,STATS = gao_meds, FUN = "/")
+# grp_lfc <- log2(gao_fc)
+#   # determine number of genes >2^6-fold up
+# up <- apply(grp_lfc,2,function(col){
+#   sum(col > 6)
+# })
+# grp <- data.frame( Sample = names(up), num_genes_64x_up = up, stringsAsFactors = F)
+#   # which genes
+# grp$genes_64x_up = apply(grp_lfc,2,function(col){
+#   paste0(names(col[col>6]),collapse=" | ")
+# })
+#   # determine number of genes <2^5-fold down
+# grp$num_genes_16x_dn <- apply(grp_lfc,2,function(col){
+#   sum(col < -4)
+# })
+# # which genes
+# grp$genes_16x_dn = apply(grp_lfc,2,function(col){
+#   paste0(names(col[col < -4]),collapse=" | ")
+# })
+
+# Ideas for more columns
+# 1. take top and bottom 10 genes, show
+# 2. take genes above threshold that cross-reference with oncogene list (already in app)
+# 3. Compute most commonly-changed genes
+# 
+
+# Ideas for plots:
+# 1. PCA
+# 2. correlation heatmaps.
+
 if(F){
-  # TODO: manipulate this, create a graph out of it, and also fold it in (link too?) with 'solid' df above through a merge.
-  gao_rna <- readxl::read_excel("../data_outside_app/Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx",sheet="RNAseq_fpkm")
-  rownames(gao_rna) <- gao_rna$Sample
-  gao_rna$Sample <- NULL
-  
-  # look at stats
-    # sums are different, thus these are probably FPKM/RPKM
-  # range(colSums(gao_rna)) # 260k - 905k
-    # compute a mean of all samples for comparison.
-  # min(gao_rna[gao_rna > 0]) # 0.01 across all samples
-  gao_rna_pc <- gao_rna + 10
-  gao_meds <- apply(gao_rna_pc,1,median)
-  gao_fc <- sweep(gao_rna_pc,MARGIN = 1,STATS = gao_meds, FUN = "/")
-  grp_lfc <- log2(gao_fc)
-    # determine number of genes >2^6-fold up
-  up <- apply(grp_lfc,2,function(col){
-    sum(col > 6)
-  })
-  grp <- data.frame( Sample = names(up), num_genes_64x_up = up, stringsAsFactors = F)
-    # which genes
-  grp$genes_64x_up = apply(grp_lfc,2,function(col){
-    paste0(names(col[col>6]),collapse=" | ")
-  })
-    # determine number of genes <2^5-fold down
-  grp$num_genes_16x_dn <- apply(grp_lfc,2,function(col){
-    sum(col < -4)
-  })
-  # which genes
-  grp$genes_16x_dn = apply(grp_lfc,2,function(col){
-    paste0(names(col[col < -4]),collapse=" | ")
-  })
-  
-  # Ideas for more columns
-  # 1. take top and bottom 10 genes, show
-  # 2. take genes above threshold that cross-reference with oncogene list (already in app)
-  # 3. Compute most commonly-changed genes
-  # 
-  
-  # Ideas for plots:
-  # 1. PCA
-  # 2. correlation heatmaps.
-  
-  if(F){
-    # try PCA
-    # ok to use raw rpkm values?
-    gpca <- t(gao_rna)
-    # remove constant cols
-    gpca <- gpca[,apply(gpca,2,var) != 0]
-    gpca_prcomp <- prcomp(gpca, scale = TRUE) # note sure whether I'm supposed to be transposing. Think this is right.
-    plot(gpca_prcomp)
-    summary(gpca_prcomp)
-    biplot(gpca_prcomp)
-  #   gpca_princomp <- princomp(t(gpca)) # just playing, could be wrong. failed.
-  #   biplot(gpca_princomp)
-  }
-  rm(list=c("gao_fc","gao_rna","gao_rna_pc","grp","grp_lfc","up","gao_meds"))
-  
+  # try PCA
+  # ok to use raw rpkm values?
+  gpca <- t(gao_rna)
+  # remove constant cols
+  gpca <- gpca[,apply(gpca,2,var) != 0]
+  gpca_prcomp <- prcomp(gpca, scale = TRUE) # note sure whether I'm supposed to be transposing. Think this is right.
+  plot(gpca_prcomp)
+  summary(gpca_prcomp)
+  biplot(gpca_prcomp)
+#   gpca_princomp <- princomp(t(gpca)) # just playing, could be wrong. failed.
+#   biplot(gpca_princomp)
 }
+rm(list=c("gao_fc","gao_rna_pc","grp","grp_lfc","up","gao_meds"))
+
+
+
+####### --------- mutation data ---------- #############
+
+
 
 ## read in mutation data ##
 gao_mut <- readxl::read_excel("../data_outside_app/Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx",sheet="pdxe_mut_and_cn2")
