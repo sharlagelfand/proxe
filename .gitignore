@@ -14,6 +14,9 @@ draft_*
 *.txt
 *password*
 *login_credentials*
+.httr-oauth
+drafts/
+www/
 
 
 #######################################
