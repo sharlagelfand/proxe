@@ -545,6 +545,22 @@ shinyUI(
                 "sampleInput_solid","Type of sample input",
                 c("All samples" = "all","Click rows in Database Explorer" = "click"),
                 selected="all"
+              ),
+              # filter for sample categories
+              conditionalPanel(
+                condition = "input.sampleInput_solid == 'all'",
+                selectizeInput(inputId="COSMIC_Type_solid",
+                  label = "Select COSMIC Type to show:",
+                  choices = levels(solid$`COSMIC Type`),
+                  multiple=TRUE,
+                  selected = c("carcinoma","malignant_melanoma","sarcoma")
+                ),
+                selectizeInput(inputId="COSMIC_Subtype_solid",
+                  label = "Select COSMIC Subtype to show:",
+                  choices = levels(solid$`COSMIC Subtype`),
+                  multiple=TRUE,
+                  selected = c("ductal_carcinoma","adenocarcinoma","NS","squamous_cell_carcinoma")
+                )
               )
             ),
             # Graph Type 2: barplot

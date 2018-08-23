@@ -903,7 +903,10 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       # subset for only samples desired
       rnamat_names <- solid[input$solid_table_rows_selected,]$`PDX Name`
       if(input$sampleInput_solid == "all"){
-        gao_rna3 <- gao_rna2
+        # filter 'solid' by COSMIC_Type_solid and COSMIC_Subtype_solid
+        pdx_to_keep = solid[solid$`COSMIC Type` %in% input$COSMIC_Type_solid & 
+                           solid$`COSMIC Subtype` %in% input$COSMIC_Subtype_solid,]$`PDX Name`
+        gao_rna3 <- gao_rna2[,pdx_to_keep]
       } else if(input$sampleInput_solid == "click"){
         gao_rna3 <- gao_rna2[,colnames(gao_rna2) %in% rnamat_names]
       }
@@ -981,8 +984,9 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       }
       # set up annotations
       annotation_row = data.frame(
-        primary_site = solid$`COSMIC Primary Site`,
-        cosmic_type = solid$`COSMIC Type`
+        # primary_site = solid$`COSMIC Primary Site`,
+        COSMIC_Type = solid$`COSMIC Type`,
+        COSMIC_Subtype = solid$`COSMIC Subtype`
       )
       rownames(annotation_row) = solid$`PDX Name`
       # set annotation colors
@@ -996,9 +1000,9 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       #     rev(shifter(rainbow(length(levels(annotation_row$primary_site))),length(levels(annotation_row$primary_site)))),
       #     names=levels(annotation_row$primary_site)
       #   ),
-      #   cosmic_type = structure(
-      #     rev(shifter(rainbow(length(levels(annotation_row$cosmic_type))),length(levels(annotation_row$cosmic_type)))),
-      #     names=levels(annotation_row$cosmic_type)
+      #   COSMIC_Type = structure(
+      #     rev(shifter(rainbow(length(levels(annotation_row$COSMIC_Type))),length(levels(annotation_row$COSMIC_Type)))),
+      #     names=levels(annotation_row$COSMIC_Type)
       #   )
       # )
       # plot heatmap
