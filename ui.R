@@ -574,7 +574,7 @@ shinyUI(
             )
           ),
           mainPanel(
-            plotOutput("plot_rna_solid",height = 1300,width=1300)
+            plotOutput("plot_rna_solid",height = 800,width=1300)
           )
         )
       ),

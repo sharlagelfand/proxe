@@ -3,13 +3,12 @@
 # note ./global.R is run before any of this.
 
 library(shiny)
-# library(WriteXLS)
 library(xlsx)
 library(ggplot2)
 library(DT)
 library(beeswarm)
 library(stringr)
-# library(rCharts)
+library(pheatmap)
 
 op <- par(no.readonly = TRUE)
 
@@ -884,7 +883,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     gao_rna <- as.matrix(gao_rna)
     
     if(input$z_log_solid == "z"){
-      gao_rna <- t(scale(t(gao_rna)))
+      gao_rna <- t(scale(t(log2(gao_rna+0.01))))
     } else if(input$z_log_solid == "log"){
       gao_rna <- log2(gao_rna + 0.01)
     } else if(input$z_log_solid == "lin"){
@@ -914,6 +913,7 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       # plot
       # op <- par(no.readonly = T)
       # par(mar=c(50,5,5,6))
+      if(F){
       heatmap.2(gao_rna3,
                 # cellnote = toy2,  # same data set for cell labels
                 main = switch(input$z_log_solid,z="Z-score",log="Log2( RPKM + 0.01 )",lin="RPKM"), # heat map title
@@ -927,6 +927,92 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
                 dendrogram="both")#,     # only draw a row dendrogram
       # Colv="NA")            # turn off column clustering
       # par(op)
+      }
+      
+      # sample code for pulling pheatmap params
+      if(F){
+        # -- plot heatmaps of lfc -- ##
+        
+        # 1. Generate annotations for rows and columns
+        
+        annotation_row = data.frame(
+          treatment = demog$treatment_abv,
+          time = demog$time,
+          donor = as.factor(demog$donor_abv)
+        )
+        rownames(annotation_row) = demog$foreignkey_short
+        
+        # utility function for shifting arrays
+        shifter <- function(x, n = 1) {
+          if (n == 0) x else c(tail(x, -n), head(x, n))
+        }
+        
+        # set annotation colors
+        library(RColorBrewer)
+        ann_colors <- list(
+          treatment = structure(
+            c(brewer.pal(3,"Dark2"),"white"),
+            names=levels(annotation_row$treatment)
+          ),
+          time = c("day4" = "gray", "day7" = "black"),
+          donor = structure(
+            rev(shifter(rainbow(length(levels(annotation_row$donor))),14)),
+            # colorRampPalette(c("red","yellow","blue"))(length(levels(annotation_row$donor))),
+            names = levels(annotation_row$donor)
+          )
+        )
+        
+        # set color-mapping parameters
+        color = colorRampPalette(rev(brewer.pal(n = 7, name =
+            "RdBu")))(100)
+        breaks = seq(-1,1,length.out=101)
+        
+        # 2a. plot sample-number-ordered heatmap of Pearson of LFC
+        library(pheatmap)
+        pheatmap(
+          mat=cor(cpm_filt_lfc),
+          color = color, breaks = breaks,
+          cluster_rows = FALSE,
+          cluster_cols = FALSE,
+          annotation_col = annotation_row,
+          annotation_colors = ann_colors,
+          annotation_row = annotation_row
+        )
+      }
+      # set up annotations
+      annotation_row = data.frame(
+        primary_site = solid$`COSMIC Primary Site`,
+        cosmic_type = solid$`COSMIC Type`
+      )
+      rownames(annotation_row) = solid$`PDX Name`
+      # set annotation colors
+      library(RColorBrewer)
+          # utility function for shifting arrays
+      # shifter <- function(x, n = 1) {
+      #   if (n == 0) x else c(tail(x, -n), head(x, n))
+      # }
+      # ann_colors <- list(
+      #   primary_site = structure(
+      #     rev(shifter(rainbow(length(levels(annotation_row$primary_site))),length(levels(annotation_row$primary_site)))),
+      #     names=levels(annotation_row$primary_site)
+      #   ),
+      #   cosmic_type = structure(
+      #     rev(shifter(rainbow(length(levels(annotation_row$cosmic_type))),length(levels(annotation_row$cosmic_type)))),
+      #     names=levels(annotation_row$cosmic_type)
+      #   )
+      # )
+      # plot heatmap
+      pheatmap(
+        gao_rna3,
+        color = colorRampPalette(rev(brewer.pal(n = 7, name =
+            "RdBu")))(100),
+        # breaks = seq(-15,15,length.out=101),
+        cluster_rows = TRUE,
+        cluster_cols = TRUE,
+        annotation_col=annotation_row
+        # ,annotation_colors=ann_colors
+      )
+      
     } else if (input$expType_solid == "bar"){
       # subset gao_rna2 by gene, then transpose
       if(input$across_bar_solid == "samples"){

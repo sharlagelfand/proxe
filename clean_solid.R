@@ -126,7 +126,6 @@ if(F){
 #   gpca_princomp <- princomp(t(gpca)) # just playing, could be wrong. failed.
 #   biplot(gpca_princomp)
 }
-rm(list=c("gao_fc","gao_rna_pc","grp","grp_lfc","up","gao_meds"))
 
 
 
