@@ -223,3 +223,32 @@ if(F){
     show_column_names = TRUE)
   
 }
+
+
+# Ad hoc filter to say 'none' for known negative PDX Molecular Alterations
+
+# pdx_hemo_none <- readxl::read_excel("../data_outside_app/20180924_pdx_hemoseq_negative_mutations_or_vus.xlsx")
+# pdx_hemo_none <- pdx_hemo_none$`PDX Name`
+# if( length(setdiff(pdx_hemo_none,df$`PDX Name`)) != 0 ){
+#   stop("not all pdx hemoseq negative samples are in df. Probably a PRMS-mismatch.")
+# }
+# # 
+# for (pdx in pdx_hemo_none) {
+#   if(!is.na(df[df$`PDX Name`==pdx,"PDX Molecular Alterations Positive"]) | 
+#     is.na(df[df$`PDX Name`==pdx,"PDX Molecular Details"])) {
+#     print(paste(pdx,"has some Molecular Alteration info and shouldn't"))
+#   }
+# }
+
+pdx_hemo_none <- df[df$`PDX HemoSeq` == "Complete" &
+  !is.na(df$`PDX HemoSeq`) &
+  is.na(df$`PDX Molecular Alterations Positive`) &
+  is.na(df$`PDX Molecular Details`),]$`PDX Name`
+
+for(pdx in pdx_hemo_none){
+  df[df$`PDX Name`==pdx,"PDX Molecular Alterations Positive"] <- "none detected"
+  df[df$`PDX Name`==pdx,"PDX Molecular Details"] <- "none detected"
+}
+
+
+

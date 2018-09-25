@@ -10,6 +10,8 @@ solid_meta <- readxl::read_excel("../data_outside_app/NIBR_PDX_annotation_ProXe_
 solid <- readxl::read_excel("../data_outside_app/NIBR_PDX_annotation_ProXe_23May2016.xlsx",sheet = 1)
 solid <- data.frame(lapply(solid,as.factor))
 solid$Sample <- as.character(solid$Sample)
+# change sample prefix
+solid$Sample <- gsub("X-","NIBR-",solid$Sample)
 names(solid) <- c("PDX_Name","COSMIC_Primary_Site","COSMIC_Type","COSMIC_Subtype")
 
 # add availability column manually
@@ -26,6 +28,8 @@ gao_rna <- as.data.frame(gao_rna)
 rownames(gao_rna) <- gao_rna$Sample
 gao_rna$Sample <- NULL
 library(pheatmap)
+# change sample prefix
+colnames(gao_rna) <- gsub("X-","NIBR-",colnames(gao_rna))
 
 # remove genes that are all zero
 rows_to_keep <- apply(gao_rna,1,function(row){
@@ -135,6 +139,8 @@ if(F){
 
 ## read in mutation data ##
 gao_mut <- readxl::read_excel("../data_outside_app/Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx",sheet="pdxe_mut_and_cn2")
+  # change sample prefix
+gao_mut$Sample <- gsub("X-","NIBR-",gao_mut$Sample)
 gao_mut <- gao_mut[grepl("Mut",x = gao_mut$Category),]
 gao_mut$Alteration <- gsub(",.*","",gao_mut$Details)
 gao_mut$Pct <- as.character(paste0(as.numeric(gsub(".*,","",gao_mut$Details))*100,"%"))

@@ -585,7 +585,7 @@ shinyUI(
                             selected="OncoPanel"),
                 selectizeInput(inputId="bar_rna_sample_solid",label = "Enter/select sample name",
                                choices = colnames(gao_rna),multiple=FALSE,
-                               selected = "X-1004")
+                               selected = "NIBR-1004")
               )
             )
           ),
