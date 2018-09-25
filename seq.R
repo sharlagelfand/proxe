@@ -42,7 +42,7 @@ if(!all(names(seq) == seq_meta$Internal_Column_Header)) stop("seq names ordering
 
 # SRA submission
 sra.filename <- dir("../data_outside_app/",pattern = glob2rx("*SRA_metadata*xlsx"))
-if(length(sra.filename) != 1) stop("too few or too many SEQUENCING_checklist sheets in dropbox")
+if(length(sra.filename) != 1) stop("too few or too many SRA_metadata sheets in dropbox")
 sra <- read_excel(paste0("../data_outside_app/",sra.filename),sheet=2,
   col_types ="text")
 
