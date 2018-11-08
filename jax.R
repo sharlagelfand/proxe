@@ -4,13 +4,13 @@
 ########## load in JAX table from Mark #########
 
 # load in JAX metadata
-jax.filename <- dir("../data_outside_app/",pattern = glob2rx("*proxe_jax_key.xlsx"))
+jax.filename <- dir(data_outside_app_dir,pattern = glob2rx("*proxe_jax_key.xlsx"))
 if(length(jax.filename) != 1) stop("too few or too many JAX sheets in dropbox")
-jax_meta <- read_excel(paste0("../data_outside_app/",jax.filename),sheet="Header_Data")
+jax_meta <- read_excel(file.path(data_outside_app_dir,jax.filename),sheet="Header_Data")
 jax_meta <- as.data.frame(jax_meta)
 
 # use that to load in JAX data
-jax <- read_excel(paste0("../data_outside_app/",jax.filename),sheet=1)
+jax <- read_excel(file.path(data_outside_app_dir,jax.filename),sheet=1)
 # , col_types =jax_meta$read_excel_type)
 jax <- as.data.frame(jax)
 

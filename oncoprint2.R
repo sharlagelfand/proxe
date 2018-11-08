@@ -3,10 +3,10 @@ library(readxl)
 
 
 # read in spreadsheet
-variants.filename <- dir("../data_outside_app/",pattern = glob2rx("20*_pdx_dna_variants.xlsx"))
+variants.filename <- dir(data_outside_app_dir,pattern = glob2rx("20*_pdx_dna_variants.xlsx"))
 if(length(variants.filename) != 1) stop("too few or too many _pdx_dna_variants.xlsx files in dropbox")
-# var_native <- read_excel(paste0("../data_outside_app/",variants.filename),sheet=1)
-variants <- read_excel(paste0("../data_outside_app/",variants.filename),sheet=1,col_types = "text")
+# var_native <- read_excel(file.path(data_outside_app_dir,variants.filename),sheet=1)
+variants <- read_excel(file.path(data_outside_app_dir,variants.filename),sheet=1,col_types = "text")
 variants <- as.data.frame(variants)
 vs = variants
 
@@ -227,7 +227,7 @@ if(F){
 
 # Ad hoc filter to say 'none' for known negative PDX Molecular Alterations
 
-# pdx_hemo_none <- readxl::read_excel("../data_outside_app/20180924_pdx_hemoseq_negative_mutations_or_vus.xlsx")
+# pdx_hemo_none <- readxl::read_excel(file.path(data_outside_app_dir,"20180924_pdx_hemoseq_negative_mutations_or_vus.xlsx"))
 # pdx_hemo_none <- pdx_hemo_none$`PDX Name`
 # if( length(setdiff(pdx_hemo_none,df$`PDX Name`)) != 0 ){
 #   stop("not all pdx hemoseq negative samples are in df. Probably a PRMS-mismatch.")

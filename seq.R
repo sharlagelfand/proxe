@@ -4,9 +4,9 @@
 # -- read in seq tracking -- #
 
 # read in metadata
-seq.filename <- dir("../data_outside_app/",pattern = glob2rx("SEQUENCING_checklist*xlsx"))
+seq.filename <- dir(data_outside_app_dir,pattern = glob2rx("SEQUENCING_checklist*xlsx"))
 if(length(seq.filename) != 1) stop("too few or too many SEQUENCING_checklist sheets in dropbox")
-seq_meta <- read_excel(paste0("../data_outside_app/",seq.filename),sheet="Header_Data")
+seq_meta <- read_excel(file.path(data_outside_app_dir,seq.filename),sheet="Header_Data")
 seq_meta <- as.data.frame(seq_meta)
 
 stopifnot(all(names(table(seq_meta$read_excel_type)) %in% c("character","factor","logical","numeric","date")))
@@ -15,7 +15,7 @@ seq_meta$read_excel_type[seq_meta$read_excel_type %in% c("logical","numeric")] <
 
 # read in data, returning difference with seq_meta if error.
 # try(expr={ # TODO: implement try-else-print-debugging
-seq <- read_excel(paste0("../data_outside_app/",seq.filename),sheet="sequencing",
+seq <- read_excel(file.path(data_outside_app_dir,seq.filename),sheet="sequencing",
   col_types =rep("text",nrow(seq_meta))) # seq_meta$read_excel_type)
 # })
 seq <- as.data.frame(seq) # added because the default class of read_excel output is ‘tbl_df’, ‘tbl’ and 'data.frame' which is incompatible with FUN of convert.magic() 8/2016
@@ -41,9 +41,9 @@ if(!all(names(seq) == seq_meta$Internal_Column_Header)) stop("seq names ordering
 # -- read in SRA submission -- #
 
 # SRA submission
-sra.filename <- dir("../data_outside_app/",pattern = glob2rx("*SRA_metadata*xlsx"))
+sra.filename <- dir(data_outside_app_dir,pattern = glob2rx("*SRA_metadata*xlsx"))
 if(length(sra.filename) != 1) stop("too few or too many SRA_metadata sheets in dropbox")
-sra <- read_excel(paste0("../data_outside_app/",sra.filename),sheet=2,
+sra <- read_excel(file.path(data_outside_app_dir,sra.filename),sheet=2,
   col_types ="text")
 
 # c <- names(table(sra$library_ID))

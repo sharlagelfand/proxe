@@ -21,7 +21,9 @@ print("didcomehere00")
 # read in RPKM data
 # rnadf <- read.table("../data_outside_app/PDX.rpkm.txt",header=T,sep="\t")
 # rnadf <- read.table("../data_outside_app/PDX.rpkm.201703.txt",header=T,sep="\t")
-rnadf <- read.csv("../data_outside_app/Cuff_Gene_Counts.csv",header=T)
+rnadf <- read.csv(
+  file.path(data_outside_app_dir,"Cuff_Gene_Counts.csv"),
+  header=T)
 
 # old version, transposed:
   # rnadf <- read.table(file = "data/wl_tidy_rnaseq_transposed.txt",

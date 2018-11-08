@@ -2,12 +2,16 @@ library(readxl)
 
 ## read in solid metadata as solid_meta
 
-solid_meta <- readxl::read_excel("../data_outside_app/NIBR_PDX_annotation_ProXe_23May2016.xlsx",sheet = "Header_Data")
+solid_meta <- readxl::read_excel(
+  file.path(data_outside_app_dir,"NIBR_PDX_annotation_ProXe_23May2016.xlsx"),
+  sheet = "Header_Data")
 
 
 # setwd("/Users/scott/Dropbox/PRoXe/PRoXe_app")
 
-solid <- readxl::read_excel("../data_outside_app/NIBR_PDX_annotation_ProXe_23May2016.xlsx",sheet = 1)
+solid <- readxl::read_excel(
+  file.path(data_outside_app_dir,"NIBR_PDX_annotation_ProXe_23May2016.xlsx"),
+    sheet = 1)
 solid <- data.frame(lapply(solid,as.factor))
 solid$Sample <- as.character(solid$Sample)
 # change sample prefix
@@ -23,7 +27,9 @@ solid$Distribution_Permissions <- "academic, industry-sponsored academic, and in
 
 # TODO: manipulate this, create a graph out of it, 
   # and also fold it in (link too?) with 'solid' df above through a merge.
-gao_rna <- readxl::read_excel("../data_outside_app/Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx",sheet="RNAseq_fpkm")
+gao_rna <- readxl::read_excel(
+  file.path(data_outside_app_dir,"Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx"),
+  sheet="RNAseq_fpkm")
 gao_rna <- as.data.frame(gao_rna)
 rownames(gao_rna) <- gao_rna$Sample
 gao_rna$Sample <- NULL
@@ -138,7 +144,10 @@ if(F){
 
 
 ## read in mutation data ##
-gao_mut <- readxl::read_excel("../data_outside_app/Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx",sheet="pdxe_mut_and_cn2")
+gao_mut <- readxl::read_excel(
+  file.path(data_outside_app_dir,"Gao_et_al_PDXs_suppl_table_Nat_Med_2015.xlsx"),
+  sheet="pdxe_mut_and_cn2")
+
   # change sample prefix
 gao_mut$Sample <- gsub("X-","NIBR-",gao_mut$Sample)
 gao_mut <- gao_mut[grepl("Mut",x = gao_mut$Category),]

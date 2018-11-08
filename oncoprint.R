@@ -20,7 +20,7 @@
 # oncoPrint(M, sort=FALSE);
 
 # note prima.filename comes from clean_liquid.R
-mut_df <- read.xlsx2(paste0("../data_outside_app/",prima.filename),sheetName = "Mutation_Matrix",header = T,colClasses = "character")
+mut_df <- read.xlsx2(file.path(data_outside_app_dir,prima.filename),sheetName = "Mutation_Matrix",header = T,colClasses = "character")
 mut_df <- mut_df[mut_df$Include_in_Primary_Analysis==1,]
 
 M2 <- mut_df

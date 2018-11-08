@@ -78,9 +78,9 @@ meta_gloss <- read_excel(paste0("./data/",gloss.filename),sheet=1)
 meta_gloss <- as.data.frame(meta_gloss)
 
 # read in metadata
-prima.filename <- dir("../data_outside_app/",pattern = glob2rx("PRIMAGRAFTS*xlsx"))
+prima.filename <- dir(data_outside_app_dir,pattern = glob2rx("PRIMAGRAFTS*xlsx"))
 if(length(prima.filename) != 1) stop("too few or too many PRIMAGRAFTS sheets in dropbox")
-meta <- read_excel(paste0("../data_outside_app/",prima.filename),sheet="Header_Data")
+meta <- read_excel(file.path(data_outside_app_dir,prima.filename),sheet="Header_Data")
 meta <- as.data.frame(meta)
 
 # add meta into meta_gloss
@@ -106,7 +106,7 @@ meta$read_excel_type[meta$read_excel_type %in% c("logical","numeric")] <- "numer
 
 # read in data, returning difference with meta if error.
 # try(expr={ # TODO: implement try-else-print-debugging
-df <- read_excel(paste0("../data_outside_app/",prima.filename),sheet="Injected",
+df <- read_excel(file.path(data_outside_app_dir,prima.filename),sheet="Injected",
   col_types =rep("text",nrow(meta))) # meta$read_excel_type)
 # })
 df <- as.data.frame(df) # added because the default class of read_excel output is ‘tbl_df’, ‘tbl’ and 'data.frame' which is incompatible with FUN of convert.magic() 8/2016
@@ -388,13 +388,13 @@ obInvisRet_ind <- obInvisRet_ind + length(new_col_inds)
 ### --- Include inventory information --- ###
 
 # confirm inventory files
-inv.filename.pdx <- dir("../data_outside_app/",pattern = glob2rx("^PDX_Inventory_*.xlsx"))
-if(length(inv.filename.pdx) != 1) stop("too few or too many Inventory sheets in ../data_outside_app/")
+inv.filename.pdx <- dir(data_outside_app_dir,pattern = glob2rx("^PDX_Inventory_*.xlsx"))
+if(length(inv.filename.pdx) != 1) stop("too few or too many Inventory sheets in Dropbox/PRoXe/data_outside_app/")
 
 #TODO: Ask Mark whether also to show BM and Tumor vials. -- no for now, later yes to Tumor for solid (-Amanda)
 # Read in and sum number of spleen vials left from both adult and pediatric PDXs.
 # inv <- read_excel("data/Inventory_Tracking/2015-9-2_Adult_Inventory.xlsx",1)
-inv <- read.xlsx2(file = file.path("../data_outside_app/",inv.filename.pdx),sheetName = "Banked",stringsAsFactors=FALSE)
+inv <- read.xlsx2(file = file.path(data_outside_app_dir,inv.filename.pdx),sheetName = "Banked",stringsAsFactors=FALSE)
 
 # save inventory-last-updated date from inventory
 inv$Date <- as.Date('1900-01-01')+as.numeric(inv$Date)-2

@@ -11,21 +11,27 @@ read_in_scripts = c("clean_liquid.R","seq.R","rna_seq.R","oncoprint2.R",
 host <- system("hostname",intern=TRUE)
 who <- system("whoami",intern=TRUE)
 essential_dir = c("data","global.R","server.R","ui.R","www",read_in_scripts)
+data_outside_app_dir = file.path("~","Dropbox","PRoXe","data_outside_app")  # based on default Dropbox location
 if(basename(getwd()) == "PRoXe_app" & all(essential_dir %in% dir())){
   print("Seem to be in PRoXe_app directory. Continuing...")
-  wd_full = getwd()
+  app_dir = getwd()
 } else if (who == "scott"){ # not a typo
-  wd_full = file.path("/","Users","scott","Dropbox","PRoXe","PRoXe_app")
-  print(paste("User is probably Scott K. Setting working directory to",wd_full))
-  setwd(wd_full)
+  app_dir = file.path("~","git","PRoXe_app")
+  print(paste("User is probably Scott K. Setting working directory to",app_dir))
+  setwd(app_dir)
+  # data_outside_app_dir = (default)
 } else if (grepl("ArmaVirumque",host)){
-  wd_full = file.path("C:","Users","Mark","Dropbox (Partners HealthCare)","PRoXe","PRoXe_app")
-  print(paste("User is Mark. Setting working directory to",wd_full))
-  setwd(wd_full)
+  app_dir = file.path("C:","Users","Mark","git","PRoXe","PRoXe_app")
+  # TODO: clone the git repo here and add in gitignore files.
+  print(paste("User is Mark. Setting working directory to",app_dir))
+  setwd(app_dir)
+  data_outside_app_dir = file.path("C:","Users","Mark","Dropbox (Partners HealthCare)","PRoXe","data_outside_app")
 } else if (grepl("proxe.dfci.harvard.edu",host)){
-  wd_full = file.path("~","Dropbox","PRoXe","PRoXe_app")
-  print(paste("On proxe.dfci.harvard.edu VM, Setting dir to",wd_full))
-  setwd(wd_full)
+  app_dir = file.path("~","git","PRoXe_app")
+  # TODO: clone the git repo here and add in gitignore files.
+  print(paste("On proxe.dfci.harvard.edu VM, Setting dir to",app_dir))
+  setwd(app_dir)
+  data_outside_app_dir = file.path("~","Dropbox","PRoXe","data_outside_app")
 } else {
   stop("User not recognized; manually navigate to PRoXe_app directory via setwd()")
 }
