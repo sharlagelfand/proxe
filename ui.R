@@ -2,15 +2,6 @@
 
 # note ./global.R is run before any of this.
 
-library(shiny)
-library(DT)
-library(ggplot2)
-library(readxl)
-library(xlsx)
-library(gplots)
-library(RColorBrewer)
-library(plyr)
-
 print("didcomehere3")
 # # make lists of which variables to show as options
 numeric_cols_vis <- which(sapply(df[,1:obInvisRet_ind], is.numeric))
