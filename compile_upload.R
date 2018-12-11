@@ -1,8 +1,5 @@
 ## this script is for pre-compiling data and running/uploading app
 
-# clean slate
-rm(list=ls())
-
 # set order of read-in scripts
 read_in_scripts = c("clean_liquid.R","seq.R","rna_seq.R","oncoprint2.R",
   "clean_solid.R","jax.R","finalize.R")
