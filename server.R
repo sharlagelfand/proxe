@@ -319,7 +319,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     # rownames(vmeta) <- vmeta$pdx_name
     
     # printing plot
-    library(ComplexHeatmap)
     cols_to_show = c("Sex","WHO Category","Treatment Phase at Time of Sample",
       "Treated","Cytogenetic Risk Category","Age")
     
