@@ -256,7 +256,22 @@ shinyUI(
                                choices = colnames(rnamat_sub),multiple=FALSE,
                                selected = "AML12.20140429.pe")
               )
-            )
+            ),
+            HTML("<b>Download associated files:</b>"),
+            br(),
+            a("Gene Levels Filtered",
+              target="_blank",
+              href="https://www.dropbox.com/s/60699rvg3ftno2m/Cuff_Gene_Levels_filtered_proxe.csv?dl=0"),
+            br(),
+            a("Gene Levels",
+              target="_blank",
+              href="https://www.dropbox.com/s/4ur0yvhsmfdommf/Cuff_Gene_Levels_proxe.csv?dl=0"),
+            HTML("* This data underlies this heatmap."),
+            br(),
+            a("Isoform Levels",
+              target="_blank",
+              href="https://www.dropbox.com/s/l1kdtynwhes804a/Cuff_Isoform_Levels_proxe.csv?dl=0"),
+            helpText("Files last updated 1/10/2019")
           ),
           mainPanel(
             plotOutput("plot_rna",height = 1300,width=1300)
