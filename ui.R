@@ -304,6 +304,13 @@ shinyUI(
           )
         )
       ),
+      tabPanel("PDX Viral Transcript Detection",
+               h1("Liquid Tumor PDX Viral Transcript Detection"),
+               sidebarLayout(
+                 sidebarPanel(),
+                 mainPanel()
+               )
+      ),
       tabPanel("Contingency Table",
         h1("Liquid Tumor Contingency Table"),
         sidebarLayout(
