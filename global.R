@@ -25,3 +25,14 @@ if(F){
     readline(prompt="Press [enter] to continue")
   }
 }
+
+# # make lists of which variables to show as options in UI
+numeric_cols_vis <- which(sapply(df[,1:obInvisRet_ind], is.numeric))
+factor_cols_vis <- which(sapply(df[,1:obInvisRet_ind], is.factor))
+solid_numeric_cols_vis <- which(sapply(solid,is.numeric))
+solid_factor_cols_vis <- which(sapply(solid,is.factor))
+
+
+for (f in list.files("ui/liquid_tumors/", pattern="*.R")) {
+  source(paste0("ui/liquid_tumors/", f))
+}
