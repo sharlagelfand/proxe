@@ -33,7 +33,7 @@ shinyUI(
     ),
 
     navbarMenu(
-      "Solid Tumors",
+      "Solid Tumors", # UIs defined in ui/solid_tumors/
       # tabPanel("Solid Tumors (beta)",
 
       ui_solid_tumors_database_explorer(),
@@ -42,7 +42,7 @@ shinyUI(
     ),
 
     navbarMenu(
-      "More",
+      "More", # UIs defined in ui/more/
 
       ui_more_line_requests_pricing(),
       ui_more_ilab_billing_platform(),
