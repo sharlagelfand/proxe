@@ -38,50 +38,26 @@ shinyServer(function(input, output, session) { # TODO: read on what 'session' me
     if (input$Request_link_solid != 0) updateTabsetPanel(session, inputId = "mainNavBar", selected = "Line Request/Pricing")
   })
 
-  # Liquid
-
-  ## PDX
-
+  # Liquid tumors, defined in server/liquid_tumors/
+  
   server_liquid_tumors_database_explorer(input, output, session)
   server_liquid_tumors_pdx_gene_expression(input, output, session)
-
   server_liquid_tumors_pdx_mutations(input, output, session)
-
-  ## Contingency Table
-
   server_liquid_tumors_contingency_table(input, output, session)
-
-  ## Line Report
-
   server_liquid_tumors_line_report(input, output, session)
-
-  ##  Glossary
-
   server_liquid_tumors_glossary(input, output, session)
-
-  ## Methods
-
   server_liquid_tumors_methods(input, output, session)
 
-  # Solid Tumors
+  # Solid Tumors, defined in server/solid_tumors
 
-  ## Data table
-
-  server_solid_tumors(input, output, session)
-
-  ## PDX gene expression
-
+  server_solid_tumors_database_explorer(input, output, session)
   server_solid_tumors_pdx_gene_expression(input, output, session)
-
-  ## Glossary
-
   server_solid_tumors_glossary(input, output, session)
 
-  # 'More' menu
+  # 'More' menu, defined in server/more/
 
-  server_more_pricing(input, output, session)
-
-  server_more_ilab_manual(input, output, session)
+  server_more_line_request_pricing(input, output, session)
+  server_more_ilab_billing_platform(input, output, session)
 
   ######### -- observing dropdownMenu objects -- ########
 
