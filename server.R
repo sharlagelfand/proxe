@@ -1,12 +1,5 @@
 # server.R
 
-# note ./global.R is run before any of this.
-
-op <- par(no.readonly = TRUE)
-
-# warn if WHO_Classification is a factor -- this was a temporary fix in clean_liquid.R for production of a contingency table 2/2016.
-if (class(df$`WHO Classification`) == "factor") warning("Reminder: WHO Classification is a factor even though it is highly variable.")
-
 print("didcomehere4")
 # Define a server for the Shiny app
 shinyServer(function(input, output, session) { # TODO: read on what 'session' means here.
