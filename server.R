@@ -292,6 +292,20 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
       }
     }
   })
+  
+  output$plot_pdx_viral_transcript_detection <- renderPlot({
+    virusseq_fpkm_matrix_selected_genes <- virusseq_fpkm_matrix[rownames(virusseq_fpkm_matrix) %in% input$pdx_viral_transcript_genes, ]
+    
+    heatmap.2(virusseq_fpkm_matrix_selected_genes,
+              main = "FPKM",
+              notecol="black",
+              density.info="none",
+              trace="none",
+              #margins =c(19,16),
+              col=my_palette,
+              keysize = 0.75,
+              dendrogram="both")
+  })
 
   ########### -- PDX mutations 2 oncoprint -- ###############
   
