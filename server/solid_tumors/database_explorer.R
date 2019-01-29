@@ -1,4 +1,4 @@
-server_solid_tumors <- function(input, output, server) {
+server_solid_tumors_database_explorer <- function(input, output, server) {
   output$solid_table <- DT::renderDataTable({
     cols_selected <- c(input$check2_solid_administrative, input$check2_solid_tumor, input$check2_solid_pdx) # note took out patient because no data yet.
     if (is.null(cols_selected)) {
@@ -171,9 +171,6 @@ server_solid_tumors <- function(input, output, server) {
     } else {
       input$solid_plotType <- plot(0)
     }
-
-
-
 
     ### TODO: I would like to switch this to ggplot/qplot, but it doesn't take variables where 'input$hist_var' is.
     # aes_string is a hint.

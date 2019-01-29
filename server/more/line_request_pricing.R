@@ -1,4 +1,4 @@
-server_more_pricing <- function(input, output, server) {
+server_more_line_request_pricing <- function(input, output, server) {
   output$pricing <- DT::renderDataTable({
     pricing <- data.frame(
       "Service Name" = c("Per vial", "Handling rate (per shipment)", "Consulting (hourly)", "Shipping (domestic)", "Shipping (international)"),
