@@ -33,6 +33,6 @@ solid_numeric_cols_vis <- which(sapply(solid,is.numeric))
 solid_factor_cols_vis <- which(sapply(solid,is.factor))
 
 
-for (f in list.files("ui/liquid_tumors/", pattern="*.R")) {
-  source(paste0("ui/liquid_tumors/", f))
+for (f in list.files("ui", pattern="*.R", recursive = TRUE, full.names = TRUE)) {
+  source(f)
 }
