@@ -7,6 +7,7 @@ server_liquid_tumors_pdx_viral_transcript_detection <- function(input, output, s
       notecol = "black",
       density.info = "none",
       trace = "none",
+      margins = c(19, 16),
       col = my_palette,
       keysize = 0.75,
       dendrogram = "both"
