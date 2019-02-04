@@ -4,10 +4,26 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
     h1("Liquid Tumor PDX Viral Transcript Detection"),
     sidebarLayout(
       sidebarPanel(
+        radioButtons(
+          inputId = "pdx_viral_transcript_plot",
+          label = "Plot type",
+          choices = c("Heatmap" = "heatmap",
+                      "Distribution" = "distribution"),
+          selected = "heatmap"
+        ),
+        
+        radioButtons(
+          inputId = "pdx_viral_transcript_measure",
+          label = "Select a measure",
+          choices = c("log2(FPKM)" = "log2_fpkm",
+                      "FPKM" = "fpkm",
+                      "Counts" = "counts"),
+          selected = "log2_fpkm"
+        ),
+        
         selectizeInput(
           inputId = "pdx_viral_transcript_genes",
           label = "Select genes",
-          selected = c("EBV_BALF4", "EBV_BALF3", "EBV_A73"),
           choices = sort(rownames(virusseq_fpkm_matrix)),
           multiple = TRUE
         )
@@ -15,7 +31,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
       mainPanel(
         plotOutput(
           "plot_pdx_viral_transcript_detection",
-          height = 1300,
+          height = 800,
           width = 800
         )
       )
