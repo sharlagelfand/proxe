@@ -47,9 +47,10 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           condition = "input.pdx_viral_transcript_selection_method == 'line_name'",
           selectInput(
             inputId = "pdx_viral_transcript_line_name",
-            label = "Type or select a line name below to see a full report",
+            label = "Type or select a line name",
             choices = colnames(virusseq_fpkm_matrix),
-            selected = NULL
+            selected = NULL,
+            multiple = TRUE
           )
         )
       ),
