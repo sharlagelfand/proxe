@@ -52,6 +52,17 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
             selected = NULL,
             multiple = TRUE
           )
+        ),
+
+        conditionalPanel(
+          condition = "input.pdx_viral_transcript_selection_method == 'who'",
+          selectizeInput(
+            inputId = "pdx_viral_transcript_who",
+            label = "WHO Classification",
+            choices = unique(df[["WHO Category"]]),
+            multiple = TRUE,
+            selected = "AML"
+          )
         )
       ),
       mainPanel(

@@ -43,8 +43,16 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         }
         else if (input$pdx_viral_transcript_selection_method == "database_explorer") {
           selected_ids <- input$table_rows_selected
-          sample_names <- df$`PDX Name`[selected_ids]
+          sample_names <- df[selected_ids, "PDX Name"]
           virusseq_matrix_selected_transcripts[, sample_names, drop = FALSE]
+        }
+        else if (input$pdx_viral_transcript_selection_method == "who") {
+          sample_names <- df[
+            df[["WHO Category"]] %in% input$pdx_viral_transcript_who,
+            "PDX Name"
+          ]
+          valid_sample_names <- sample_names[sample_names %in% colnames(virusseq_matrix_selected_transcripts)]
+          virusseq_matrix_selected_transcripts[, valid_sample_names, drop = FALSE]
         }
         else {
           virusseq_matrix_selected_transcripts
