@@ -9,6 +9,8 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
           virusseq_fpkm_matrix
         else if (input$pdx_viral_transcript_measure == "counts")
           virusseq_counts_matrix
+        else if (input$pdx_viral_transcript_measure == "log_counts")
+          log(virusseq_counts_matrix + 0.01)
       }
       
       pdx_viral_transcript_detection_plot_title <- {
@@ -18,13 +20,14 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
           "FPKM"
         else if (input$pdx_viral_transcript_measure == "counts")
           "Counts"
+        else if (input$pdx_viral_transcript_measure == "log_counts")
+          "Log(Counts)"
       }
-      
-      virusseq_matrix_selected_genes <-
-        pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_genes,]
+    
+      virusseq_matrix_selected_transcripts <- pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_transcripts,]
       
       heatmap.2(
-        virusseq_matrix_selected_genes,
+        if(input$pdx_viral_transcript_all_transcripts == "no"){virusseq_matrix_selected_transcripts}else{pdx_viral_transcript_detection_data},
         main = pdx_viral_transcript_detection_plot_title,
         notecol = "black",
         density.info = "none",
