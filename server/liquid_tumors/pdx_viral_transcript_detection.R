@@ -41,11 +41,16 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         else if (input$pdx_viral_transcript_selection_method == "line_name") {
           virusseq_matrix_selected_transcripts[, input$pdx_viral_transcript_line_name, drop = FALSE] # retain matrix structure
         }
+        else if (input$pdx_viral_transcript_selection_method == "database_explorer") {
+          selected_ids <- input$table_rows_selected
+          sample_names <- df$`PDX Name`[selected_ids]
+          virusseq_matrix_selected_transcripts[, sample_names, drop = FALSE]
+        }
         else {
           virusseq_matrix_selected_transcripts
         }
       }
-      
+
       # TODO: heatmap.2 breaks if less than 2 lines and less than 2 transcripts are selected; other visualization? indication that 2 must always be selected?
       heatmap.2(
         virusseq_matrix_selected_lines,
