@@ -2,14 +2,6 @@
 
 # note ./global.R is run before any of this.
 
-library(shiny)
-library(xlsx)
-library(ggplot2)
-library(DT)
-library(beeswarm)
-library(stringr)
-library(pheatmap)
-
 op <- par(no.readonly = TRUE)
 
 # warn if WHO_Classification is a factor -- this was a temporary fix in clean_liquid.R for production of a contingency table 2/2016.
@@ -327,7 +319,6 @@ shinyServer(function(input, output, session) {  #TODO: read on what 'session' me
     # rownames(vmeta) <- vmeta$pdx_name
     
     # printing plot
-    library(ComplexHeatmap)
     cols_to_show = c("Sex","WHO Category","Treatment Phase at Time of Sample",
       "Treated","Cytogenetic Risk Category","Age")
     

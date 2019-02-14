@@ -1,8 +1,5 @@
 ## this script is for pre-compiling data and running/uploading app
 
-# clean slate
-rm(list=ls())
-
 # set order of read-in scripts
 read_in_scripts = c("clean_liquid.R","seq.R","rna_seq.R","oncoprint2.R",
   "clean_solid.R","jax.R","finalize.R")
@@ -32,6 +29,11 @@ if(basename(getwd()) == "PRoXe_app" & all(essential_dir %in% dir())){
   print(paste("On proxe.dfci.harvard.edu VM, Setting dir to",app_dir))
   setwd(app_dir)
   data_outside_app_dir = file.path("~","Dropbox","PRoXe","data_outside_app")
+} else if (who  == "sharla"){
+  app_dir <- file.path("~", "tcb", "proxe")
+  print(paste("User is Sharla Gelfand. Setting working directory to", app_dir))
+  setwd(app_dir)
+  data_outside_app_dir <- file.path("~","tcb", "proxe", "Dropbox (Partners HealthCare)", "PRoXe", "data_outside_app") 
 } else {
   stop("User not recognized; manually navigate to PRoXe_app directory via setwd()")
 }
