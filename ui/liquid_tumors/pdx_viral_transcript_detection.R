@@ -34,12 +34,12 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
 
         radioButtons(
           inputId = "pdx_viral_transcript_selection_method",
-          label = "Line selection?",
+          label = "Type of sample input",
           choices = c(
-            "All lines" = "all",
-            "By line name" = "line_name",
-            "By WHO Classification" = "who",
-            "Lines selected in database explorer" = "database_explorer"
+            "All samples" = "all",
+            "Select line names" = "line_name",
+            "Select WHO Classification" = "who",
+            "Click rows in Database Explorer" = "database_explorer"
           ),
           selected = "all"
         ),
@@ -48,7 +48,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           condition = "input.pdx_viral_transcript_selection_method == 'line_name'",
           selectInput(
             inputId = "pdx_viral_transcript_line_name",
-            label = "Type or select a line name",
+            label = "Type or select line names",
             choices = colnames(virusseq_fpkm_matrix),
             selected = NULL,
             multiple = TRUE
