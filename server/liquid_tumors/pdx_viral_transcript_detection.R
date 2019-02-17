@@ -1,6 +1,7 @@
 server_liquid_tumors_pdx_viral_transcript_detection <-
   function(input, output, server) {
     output$plot_pdx_viral_transcript_detection <- renderPlot({
+      
       pdx_viral_transcript_detection_data <- switch(
         input$pdx_viral_transcript_measure,
         log2_fpkm = log(virusseq_fpkm_matrix + 0.01, base = 2),
@@ -19,8 +20,8 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
 
       virusseq_matrix_selected_transcripts <- switch(
         input$pdx_viral_transcript_all_transcripts,
-        no = pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_transcripts, ],
-        yes = pdx_viral_transcript_detection_data
+        No = pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_transcripts, ],
+        Yes = pdx_viral_transcript_detection_data
       )
 
       viral_transcripts_from_database_explorer <-

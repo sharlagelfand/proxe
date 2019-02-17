@@ -4,6 +4,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
     h1("Liquid Tumor PDX Viral Transcript Detection"),
     sidebarLayout(
       sidebarPanel(
+        width = 3,
         radioButtons(
           inputId = "pdx_viral_transcript_measure",
           label = "Select a measure",
@@ -19,8 +20,8 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
         radioButtons(
           inputId = "pdx_viral_transcript_all_transcripts",
           label = "All transcripts? May be be useful for understanding overall distribution. Overrides whatever is below.",
-          choices = c("no", "yes"),
-          selected = "no"
+          choices = c("No", "Yes"),
+          selected = "No"
         ),
 
         selectizeInput(
