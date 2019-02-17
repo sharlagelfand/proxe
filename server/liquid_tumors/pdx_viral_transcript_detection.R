@@ -24,13 +24,13 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         Yes = pdx_viral_transcript_detection_data
       )
 
-      viral_transcripts_from_database_explorer <-
+      lines_from_database_explorer <-
         function(rows_selected) {
           sample_names <- df[rows_selected, "PDX Name"]
           virusseq_matrix_selected_transcripts[, sample_names, drop = FALSE]
         }
 
-      viral_transcripts_from_who_classification <-
+      lines_from_who_classification <-
         function(who_classification) {
           sample_names <- df[
             df[["WHO Category"]] %in% who_classification,
@@ -46,11 +46,11 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         all = virusseq_matrix_selected_transcripts,
         line_name = virusseq_matrix_selected_transcripts[, input$pdx_viral_transcript_line_name, drop = FALSE],
         # retain matrix structure
-        database_explorer = viral_transcripts_from_database_explorer(input$table_rows_selected),
-        who = viral_transcripts_from_who_classification(input$pdx_viral_transcript_who),
+        database_explorer = lines_from_database_explorer(input$table_rows_selected),
+        who = lines_from_who_classification(input$pdx_viral_transcript_who),
         virusseq_matrix_selected_transcripts
       )
-
+      
       # TODO: heatmap.2 breaks if less than 2 lines and less than 2 transcripts are selected; other visualization? indication that 2 must always be selected?
       # heatmap.2 breaks if all values are identical AND they are all zeros (does not happen if all identical and non-zero). this may happen in cases of raw Counts and FPKM. The fix is to remove the colour key, see: https://stackoverflow.com/questions/9721785/r-trying-to-make-a-heatmap-from-a-matrix-all-the-values-in-the-matrix-are-the
       data_all_zeros <- unique(c(virusseq_matrix_selected_lines)) == 0
