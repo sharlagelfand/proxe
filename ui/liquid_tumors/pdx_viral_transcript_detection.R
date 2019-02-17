@@ -10,8 +10,8 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           choices = c(
             "log2(FPKM)" = "log2_fpkm",
             "FPKM" = "fpkm",
-            "Counts" = "counts",
-            "log(Counts)" = "log_counts"
+            "log(Counts)" = "log_counts",
+            "Counts" = "counts"
           ),
           selected = "log2_fpkm"
         ),
