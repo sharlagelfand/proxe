@@ -3,6 +3,7 @@ library(dplyr)
 library(readxl)
 library(stringr)
 library(tidyr)
+library(forcats)
 
 virusseq <- read_csv(paste0(data_outside_app_dir, "/virusseq_table.csv"))
 sequencing_checklist <- read_excel(paste0(data_outside_app_dir, "/SEQUENCING_checklist_091718.xlsx")) %>%
@@ -63,34 +64,47 @@ virusseq_with_pdx_name <- virusseq_with_pdx_name %>%
   select(pdx_name, TranscriptID, FPKM, Counts) %>%
   complete(pdx_name, TranscriptID, fill = list(FPKM = 0, Counts = 0))
 
+# Add factor of transcript type for default ordering
+
+virusseq_with_pdx_name <- virusseq_with_pdx_name %>%
+  mutate(transcript_factor = case_when(TranscriptID == "HTLV" ~ "HTLV1",
+                                       str_detect(TranscriptID, "EBV") ~ "EBV",
+                                       TranscriptID == "HCV" ~ "Hep C",
+                                       str_detect(TranscriptID, "HHV5") ~ "HHV5",
+                                       TranscriptID == "XMRV" ~ "XMRV",
+                                       TranscriptID == "HpV18gp3_E1" ~ "Other"),
+         transcript_factor = fct_relevel(as_factor(transcript_factor),
+                                         c("HTLV1", "EBV", "Hep C", "HHV5", "Other", "XMRV")))
+
 # convert to matrix form for heatmap
 
 # FPKM
 
 virusseq_fpkm_matrix <- virusseq_with_pdx_name %>% 
-  select(pdx_name, TranscriptID, FPKM) %>%
+  select(pdx_name, TranscriptID, FPKM, transcript_factor) %>%
   spread(pdx_name, FPKM) %>%
+  arrange(transcript_factor) %>%
   as.data.frame()
 
 row.names(virusseq_fpkm_matrix) <- virusseq_fpkm_matrix[["TranscriptID"]]
 
 virusseq_fpkm_matrix <- virusseq_fpkm_matrix %>%
-  select(-TranscriptID) %>%
+  select(-TranscriptID, -transcript_factor) %>%
   as.matrix()
 
 # Counts
 
 virusseq_counts_matrix <- virusseq_with_pdx_name %>% 
-  select(pdx_name, TranscriptID, Counts) %>%
+  select(pdx_name, TranscriptID, Counts, transcript_factor) %>%
   spread(pdx_name, Counts) %>%
+  arrange(transcript_factor) %>%
   as.data.frame()
 
 row.names(virusseq_counts_matrix) <- virusseq_counts_matrix[["TranscriptID"]]
 
 virusseq_counts_matrix <- virusseq_counts_matrix %>%
-  select(-TranscriptID) %>%
+  select(-TranscriptID, -transcript_factor) %>%
   as.matrix()
 
 # Remove objects that do not need to be available in app
 rm(virusseq, sequencing_checklist)
-
