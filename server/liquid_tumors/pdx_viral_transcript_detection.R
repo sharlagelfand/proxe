@@ -57,10 +57,8 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         )
       )
       
-      # TODO: heatmap.2 breaks if less than 2 lines and less than 2 transcripts are selected; other visualization? indication that 2 must always be selected?
-      
       # heatmap.2 breaks if all values are identical AND they are all zeros (does not happen if all identical and non-zero). this may happen in cases of raw Counts and FPKM. The fix is to remove the colour key, see: https://stackoverflow.com/questions/9721785/r-trying-to-make-a-heatmap-from-a-matrix-all-the-values-in-the-matrix-are-the
-      data_all_zeros <- unique(c(virusseq_matrix_selected_lines)) == 0
+      data_all_zeros <- all(unique(c(virusseq_matrix_selected_lines)) == 0)
 
       if (!data_all_zeros) {
         heatmap.2(
