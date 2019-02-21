@@ -107,4 +107,4 @@ virusseq_counts_matrix <- virusseq_counts_matrix %>%
   as.matrix()
 
 # Remove objects that do not need to be available in app
-rm(virusseq, sequencing_checklist)
+rm(virusseq, sequencing_checklist, virusseq_with_pdx_name)
