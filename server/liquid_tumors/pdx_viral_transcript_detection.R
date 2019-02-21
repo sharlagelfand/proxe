@@ -21,7 +21,7 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
       virusseq_matrix_selected_transcripts <- switch(
         input$pdx_viral_transcript_all_transcripts,
         No = pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_transcripts, ],
-        Yes = pdx_viral_transcript_detection_data
+        Yes = pdx_viral_transcript_detection_data[!(rownames(pdx_viral_transcript_detection_data) == "XMRV"), ] # do not show XMRV by default, but leave as an option
       )
 
       lines_from_database_explorer <-
@@ -44,8 +44,7 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
       virusseq_matrix_selected_lines <- switch(
         input$pdx_viral_transcript_selection_method,
         all = virusseq_matrix_selected_transcripts,
-        line_name = virusseq_matrix_selected_transcripts[, input$pdx_viral_transcript_line_name, drop = FALSE],
-        # retain matrix structure
+        line_name = virusseq_matrix_selected_transcripts[, input$pdx_viral_transcript_line_name, drop = FALSE], # retain matrix structure
         database_explorer = lines_from_database_explorer(input$table_rows_selected),
         who = lines_from_who_classification(input$pdx_viral_transcript_who),
         virusseq_matrix_selected_transcripts
@@ -59,6 +58,7 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
       )
       
       # TODO: heatmap.2 breaks if less than 2 lines and less than 2 transcripts are selected; other visualization? indication that 2 must always be selected?
+      
       # heatmap.2 breaks if all values are identical AND they are all zeros (does not happen if all identical and non-zero). this may happen in cases of raw Counts and FPKM. The fix is to remove the colour key, see: https://stackoverflow.com/questions/9721785/r-trying-to-make-a-heatmap-from-a-matrix-all-the-values-in-the-matrix-are-the
       data_all_zeros <- unique(c(virusseq_matrix_selected_lines)) == 0
 
