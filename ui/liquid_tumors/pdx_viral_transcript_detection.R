@@ -38,7 +38,8 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           choices = c(
             "All samples" = "all",
             "Select line names" = "line_name",
-            "Select WHO Classification" = "who",
+            "Select WHO Category" = "who_category",
+            "Select WHO Classification" = "who_classification",
             "Click rows in Database Explorer" = "database_explorer"
           ),
           selected = "all"
@@ -56,13 +57,24 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
         ),
 
         conditionalPanel(
-          condition = "input.pdx_viral_transcript_selection_method == 'who'",
+          condition = "input.pdx_viral_transcript_selection_method == 'who_category'",
           selectizeInput(
-            inputId = "pdx_viral_transcript_who",
-            label = "WHO Classification",
+            inputId = "pdx_viral_transcript_who_category",
+            label = "WHO Category",
             choices = unique(df[["WHO Category"]]),
             multiple = TRUE,
             selected = "AML"
+          )
+        ),
+        
+        conditionalPanel(
+          condition = "input.pdx_viral_transcript_selection_method == 'who_classification'",
+          selectizeInput(
+            inputId = "pdx_viral_transcript_who_classification",
+            label = "WHO Classification",
+            choices = unique(df[["WHO Classification"]]),
+            multiple = TRUE,
+            selected = NULL
           )
         )
       ),

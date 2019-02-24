@@ -24,29 +24,39 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         Yes = pdx_viral_transcript_detection_data[!(rownames(pdx_viral_transcript_detection_data) == "XMRV"), ] # do not show XMRV by default, but leave as an option
       )
 
-      lines_from_database_explorer <-
-        function(rows_selected) {
+      lines_from_database_explorer <- function(rows_selected) {
           sample_names <- df[rows_selected, "PDX Name"]
           virusseq_matrix_selected_transcripts[, sample_names, drop = FALSE]
         }
 
-      lines_from_who_classification <-
-        function(who_classification) {
+      lines_from_who_category <- function(who_category) {
           sample_names <- df[
-            df[["WHO Category"]] %in% who_classification,
+            df[["WHO Category"]] %in% who_category,
             "PDX Name"
           ]
           valid_sample_names <-
             sample_names[sample_names %in% colnames(virusseq_matrix_selected_transcripts)]
           virusseq_matrix_selected_transcripts[, valid_sample_names, drop = FALSE]
-        }
+      }
+      
+      lines_from_who_classification <- function(who_classification) {
+        sample_names <- df[
+          df[["WHO Classification"]] %in% who_classification,
+          "PDX Name"
+          ]
+        valid_sample_names <-
+          sample_names[sample_names %in% colnames(virusseq_matrix_selected_transcripts)]
+        virusseq_matrix_selected_transcripts[, valid_sample_names, drop = FALSE]
+      }
 
+      
       virusseq_matrix_selected_lines <- switch(
         input$pdx_viral_transcript_selection_method,
         all = virusseq_matrix_selected_transcripts,
         line_name = virusseq_matrix_selected_transcripts[, input$pdx_viral_transcript_line_name, drop = FALSE], # retain matrix structure
         database_explorer = lines_from_database_explorer(input$table_rows_selected),
-        who = lines_from_who_classification(input$pdx_viral_transcript_who),
+        who_category = lines_from_who_category(input$pdx_viral_transcript_who_category),
+        who_classification = lines_from_who_classification(input$pdx_viral_transcript_who_classification),
         virusseq_matrix_selected_transcripts
       )
       
