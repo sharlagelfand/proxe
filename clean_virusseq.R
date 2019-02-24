@@ -76,6 +76,12 @@ virusseq_with_pdx_name <- virusseq_with_pdx_name %>%
          transcript_factor = fct_relevel(as_factor(transcript_factor),
                                          c("HTLV1", "EBV", "Hep C", "HHV5", "HPV", "XMRV")))
 
+# Retain list of transcript and virus for heatmap selection
+
+virusseq_transcript_virus_lookup <- virusseq_with_pdx_name %>%
+  select(TranscriptID, virus = transcript_factor) %>%
+  distinct()
+
 # convert to matrix form for heatmap
 
 # FPKM

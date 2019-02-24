@@ -30,13 +30,22 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           condition = "input.pdx_viral_transcript_all_transcripts == 'transcript'",
           selectizeInput(
             inputId = "pdx_viral_transcript_transcripts",
-            label = "Select transcript",
+            label = "Transcript:",
             choices = sort(rownames(virusseq_fpkm_matrix)),
             selected = NULL,
             multiple = TRUE
           )
         ),
         
+        conditionalPanel(
+          condition = "input.pdx_viral_transcript_all_transcripts == 'virus'",
+          checkboxGroupInput(
+            inputId = "pdx_viral_transcript_virus",
+            label = "Virus:",
+            choices = c("HTLV1", "EBV", "Hep C", "HHV5", "HPV", "XMRV"),
+            selected = NULL
+          )
+        ),
         
         radioButtons(
           inputId = "pdx_viral_transcript_selection_method",

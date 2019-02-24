@@ -9,7 +9,7 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         counts = virusseq_counts_matrix,
         log_counts = log(virusseq_counts_matrix + 0.01)
       )
-
+      
       pdx_viral_transcript_detection_plot_title <- switch(
         input$pdx_viral_transcript_measure,
         log2_fpkm = "Log2(FPKM + 0.01)",
@@ -17,26 +17,32 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         counts = "Counts",
         log_counts = "Log(Counts)"
       )
-
+      
+      virusseq_virus_transcripts <- function(input_virus){
+        virus_transcripts <- virusseq_transcript_virus_lookup[virusseq_transcript_virus_lookup[["virus"]] %in% input_virus, ][["TranscriptID"]]
+        pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% virus_transcripts ,]
+      }
+      
       virusseq_matrix_selected_transcripts <- switch(
         input$pdx_viral_transcript_all_transcripts,
+        All = pdx_viral_transcript_detection_data[!(rownames(pdx_viral_transcript_detection_data) == "XMRV"), ], # do not show XMRV by default, but leave as an option
         transcript = pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_transcripts, ],
-        All = pdx_viral_transcript_detection_data[!(rownames(pdx_viral_transcript_detection_data) == "XMRV"), ] # do not show XMRV by default, but leave as an option
+        virus = virusseq_virus_transcripts(input$pdx_viral_transcript_virus)
       )
-
+      
       lines_from_database_explorer <- function(rows_selected) {
-          sample_names <- df[rows_selected, "PDX Name"]
-          virusseq_matrix_selected_transcripts[, sample_names, drop = FALSE]
-        }
-
+        sample_names <- df[rows_selected, "PDX Name"]
+        virusseq_matrix_selected_transcripts[, sample_names, drop = FALSE]
+      }
+      
       lines_from_who_category <- function(who_category) {
-          sample_names <- df[
-            df[["WHO Category"]] %in% who_category,
-            "PDX Name"
+        sample_names <- df[
+          df[["WHO Category"]] %in% who_category,
+          "PDX Name"
           ]
-          valid_sample_names <-
-            sample_names[sample_names %in% colnames(virusseq_matrix_selected_transcripts)]
-          virusseq_matrix_selected_transcripts[, valid_sample_names, drop = FALSE]
+        valid_sample_names <-
+          sample_names[sample_names %in% colnames(virusseq_matrix_selected_transcripts)]
+        virusseq_matrix_selected_transcripts[, valid_sample_names, drop = FALSE]
       }
       
       lines_from_who_classification <- function(who_classification) {
@@ -48,7 +54,7 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
           sample_names[sample_names %in% colnames(virusseq_matrix_selected_transcripts)]
         virusseq_matrix_selected_transcripts[, valid_sample_names, drop = FALSE]
       }
-
+      
       
       virusseq_matrix_selected_lines <- switch(
         input$pdx_viral_transcript_selection_method,
@@ -69,7 +75,7 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
       
       # heatmap.2 breaks if all values are identical AND they are all zeros (does not happen if all identical and non-zero). this may happen in cases of raw Counts and FPKM. The fix is to remove the colour key, see: https://stackoverflow.com/questions/9721785/r-trying-to-make-a-heatmap-from-a-matrix-all-the-values-in-the-matrix-are-the
       data_all_zeros <- all(unique(c(virusseq_matrix_selected_lines)) == 0)
-
+      
       if (!data_all_zeros) {
         heatmap.2(
           virusseq_matrix_selected_lines,
