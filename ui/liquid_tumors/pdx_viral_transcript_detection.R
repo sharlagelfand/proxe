@@ -16,7 +16,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           ),
           selected = "log2_fpkm"
         ),
-
+        
         radioButtons(
           inputId = "pdx_viral_transcript_all_transcripts",
           label = "Select transcripts",
@@ -25,15 +25,19 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
                       "By virus" = "virus"),
           selected = "All"
         ),
-
-        selectizeInput(
-          inputId = "pdx_viral_transcript_transcripts",
-          label = "Select transcript",
-          choices = sort(rownames(virusseq_fpkm_matrix)),
-          selected = sort(rownames(virusseq_fpkm_matrix))[1:5],
-          multiple = TRUE
+        
+        conditionalPanel(
+          condition = "input.pdx_viral_transcript_all_transcripts == 'transcript'",
+          selectizeInput(
+            inputId = "pdx_viral_transcript_transcripts",
+            label = "Select transcript",
+            choices = sort(rownames(virusseq_fpkm_matrix)),
+            selected = NULL,
+            multiple = TRUE
+          )
         ),
-
+        
+        
         radioButtons(
           inputId = "pdx_viral_transcript_selection_method",
           label = "Type of sample input",
@@ -46,7 +50,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           ),
           selected = "all"
         ),
-
+        
         conditionalPanel(
           condition = "input.pdx_viral_transcript_selection_method == 'line_name'",
           selectInput(
@@ -57,7 +61,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
             multiple = TRUE
           )
         ),
-
+        
         conditionalPanel(
           condition = "input.pdx_viral_transcript_selection_method == 'who_category'",
           selectizeInput(
