@@ -19,9 +19,11 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
 
         radioButtons(
           inputId = "pdx_viral_transcript_all_transcripts",
-          label = "All transcripts? May be be useful for understanding overall distribution. Overrides whatever is below.",
-          choices = c("No", "Yes"),
-          selected = "No"
+          label = "Select transcripts",
+          choices = c("All", 
+                      "By transcript" = "transcript",
+                      "By virus" = "virus"),
+          selected = "All"
         ),
 
         selectizeInput(

@@ -20,8 +20,8 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
 
       virusseq_matrix_selected_transcripts <- switch(
         input$pdx_viral_transcript_all_transcripts,
-        No = pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_transcripts, ],
-        Yes = pdx_viral_transcript_detection_data[!(rownames(pdx_viral_transcript_detection_data) == "XMRV"), ] # do not show XMRV by default, but leave as an option
+        transcript = pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_transcripts, ],
+        All = pdx_viral_transcript_detection_data[!(rownames(pdx_viral_transcript_detection_data) == "XMRV"), ] # do not show XMRV by default, but leave as an option
       )
 
       lines_from_database_explorer <- function(rows_selected) {
