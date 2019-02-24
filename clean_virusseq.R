@@ -72,9 +72,9 @@ virusseq_with_pdx_name <- virusseq_with_pdx_name %>%
                                        TranscriptID == "HCV" ~ "Hep C",
                                        str_detect(TranscriptID, "HHV5") ~ "HHV5",
                                        TranscriptID == "XMRV" ~ "XMRV",
-                                       TranscriptID == "HpV18gp3_E1" ~ "Other"),
+                                       TranscriptID == "HpV18gp3_E1" ~ "HPV"),
          transcript_factor = fct_relevel(as_factor(transcript_factor),
-                                         c("HTLV1", "EBV", "Hep C", "HHV5", "Other", "XMRV")))
+                                         c("HTLV1", "EBV", "Hep C", "HHV5", "HPV", "XMRV")))
 
 # convert to matrix form for heatmap
 
