@@ -80,7 +80,8 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
           margins = c(19, 16),
           col = my_palette,
           keysize = 0.75,
-          dendrogram = "both"
+          dendrogram = "column",
+          Rowv = FALSE
         )
       }
       else {
@@ -93,7 +94,8 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
           margins = c(19, 16),
           col = my_palette,
           key = FALSE,
-          dendrogram = "both"
+          dendrogram = "column",
+          Rowv = FALSE
         )
       }
     })
