@@ -12,7 +12,7 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
 
       pdx_viral_transcript_detection_plot_title <- switch(
         input$pdx_viral_transcript_measure,
-        log2_fpkm = "Log2( FPKM + 0.01)",
+        log2_fpkm = "Log2(FPKM + 0.01)",
         fpkm = "FPKM",
         counts = "Counts",
         log_counts = "Log(Counts)"
