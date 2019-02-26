@@ -112,5 +112,10 @@ virusseq_counts_matrix <- virusseq_counts_matrix %>%
   select(-TranscriptID, -transcript_factor) %>%
   as.matrix()
 
+# Retain copy of raw data for downloading
+
+liquid_tumor_pdx_viral_transcript_detection <- virusseq_with_pdx_name %>% 
+  select(transcript_id = TranscriptID, pdx_name, fpkm = FPKM, counts = Counts)
+
 # Remove objects that do not need to be available in app
 rm(virusseq, sequencing_checklist, virusseq_with_pdx_name)
