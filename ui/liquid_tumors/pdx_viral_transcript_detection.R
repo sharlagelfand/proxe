@@ -96,7 +96,9 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
             multiple = TRUE,
             selected = NULL
           )
-        )
+        ),
+        
+        downloadLink("pdx_viral_transcript_download", "Download associated data")
       ),
       mainPanel(
         plotOutput(

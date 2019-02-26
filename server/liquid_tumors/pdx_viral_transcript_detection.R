@@ -105,4 +105,13 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         )
       }
     })
+    
+    output$pdx_viral_transcript_download <- downloadHandler(
+      filename = function() {
+        "liquid_tumor_pdx_viral_transcript_detection.csv"
+      },
+      content = function(file) {
+        write.csv(liquid_tumor_pdx_viral_transcript_detection, file, row.names = FALSE)
+      }
+    )
   }
