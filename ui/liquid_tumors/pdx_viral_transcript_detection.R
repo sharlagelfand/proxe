@@ -41,13 +41,13 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           condition = "input.pdx_viral_transcript_all_transcripts == 'virus'",
           checkboxGroupInput(
             inputId = "pdx_viral_transcript_virus",
-            label = "",
-            choices = c("HTLV1 transcripts" = "HTLV1",
-                        "EBV transcripts" = "EBV", 
-                        "Hep C transcripts" = "Hep C",
-                        "HHV5 transcripts" = "HHV5",
-                        "HPV transcripts" = "HPV",
-                        "XMRV transcripts" = "XMRV"),
+            label = "Virus:",
+            choices = c("HTLV1",
+                        "EBV", 
+                        "Hep C",
+                        "HHV5",
+                        "HPV",
+                        "XMRV"),
             selected = NULL
           )
         ),
