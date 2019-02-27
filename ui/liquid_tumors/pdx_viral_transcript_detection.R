@@ -5,23 +5,25 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
     sidebarLayout(
       sidebarPanel(
         width = 3,
-        
+
         sliderInput(
-          inputId = "pdx_viral_transcript_plot_height", 
-          label = "Plot height (px)", 
+          inputId = "pdx_viral_transcript_plot_height",
+          label = "Plot height (px)",
           min = 600,
-          max = 1600, 
-          step = 200, 
-          value = 800),
-        
+          max = 1600,
+          step = 200,
+          value = 800
+        ),
+
         sliderInput(
-          inputId = "pdx_viral_transcript_plot_width", 
-          label = "Plot width (px)", 
+          inputId = "pdx_viral_transcript_plot_width",
+          label = "Plot width (px)",
           min = 600,
-          max = 1600, 
-          step = 200, 
-          value = 800),
-        
+          max = 1600,
+          step = 200,
+          value = 800
+        ),
+
         radioButtons(
           inputId = "pdx_viral_transcript_measure",
           label = "Select a measure",
@@ -33,16 +35,17 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           ),
           selected = "log2_fpkm"
         ),
-        
+
         radioButtons(
           inputId = "pdx_viral_transcript_all_transcripts",
           label = "Select transcripts",
-          choices = c("All", 
-                      "By transcript" = "transcript",
-                      "By virus" = "virus"),
+          choices = c("All",
+            "By transcript" = "transcript",
+            "By virus" = "virus"
+          ),
           selected = "All"
         ),
-        
+
         conditionalPanel(
           condition = "input.pdx_viral_transcript_all_transcripts == 'transcript'",
           selectizeInput(
@@ -53,22 +56,24 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
             multiple = TRUE
           )
         ),
-        
+
         conditionalPanel(
           condition = "input.pdx_viral_transcript_all_transcripts == 'virus'",
           checkboxGroupInput(
             inputId = "pdx_viral_transcript_virus",
             label = "Virus:",
-            choices = c("HTLV1",
-                        "EBV", 
-                        "Hep C",
-                        "HHV5",
-                        "HPV",
-                        "XMRV"),
+            choices = c(
+              "HTLV1",
+              "EBV",
+              "Hep C",
+              "HHV5",
+              "HPV",
+              "XMRV"
+            ),
             selected = NULL
           )
         ),
-        
+
         radioButtons(
           inputId = "pdx_viral_transcript_selection_method",
           label = "Type of sample input",
@@ -81,7 +86,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           ),
           selected = "all"
         ),
-        
+
         conditionalPanel(
           condition = "input.pdx_viral_transcript_selection_method == 'line_name'",
           selectInput(
@@ -92,7 +97,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
             multiple = TRUE
           )
         ),
-        
+
         conditionalPanel(
           condition = "input.pdx_viral_transcript_selection_method == 'who_category'",
           selectizeInput(
@@ -103,7 +108,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
             selected = "AML"
           )
         ),
-        
+
         conditionalPanel(
           condition = "input.pdx_viral_transcript_selection_method == 'who_classification'",
           selectizeInput(
@@ -114,13 +119,11 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
             selected = NULL
           )
         ),
-        
+
         downloadLink("pdx_viral_transcript_download", "Download raw data")
       ),
       mainPanel(
-
         uiOutput("ui_plot_pdx_viral_transcript_detection")
-        
       )
     )
   )
