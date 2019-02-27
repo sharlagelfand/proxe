@@ -5,6 +5,23 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
     sidebarLayout(
       sidebarPanel(
         width = 3,
+        
+        sliderInput(
+          inputId = "pdx_viral_transcript_plot_height", 
+          label = "Plot height (px)", 
+          min = 600,
+          max = 1600, 
+          step = 200, 
+          value = 800),
+        
+        sliderInput(
+          inputId = "pdx_viral_transcript_plot_width", 
+          label = "Plot width (px)", 
+          min = 600,
+          max = 1600, 
+          step = 200, 
+          value = 800),
+        
         radioButtons(
           inputId = "pdx_viral_transcript_measure",
           label = "Select a measure",
@@ -98,7 +115,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
           )
         ),
         
-        downloadLink("pdx_viral_transcript_download", "Download associated data")
+        downloadLink("pdx_viral_transcript_download", "Download raw data")
       ),
       mainPanel(
         plotOutput(
