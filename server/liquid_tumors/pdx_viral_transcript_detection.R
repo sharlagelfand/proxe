@@ -20,13 +20,13 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
       
       virusseq_virus_transcripts <- function(input_virus){
         virus_transcripts <- virusseq_transcript_virus_lookup[virusseq_transcript_virus_lookup[["virus"]] %in% input_virus, ][["TranscriptID"]]
-        pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% virus_transcripts ,]
+        pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% virus_transcripts ,, drop = FALSE]
       }
       
       virusseq_matrix_selected_transcripts <- switch(
         input$pdx_viral_transcript_all_transcripts,
         All = pdx_viral_transcript_detection_data[!(rownames(pdx_viral_transcript_detection_data) == "XMRV"), ], # do not show XMRV by default, but leave as an option
-        transcript = pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_transcripts, ],
+        transcript = pdx_viral_transcript_detection_data[rownames(pdx_viral_transcript_detection_data) %in% input$pdx_viral_transcript_transcripts,, drop = FALSE],
         virus = virusseq_virus_transcripts(input$pdx_viral_transcript_virus)
       )
       
@@ -54,7 +54,6 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
           sample_names[sample_names %in% colnames(virusseq_matrix_selected_transcripts)]
         virusseq_matrix_selected_transcripts[, valid_sample_names, drop = FALSE]
       }
-      
       
       virusseq_matrix_selected_lines <- switch(
         input$pdx_viral_transcript_selection_method,
