@@ -113,4 +113,10 @@ server_liquid_tumors_pdx_viral_transcript_detection <-
         write.csv(liquid_tumor_pdx_viral_transcript_detection, file, row.names = FALSE)
       }
     )
+    
+    output$ui_plot_pdx_viral_transcript_detection <- renderUI({
+      plotOutput("plot_pdx_viral_transcript_detection",
+                 height = input$pdx_viral_transcript_plot_height, 
+                 width = input$pdx_viral_transcript_plot_width)
+    })
   }

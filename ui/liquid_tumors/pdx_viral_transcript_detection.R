@@ -118,11 +118,9 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
         downloadLink("pdx_viral_transcript_download", "Download raw data")
       ),
       mainPanel(
-        plotOutput(
-          "plot_pdx_viral_transcript_detection",
-          height = 1000,
-          width = 1000
-        )
+
+        uiOutput("ui_plot_pdx_viral_transcript_detection")
+        
       )
     )
   )
