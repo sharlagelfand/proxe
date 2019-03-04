@@ -43,6 +43,7 @@ shinyServer(function(input, output, session) { # TODO: read on what 'session' me
   server_liquid_tumors_database_explorer(input, output, session)
   server_liquid_tumors_pdx_gene_expression(input, output, session)
   server_liquid_tumors_pdx_mutations(input, output, session)
+  server_liquid_tumors_pdx_viral_transcript_detection(input, output, session)
   server_liquid_tumors_contingency_table(input, output, session)
   server_liquid_tumors_line_report(input, output, session)
   server_liquid_tumors_glossary(input, output, session)
