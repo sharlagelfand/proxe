@@ -105,7 +105,7 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
             label = "WHO Category",
             choices = unique(df[["WHO Category"]]),
             multiple = TRUE,
-            selected = "AML"
+            selected = "ALL"
           )
         ),
 
