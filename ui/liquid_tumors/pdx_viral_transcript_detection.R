@@ -116,7 +116,11 @@ ui_liquid_tumors_pdx_viral_transcript_detection <- function() {
             label = "WHO Classification",
             choices = unique(df[["WHO Classification"]]),
             multiple = TRUE,
-            selected = NULL
+            selected = c("T-ALL", "B-ALL NOS", "B-ALL with t(12;21) TEL-AML1 (ETV6-RUNX1)",
+                         "B-ALL with t(9;22) BCR-ABL", "B-ALL with t(v;11q23) MLL rearranged",
+                         "B-ALL with t(1;19) E2A-PBX1 (TCF3-PBX1)", 
+                         "B-ALL with hyperdiploidy", "B-ALL with hypodiploidy", 
+                         "B/myeloid acute leukemia")
           )
         ),
 
