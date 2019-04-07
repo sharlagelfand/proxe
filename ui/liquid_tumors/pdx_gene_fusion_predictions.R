@@ -28,39 +28,34 @@ ui_liquid_tumors_pdx_gene_fusion_predictions <- function() {
           inputId = "pdx_gene_fusion_predictions_select_fusions",
           label = "Select fusions",
           choices = c("All",
-                      "By fusion" = "fusion",
-                      "By reads" = "reads"
-          ),
+                      "By fusion reads" = "fusion_reads",
+                      "By fusion and junction reads" = "fusion_junction_reads"),
           selected = "All"
-        ),
+        ), 
         
         conditionalPanel(
-          condition = "pdx_gene_fusion_predictions_select_fusions == 'fusion'",
-          selectizeInput(
-            inputId = "pdx_gene_fusion_predictions_fusins",
-            label = "Fusion:",
-            choices = sort(unique(gene_fusion_predictions[["fusion_name"]])),
-            selected = NULL,
-            multiple = TRUE
+          condition = "input.pdx_gene_fusion_predictions_select_fusions == 'fusion_reads' || input.pdx_gene_fusion_predictions_select_fusions == 'fusion_junction_reads'",
+          sliderInput(
+            inputId = "pdx_gene_fusion_predictions_fusions_reads",
+            label = "Minimum fusion reads:",
+            min = 0,
+            max = max(gene_fusion_predictions[["spanning_frags"]]),
+            step = 1,
+            value = 0
           )
         ),
         
-        # conditionalPanel(
-        #   condition = "input.pdx_gene_fusion_predictions_all_transcripts == 'reads'",
-        #   checkboxGroupInput(
-        #     inputId = "pdx_gene_fusion_predictions_virus",
-        #     label = "Virus:",
-        #     choices = c(
-        #       "HTLV1",
-        #       "EBV",
-        #       "Hep C",
-        #       "HHV5",
-        #       "HPV",
-        #       "XMRV"
-        #     ),
-        #     selected = NULL
-        #   )
-        # ),
+        conditionalPanel(
+          condition = "input.pdx_gene_fusion_predictions_select_fusions == 'fusion_junction_reads'",
+          sliderInput(
+            inputId = "pdx_gene_fusion_predictions_junction_reads",
+            label = "Minimum junction reads:",
+            min = 0,
+            max = max(gene_fusion_predictions[["junction_reads"]]),
+            step = 1,
+            value = 0
+          )
+        ),
         
         radioButtons(
           inputId = "pdx_gene_fusion_predictions_selection_method",
