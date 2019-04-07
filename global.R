@@ -15,6 +15,9 @@ library(ComplexHeatmap)
 # a la http://shiny.rstudio.com/articles/scoping.html
 
 loadedGlobal <- load("pre-compiled.RData")
+
+gene_fusion_predictions <- readRDS("gene_fusion_predictions.rds")
+
 print(loadedGlobal)
 
 # developer code for manually stepping through all loaded objects
