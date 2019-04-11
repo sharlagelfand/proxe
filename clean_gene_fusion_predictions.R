@@ -9,7 +9,7 @@ library(forcats)
 library(janitor)
 
 gene_fusion_predictions <- read_csv(paste0(data_outside_app_dir, "/STAR_Fusion_Report.csv")) %>%
-  select(sample, FusionName, JunctionReads, SpanningFrags, TotalReads) %>%
+  select(Sample, FusionName, JunctionReads, SpanningFrags, TotalReads) %>%
   clean_names()
 
 sequencing_checklist <- read_excel(paste0(data_outside_app_dir, "/SEQUENCING_checklist_091718.xlsx")) %>%
@@ -88,6 +88,15 @@ gene_fusion_predictions_with_pdx_name <- gene_fusion_predictions_with_pdx_name %
       NA_character_
     )
   )
+
+gene_fusion_predictions_with_pdx_name <- gene_fusion_predictions_with_pdx_name %>%
+  arrange(!inverse_exists, pair, total_reads)
+
+# Make pdx_name into factor for completing later on
+
+gene_fusion_predictions_with_pdx_name <- gene_fusion_predictions_with_pdx_name %>%
+  mutate(pdx_name = as.factor(pdx_name)) %>%
+  select(-sample)
 
 gene_fusion_predictions <- gene_fusion_predictions_with_pdx_name
 

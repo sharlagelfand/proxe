@@ -28,10 +28,22 @@ ui_liquid_tumors_pdx_gene_fusion_predictions <- function() {
           inputId = "pdx_gene_fusion_predictions_select_fusions",
           label = "Select fusions",
           choices = c("All",
+                      "By fusion name" = "fusion_name",
                       "By fusion reads" = "fusion_reads",
                       "By fusion and junction reads" = "fusion_junction_reads"),
           selected = "fusion_reads"
         ), 
+        
+        conditionalPanel(
+          condition = "input.pdx_gene_fusion_predictions_select_fusions == 'fusion_name'",
+          selectInput(
+            inputId = "pdx_gene_fusion_predictions_fusion_name",
+            label = "Type or select fusion names",
+            choices = unique(gene_fusion_predictions[["fusion_name"]]),
+            selected = NULL,
+            multiple = TRUE
+          )
+        ),
         
         conditionalPanel(
           condition = "input.pdx_gene_fusion_predictions_select_fusions == 'fusion_reads' || input.pdx_gene_fusion_predictions_select_fusions == 'fusion_junction_reads'",
@@ -99,11 +111,10 @@ ui_liquid_tumors_pdx_gene_fusion_predictions <- function() {
             label = "WHO Classification",
             choices = unique(df[["WHO Classification"]]),
             multiple = TRUE,
-            selected = c("T-ALL", "B-ALL NOS", "B-ALL with t(12;21) TEL-AML1 (ETV6-RUNX1)",
+            selected = c("B-ALL NOS", "B-ALL with t(12;21) TEL-AML1 (ETV6-RUNX1)",
                          "B-ALL with t(9;22) BCR-ABL", "B-ALL with t(v;11q23) MLL rearranged",
                          "B-ALL with t(1;19) E2A-PBX1 (TCF3-PBX1)", 
-                         "B-ALL with hyperdiploidy", "B-ALL with hypodiploidy", 
-                         "B/myeloid acute leukemia")
+                         "B-ALL with hyperdiploidy", "B-ALL with hypodiploidy")
           )
         ),
         
