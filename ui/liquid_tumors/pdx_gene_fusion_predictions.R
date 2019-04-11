@@ -30,7 +30,7 @@ ui_liquid_tumors_pdx_gene_fusion_predictions <- function() {
           choices = c("All",
                       "By fusion reads" = "fusion_reads",
                       "By fusion and junction reads" = "fusion_junction_reads"),
-          selected = "All"
+          selected = "fusion_reads"
         ), 
         
         conditionalPanel(
@@ -41,7 +41,7 @@ ui_liquid_tumors_pdx_gene_fusion_predictions <- function() {
             min = 0,
             max = max(gene_fusion_predictions[["spanning_frags"]]),
             step = 1,
-            value = 0
+            value = 20
           )
         ),
         
@@ -61,13 +61,13 @@ ui_liquid_tumors_pdx_gene_fusion_predictions <- function() {
           inputId = "pdx_gene_fusion_predictions_selection_method",
           label = "Type of sample input",
           choices = c(
-            "All samples" = "all",
+            "All samples" = "All",
             "Select line names" = "line_name",
             "Select WHO Category" = "who_category",
             "Select WHO Classification" = "who_classification",
             "Click rows in Database Explorer" = "database_explorer"
           ),
-          selected = "all"
+          selected = "All"
         ),
         
         conditionalPanel(
