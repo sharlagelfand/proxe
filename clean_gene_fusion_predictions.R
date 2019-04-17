@@ -92,12 +92,6 @@ gene_fusion_predictions_with_pdx_name <- gene_fusion_predictions_with_pdx_name %
 gene_fusion_predictions_with_pdx_name <- gene_fusion_predictions_with_pdx_name %>%
   arrange(!inverse_exists, pair, total_reads)
 
-# Make pdx_name into factor for completing later on
-
-gene_fusion_predictions_with_pdx_name <- gene_fusion_predictions_with_pdx_name %>%
-  mutate(pdx_name = as.factor(pdx_name)) %>%
-  select(-sample)
-
 gene_fusion_predictions <- gene_fusion_predictions_with_pdx_name
 
 saveRDS(gene_fusion_predictions, "gene_fusion_predictions.rds")

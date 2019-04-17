@@ -79,7 +79,7 @@ ui_liquid_tumors_pdx_gene_fusion_predictions <- function() {
             "Select WHO Classification" = "who_classification",
             "Click rows in Database Explorer" = "database_explorer"
           ),
-          selected = "All"
+          selected = "who_classification"
         ),
         
         conditionalPanel(

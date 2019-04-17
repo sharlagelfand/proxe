@@ -5,48 +5,52 @@ server_liquid_tumors_pdx_gene_fusion_predictions <-
       
       fusion_inverses <- gene_fusion_predictions %>%
         distinct(fusion_name, inverse_exists, pair)
-      
-      gene_fusion_predictions_filter_fusions <- switch(
-        input$pdx_gene_fusion_predictions_select_fusions,
-        All = gene_fusion_predictions,
-        fusion_name = gene_fusion_predictions[gene_fusion_predictions$fusion_name %in% input$pdx_gene_fusion_predictions_fusion_name, ],
-        fusion_reads = gene_fusion_predictions[gene_fusion_predictions$spanning_frags >= input$pdx_gene_fusion_predictions_fusions_reads, ],
-        fusion_junction_reads = gene_fusion_predictions[gene_fusion_predictions$spanning_frags >= input$pdx_gene_fusion_predictions_fusions_reads &
-                                                          gene_fusion_predictions$junction_reads >= input$pdx_gene_fusion_predictions_junction_reads, ]
-      )
-      
+    
       gene_fusion_predictions_filter_samples <- switch(
         input$pdx_gene_fusion_predictions_selection_method,
         
-        All = gene_fusion_predictions_filter_fusions %>%
-          complete(pdx_name, fusion_name, fill = list(total_reads = 0)),
+        All = gene_fusion_predictions,
         
-        line_name = gene_fusion_predictions_filter_fusions[gene_fusion_predictions_filter_fusions$pdx_name %in% input$pdx_gene_fusion_predictions_line_name,],
+        line_name = gene_fusion_predictions[gene_fusion_predictions$pdx_name %in% input$pdx_gene_fusion_predictions_line_name,],
         
         who_category = {
           sample_names <- df[df[["WHO Category"]] %in% input$pdx_gene_fusion_predictions_who_category,
                              "PDX Name"]
-          gene_fusion_predictions_filter_fusions[gene_fusion_predictions_filter_fusions$pdx_name %in% sample_names,]
+          gene_fusion_predictions[gene_fusion_predictions$pdx_name %in% sample_names,]
         },
         
         who_classification = {
           sample_names <- df[df[["WHO Classification"]] %in% input$pdx_gene_fusion_predictions_who_classification,
                              "PDX Name"]
-          gene_fusion_predictions_filter_fusions[gene_fusion_predictions_filter_fusions$pdx_name %in% sample_names,]
+          gene_fusion_predictions[gene_fusion_predictions$pdx_name %in% sample_names,]
         },
         
         database_explorer = {
           sample_names <- df[input$table_rows_selected, "PDX Name"]
-          gene_fusion_predictions_filter_fusions[gene_fusion_predictions_filter_fusions$pdx_name %in% sample_names,]
+          gene_fusion_predictions[gene_fusion_predictions$pdx_name %in% sample_names,]
         }
       )
       
       gene_fusion_predictions_filter_samples <- gene_fusion_predictions_filter_samples %>%
+        mutate(pdx_name = as.factor(pdx_name))
+      
+      gene_fusion_predictions_filter_fusions <- switch(
+        input$pdx_gene_fusion_predictions_select_fusions,
+        All = gene_fusion_predictions_filter_samples,
+        fusion_name = gene_fusion_predictions_filter_samples[gene_fusion_predictions_filter_samples$fusion_name %in% input$pdx_gene_fusion_predictions_fusion_name, ],
+        fusion_reads = gene_fusion_predictions_filter_samples[gene_fusion_predictions_filter_samples$spanning_frags >= input$pdx_gene_fusion_predictions_fusions_reads, ],
+        fusion_junction_reads = gene_fusion_predictions_filter_samples[gene_fusion_predictions_filter_samples$spanning_frags >= input$pdx_gene_fusion_predictions_fusions_reads & gene_fusion_predictions_filter_samples$junction_reads >= input$pdx_gene_fusion_predictions_junction_reads, ]
+      )
+      
+      gene_fusion_predictions_filtered <- gene_fusion_predictions_filter_fusions %>%
+        complete(pdx_name, fusion_name, fill = list(total_reads = 0))
+      
+      gene_fusion_predictions_filtered <- gene_fusion_predictions_filtered %>%
         left_join(fusion_inverses, by = "fusion_name", suffix = c("", "_filter")) %>%
         arrange(!inverse_exists_filter, pair_filter, total_reads)
       
       gene_fusion_predictions_matrix <-
-        gene_fusion_predictions_filter_samples[, c("pdx_name", "fusion_name", "total_reads")] %>%
+        gene_fusion_predictions_filtered[, c("pdx_name", "fusion_name", "total_reads")] %>%
         spread(pdx_name, total_reads, fill = 0) %>%
         as.data.frame()
       
