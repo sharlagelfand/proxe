@@ -2,7 +2,8 @@
 
 # set order of read-in scripts
 read_in_scripts <- c(
-  "clean_liquid.R", "clean_virusseq.R", "seq.R", "rna_seq.R", "oncoprint2.R",
+  "clean_liquid.R", "clean_virusseq.R", "clean_gene_fusion_predictions.R",
+  "seq.R", "rna_seq.R", "oncoprint2.R",
   "clean_solid.R", "jax.R", "finalize.R"
 )
 

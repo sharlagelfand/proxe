@@ -4,7 +4,10 @@ server_liquid_tumors_pdx_gene_fusion_predictions <-
     output$plot_pdx_gene_fusion_predictions <- renderPlot({
       
       fusion_inverses <- gene_fusion_predictions %>%
-        distinct(fusion_name, inverse_exists, pair)
+        distinct(inverse_exists, fusion_name, pair, inverse_order)
+      
+      gene_fusion_predictions <- gene_fusion_predictions %>%
+        select(-inverse_exists, -pair, -inverse_order)
     
       gene_fusion_predictions_filter_samples <- switch(
         input$pdx_gene_fusion_predictions_selection_method,
@@ -42,12 +45,24 @@ server_liquid_tumors_pdx_gene_fusion_predictions <-
         fusion_junction_reads = gene_fusion_predictions_filter_samples[gene_fusion_predictions_filter_samples$spanning_frags >= input$pdx_gene_fusion_predictions_fusions_reads & gene_fusion_predictions_filter_samples$junction_reads >= input$pdx_gene_fusion_predictions_junction_reads, ]
       )
       
-      gene_fusion_predictions_filtered <- gene_fusion_predictions_filter_fusions %>%
-        complete(pdx_name, fusion_name, fill = list(total_reads = 0))
+      # Ensuring inverse fusions appear, and in the correct order
       
-      gene_fusion_predictions_filtered <- gene_fusion_predictions_filtered %>%
-        left_join(fusion_inverses, by = "fusion_name", suffix = c("", "_filter")) %>%
-        arrange(!inverse_exists_filter, pair_filter, total_reads)
+      fusion_levels <- gene_fusion_predictions_filter_fusions %>% 
+        distinct(fusion_name) %>%
+        left_join(fusion_inverses, by = "fusion_name") %>%
+        select(pair) %>% 
+        left_join(fusion_inverses, by = "pair") %>% 
+        distinct(fusion_name) %>% 
+        pull(fusion_name)
+      
+      gene_fusion_predictions_filtered_with_inverses <- gene_fusion_predictions_filter_fusions %>%
+        mutate_at(vars(fusion_name), fct_expand, fusion_levels)
+      
+      gene_fusion_predictions_filtered <- gene_fusion_predictions_filtered_with_inverses %>%
+        complete(pdx_name, fusion_name, fill = list(total_reads = 0)) %>%
+        left_join(fusion_inverses, by = "fusion_name") %>% 
+        arrange(!inverse_exists, pair, inverse_order) %>%
+        mutate_at(vars(fusion_name), ~ as_factor(.x) %>% fct_inorder)
       
       gene_fusion_predictions_matrix <-
         gene_fusion_predictions_filtered[, c("pdx_name", "fusion_name", "total_reads")] %>%

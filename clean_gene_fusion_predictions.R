@@ -1,5 +1,3 @@
-data_outside_app_dir <- file.path("~", "tcb", "proxe", "Dropbox (Partners HealthCare)", "PRoXe", "data_outside_app")
-
 library(readr)
 library(dplyr)
 library(readxl)
@@ -70,7 +68,7 @@ gene_fusion_predictions_with_pdx_name %>%
 
 # Add factor so that inverse functions are shown adjacent to one another
 
-gene_fusion_predictions_with_pdx_name <- gene_fusion_predictions_with_pdx_name %>%
+gene_fusion_predictions_with_inverse <- gene_fusion_predictions_with_pdx_name %>%
   separate(fusion_name,
     into = c("fusion_name_part_1", "fusion_name_part_2"),
     sep = "--",
@@ -85,13 +83,23 @@ gene_fusion_predictions_with_pdx_name <- gene_fusion_predictions_with_pdx_name %
         fusion_name, fusion_inverse,
         ~ paste0(c(sort(c(.x, .y))), collapse = ",")
       ),
-      NA_character_
+      fusion_name
     )
-  )
+  ) 
 
-gene_fusion_predictions_with_pdx_name <- gene_fusion_predictions_with_pdx_name %>%
+fusion_inverse_order <- gene_fusion_predictions_with_inverse %>%
+  group_by(inverse_exists, pair, fusion_name) %>%
+  summarise(mean_total_reads = mean(total_reads)) %>%
+  group_by(pair) %>%
+  arrange(desc(mean_total_reads)) %>%
+  mutate(inverse_order = ifelse(inverse_exists, row_number(), NA_integer_)) %>%
+  select(pair, fusion_name, inverse_order) %>%
+  ungroup()
+
+gene_fusion_predictions <- gene_fusion_predictions_with_inverse %>%
+  left_join(fusion_inverse_order, by = c("pair", "fusion_name"), na_matches = "never") %>%
   arrange(!inverse_exists, pair, total_reads)
 
-gene_fusion_predictions <- gene_fusion_predictions_with_pdx_name
+# Remove objects not needed outside app
 
-saveRDS(gene_fusion_predictions, "gene_fusion_predictions.rds")
+rm(fusion_inverse_order, gene_fusion_predictions_with_inverse, gene_fusion_predictions_with_pdx_name, sequencing_checklist)

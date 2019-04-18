@@ -12,13 +12,12 @@ library(plyr)
 library(ComplexHeatmap)
 library(tidyr)
 library(dplyr)
+library(forcats)
 
 # for loading of objects to be used in both ui.R and server.R
 # a la http://shiny.rstudio.com/articles/scoping.html
 
 loadedGlobal <- load("pre-compiled.RData")
-
-gene_fusion_predictions <- readRDS("gene_fusion_predictions.rds")
 
 print(loadedGlobal)
 
