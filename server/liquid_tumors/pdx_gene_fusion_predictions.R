@@ -95,7 +95,10 @@ server_liquid_tumors_pdx_gene_fusion_predictions <-
           notecol = "black",
           density.info = "none",
           trace = "none",
-          margins = c(19, 16),
+          margins = c(19, 20),
+          col = my_palette,
+          cexRow = 1.5,
+          cexCol = min(1.5, 0.2 + 1/log10(ncol(gene_fusion_predictions_matrix))),
           keysize = 0.75,
           dendrogram = "column",
           Rowv = FALSE
@@ -108,7 +111,9 @@ server_liquid_tumors_pdx_gene_fusion_predictions <-
           notecol = "black",
           density.info = "none",
           trace = "none",
-          margins = c(19, 16),
+          margins = c(19, 20),
+          col = my_palette,
+          cexRow = 1.5,
           key = FALSE,
           dendrogram = "column",
           Rowv = FALSE
