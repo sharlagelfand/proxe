@@ -1,12 +1,13 @@
 server_liquid_tumors_pdx_gene_fusion_predictions <-
   function(input, output, server) {
     
-      output$pdx_viral_transcript_download <- downloadHandler(
+      output$pdx_gene_fusion_predictions_download <- downloadHandler(
         filename = function() {
           "liquid_tumor_pdx_gene_fusion_predictions.csv"
         },
         content = function(file) {
-          write.csv(gene_fusion_predictions, file, row.names = FALSE)
+          write.csv(gene_fusion_predictions %>% 
+                      select(fusion_name, pdx_name, junction_reads, spanning_frags, total_reads), file, row.names = FALSE)
         }
       )
 
