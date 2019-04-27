@@ -13,8 +13,6 @@ library(ComplexHeatmap)
 library(tidyr)
 library(dplyr)
 library(forcats)
-library(plotly)
-library(heatmaply)
 
 # for loading of objects to be used in both ui.R and server.R
 # a la http://shiny.rstudio.com/articles/scoping.html

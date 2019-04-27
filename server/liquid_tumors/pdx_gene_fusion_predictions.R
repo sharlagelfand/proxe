@@ -7,7 +7,7 @@ server_liquid_tumors_pdx_gene_fusion_predictions <-
         },
         content = function(file) {
           write.csv(gene_fusion_predictions %>% 
-                      select(fusion_name, pdx_name, junction_reads, spanning_frags, total_reads), file, row.names = FALSE)
+                      select(fusion_name, pdx_name, junction_reads, fusion_reads = spanning_frags, total_reads), file, row.names = FALSE)
         }
       )
 
@@ -109,7 +109,7 @@ server_liquid_tumors_pdx_gene_fusion_predictions <-
           return(gene_fusion_predictions_matrix)
       })
       
-      output$pdx_gene_fusion_predictions_plot_static <- renderPlot({
+      output$pdx_gene_fusion_predictions_plot <- renderPlot({
         gene_fusion_predictions_matrix <- gene_fusion_predictions_matrix()
         
             # heatmap.2 breaks if all values are identical AND they are all zeros (does not happen if all identical and non-zero). The fix is to remove the colour key, see: https://stackoverflow.com/questions/9721785/r-trying-to-make-a-heatmap-from-a-matrix-all-the-values-in-the-matrix-are-the
@@ -151,27 +151,9 @@ server_liquid_tumors_pdx_gene_fusion_predictions <-
             }
       })
       
-      output$pdx_gene_fusion_predictions_plot_interactive <- renderPlotly(
-              heatmaply(gene_fusion_predictions_matrix(),
-              colors = my_palette,
-              column_text_angle = 90,
-              dendrogram = "column",
-              main = "log2(Total evidence + 1)"
-            ) %>%
-              config(displayModeBar = FALSE)
-            )
-      
-      output$ui_pdx_gene_fusion_predictions_plot_static <- renderUI(
+      output$ui_pdx_gene_fusion_predictions_plot <- renderUI(
         plotOutput(
-          "pdx_gene_fusion_predictions_plot_static",
-          height = input$pdx_gene_fusion_predictions_plot_height,
-          width = input$pdx_gene_fusion_predictions_plot_width
-        )
-      )
-      
-      output$ui_pdx_gene_fusion_predictions_plot_interactive <- renderUI(
-        plotlyOutput(
-          "pdx_gene_fusion_predictions_plot_interactive",
+          "pdx_gene_fusion_predictions_plot",
           height = input$pdx_gene_fusion_predictions_plot_height,
           width = input$pdx_gene_fusion_predictions_plot_width
         )

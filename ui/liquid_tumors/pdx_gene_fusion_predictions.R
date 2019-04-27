@@ -6,13 +6,6 @@ ui_liquid_tumors_pdx_gene_fusion_predictions <- function() {
       sidebarPanel(
         width = 3,
         
-        radioButtons(
-          inputId = "pdx_gene_fusion_predictions_plot_type",
-          label = "Plot type:",
-          choices = c("Static", "Interactive"),
-          selected = "Static"
-        ),
-        
         sliderInput(
           inputId = "pdx_gene_fusion_predictions_plot_height",
           label = "Plot height (px)",
@@ -128,8 +121,7 @@ ui_liquid_tumors_pdx_gene_fusion_predictions <- function() {
         downloadLink("pdx_gene_fusion_predictions_download", "Download raw data")
       ),
       mainPanel(
-        conditionalPanel('input.pdx_gene_fusion_predictions_plot_type=="Static"', uiOutput("ui_pdx_gene_fusion_predictions_plot_static")),
-        conditionalPanel('input.pdx_gene_fusion_predictions_plot_type=="Interactive"', uiOutput("ui_pdx_gene_fusion_predictions_plot_interactive"))
+        uiOutput("ui_pdx_gene_fusion_predictions_plot")
       )
     )
   )
